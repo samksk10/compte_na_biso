@@ -1,0 +1,182 @@
+/* Variables CSS */
+:root {
+    --primary-color: #1da1f2;
+    /* Bleu Twitter */
+    --secondary-color: #1991db;
+    /* Bleu plus foncé */
+    --background-color: #15202b;
+    /* Fond sombre */
+    --card-background: #192734;
+    /* Fond de la carte */
+    --input-background: #253341;
+    /* Fond des champs de formulaire */
+    --border-color: #38444d;
+    /* Couleur des bordures */
+    --text-color: #ffffff;
+    /* Couleur du texte */
+    --error-color: #e0245e;
+    /* Rouge pour les messages d'erreur */
+    --icon-color: #657786;
+    /* Couleur des icônes */
+    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    /* Ombre par défaut */
+}
+
+/* Styles globaux */
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: var(--font-family);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Carte de connexion */
+.card {
+    background-color: var(--card-background);
+    border: none;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    width: 350px;
+    padding: 20px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Logo et nom de l'application */
+.app-logo {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.app-logo .bi {
+    font-size: 3rem;
+    color: var(--primary-color);
+}
+
+.app-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-top: 10px;
+}
+
+/* Titre du formulaire */
+h2 {
+    color: var(--text-color);
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Champs de formulaire */
+.form-control {
+    background-color: var(--input-background);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 15px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(29, 161, 242, 0.2);
+}
+
+/* Bouton de connexion */
+.btn-primary {
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 100%;
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-2px);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* Message d'erreur */
+#message {
+    color: var(--error-color);
+    font-size: 0.9rem;
+    margin-top: 10px;
+    text-align: center;
+}
+
+/* Conteneur du mot de passe avec icône d'œil */
+.password-container {
+    position: relative;
+}
+
+.password-container .bi {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--icon-color);
+    transition: color 0.3s ease;
+}
+
+.password-container .bi:hover {
+    color: var(--primary-color);
+}
+
+/* Animation pour le conteneur de connexion */
+.login-container {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .card {
+        width: 90%;
+        padding: 15px;
+    }
+
+    .app-logo .bi {
+        font-size: 2.5rem;
+    }
+
+    .app-name {
+        font-size: 1.3rem;
+    }
+
+    h2 {
+        font-size: 1.4rem;
+    }
+
+    .form-control {
+        padding: 8px;
+    }
+
+    .btn-primary {
+        padding: 8px;
+    }
+}

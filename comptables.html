@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Comptables | Comptabilité Na Biso</title>
+    <!-- Liens vers les bibliothèques externes -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Styles personnalisés -->
+    <style>
+        /* Variables CSS */
+        :root {
+            --sidebar-bg: #15202b;
+            /* Fond de la barre latérale */
+            --sidebar-text: #ffffff;
+            /* Texte de la barre latérale */
+            --sidebar-hover-bg: rgba(29, 161, 242, 0.1);
+            /* Fond au survol */
+            --sidebar-hover-text: #1da1f2;
+            /* Texte au survol */
+            --logout-btn-bg: #e0245e;
+            /* Rouge pour le bouton de déconnexion */
+            --logout-btn-hover-bg: #b81d4b;
+            /* Rouge plus foncé au survol */
+            --success-btn-bg: #1da1f2;
+            /* Bleu pour les boutons */
+            --success-btn-hover-bg: #1991db;
+            /* Bleu plus foncé au survol */
+            --main-bg: #f5f8fa;
+            /* Fond du contenu principal */
+            --main-text: #15202b;
+            /* Texte du contenu principal */
+            --main-subtext: #657786;
+            /* Sous-texte du contenu principal */
+            --shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            /* Ombre de la barre latérale */
+            --transition: all 0.3s ease;
+            /* Transition par défaut */
+        }
+
+        /* Style général de la barre latérale */
+        .sidebar {
+            background-color: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            width: 250px;
+            height: 100vh;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        /* Style des liens de la barre latérale */
+        .nav-link {
+            color: var(--sidebar-text) !important;
+            font-weight: 500;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link:hover {
+            background-color: var(--sidebar-hover-bg);
+            transform: translateX(5px);
+            color: var(--sidebar-hover-text) !important;
+        }
+
+        .nav-link .bi {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        /* Style du bouton de déconnexion */
+        .logout-btn {
+            margin-top: 30px;
+            background-color: var(--logout-btn-bg);
+            color: var(--sidebar-text) !important;
+            border-radius: 8px;
+            padding: 10px 15px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            background-color: var(--logout-btn-hover-bg);
+        }
+
+        /* Style du contenu principal */
+        .main-content {
+            background-color: var(--main-bg);
+            padding: 20px;
+            margin-left: 250px;
+            flex-grow: 1;
+            min-height: 100vh;
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+
+        h4 {
+            color: var(--main-text);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        h5 {
+            color: var(--main-text);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .lead {
+            color: var(--main-subtext);
+            font-size: 1.1rem;
+        }
+
+        /* Style du formulaire */
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        /* Bouton de succès */
+        .btn-success {
+            background-color: var(--success-btn-bg);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .btn-success:hover {
+            background-color: var(--success-btn-hover-bg);
+            transform: translateY(-2px);
+        }
+
+        .btn-success:active {
+            transform: translateY(0);
+        }
+
+        /* Style du tableau */
+        .table {
+            margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #message {
+            margin-top: 10px;
+            font-weight: bold;
+            color: green;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        .table th {
+            background-color: var(--success-btn-bg);
+            color: var(--sidebar-text);
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(29, 161, 242, 0.1);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 10px;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 15px;
+            }
+
+            .nav-link {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
+
+            .logout-btn {
+                margin-top: 20px;
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
+
+            h4 {
+                font-size: 1.5rem;
+            }
+
+            h5 {
+                font-size: 1.25rem;
+            }
+
+            .lead {
+                font-size: 1rem;
+            }
+
+            .form-control {
+                font-size: 0.9rem;
+                padding: 8px;
+            }
+
+            .btn-success {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
+
+            .table-responsive {
+                overflow-x: auto;
+
+            }
+
+            .table {
+                min-width: 600px;
+            }
+
+            @media (max-width: 768px) {
+                .main-content {
+                    text-align: center;
+                }
+
+                #message {
+                    font-size: 0.95rem;
+                }
+            }
+        }
+    </style>
+
+</head>
+
+<body class="d-flex">
+    <!-- Barre latérale -->
+    <nav class="sidebar">
+        <h2 class="text-center mb-4">Menu</h2>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="dashboard.html">
+                    <i class="bi bi-speedometer2"></i> Tableau de bord
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="taux_change.html">
+                    <i class="bi bi-currency-exchange"></i>Gestion de Taux de Change
+                </a>
+            </li>
+            <li class="nav-item super_admin-only">
+                <a class="nav-link" href="register.html">
+                    <i class="bi bi-person-add"></i> Ajouter un administrateur
+                </a>
+            </li>
+            <li class="nav-item super_admin-only admin-only">
+                <a class="nav-link" data-bs-toggle="collapse" href="#comptablesSubmenu" role="button"
+                    aria-expanded="false" aria-controls="comptablesSubmenu">
+                    <i class="bi bi-person-lines-fill"></i>Gestions des Comptables <i
+                        class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <div class="collapse ps-3" id="comptablesSubmenu">
+                    <ul class="nav flex-column">
+                        <li class="nav-item super_admin-only admin-only">
+                            <a class="nav-link" href="comptables.html">➕ Ajouter un Comptable</a>
+                        </li>
+                        <li class="nav-item super_admin-only admin-only">
+                            <a class="nav-link" href="listerComptables.html">📄 Lister les Comptables</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item super_admin-only admin-only">
+                <a class="nav-link" data-bs-toggle="collapse" href="#categoriesSubmenu" role="button"
+                    aria-expanded="false" aria-controls="categoriesSubmenu">
+                    <i class="bi bi-folder2-open"></i> Catégories journaux <i class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <div class="collapse ps-3" id="categoriesSubmenu">
+                    <ul class="nav flex-column">
+                        <li class="nav-item super_admin-only admin-only">
+                            <a class="nav-link" href="categoriesjournaux.html">➕ Ajouter une Catégorie</a>
+                        </li>
+                        <li class="nav-item super_admin-only admin-only">
+                            <a class="nav-link" href="listerCategoriesJournaux.html">📄 Lister les Catégories</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item super_admin-only admin-only">
+                <a class="nav-link" href="entreprise.html">
+                    <i class="bi bi-building"></i> Gestions des Entreprises
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+                    href="#journauxSubmenu" role="button" aria-expanded="false" aria-controls="journauxSubmenu">
+                    <span>
+                        <i class="bi bi-journal-bookmark-fill me-2"></i>
+                        Journaux Comptables
+                    </span>
+                    <i class="bi bi-chevron-down collapse-icon"></i>
+                </a>
+                <div class="collapse ps-3" id="journauxSubmenu">
+                    <ul class="nav flex-column">
+                        <li class="nav-item comptable_caisse-only">
+                            <a class="nav-link ps-3 d-flex align-items-center" href="journalCaisse.html">
+                                <i class="bi bi-cash-coin me-2"></i>
+                                Journal Caisse
+                            </a>
+                        </li>
+                        <li class="nav-item comptable_banque-only">
+                            <a class="nav-link ps-3 d-flex align-items-center" href="journalBanque.html">
+                                <i class="bi bi-bank2 me-2"></i>
+                                Journal Banque
+                            </a>
+                        </li>
+                        <li class="nav-item comptable_od-only">
+                            <a class="nav-link ps-3 d-flex align-items-center" href="journalOperations.html">
+                                <i class="bi bi-file-earmark-text me-2"></i>
+                                Journal des Opérations
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link d-flex align-items-center" href="granLivre.html">
+                    <i class="bi bi-journal-text me-2"></i>
+                    Grand Livre
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="balance.html">
+                    <i class="bi bi-clipboard-data"></i> Balances Comptables
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link logout-btn" href="index.html" id="logoutBtn">
+                    <i class="bi bi-box-arrow-left"></i> Déconnexion
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Contenu principal -->
+    <!-- Contenu principal -->
+    <div class="main-content">
+        <h4 class="mb-4">Gestion des Comptables</h4>
+
+        <!-- Formulaire d'ajout -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Ajouter un Comptable</h5>
+            </div>
+            <div class="card-body">
+                <form id="comptableForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="codeComptable" class="form-label">Code Comptable</label>
+                            <input type="text" id="codeComptable" name="T4_CodeComptable" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="nomComptable" class="form-label">Nom Comptable</label>
+                            <input type="text" id="nomComptable" name="T4_NomComptable" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="emailComptable" class="form-label">Email Comptable</label>
+                            <input type="email" id="emailComptable" name="T4_Email" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="userRole" class="form-label">Rôle</label>
+                            <select id="userRole" name="T4_Role" class="form-select" required>
+                                <option value="" disabled selected>Choisir le rôle</option>
+                                <option value="chef_comptable">Chef Comptable</option>
+                                <option value="comptable_caisse">Comptable Caisse</option>
+                                <option value="comptable_banque">Comptable Banque</option>
+                                <option value="comptable_od">Comptable Opérations diverses</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="motDePasse" class="form-label">Mot de Passe</label>
+                            <div class="input-group">
+                                <input type="password" id="motDePasse" name="T4_MotDePasseCompta" class="form-control"
+                                    required>
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword"
+                                    aria-label="Afficher/masquer le mot de passe">
+                                    <i class="bi bi-eye" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="dateDebut" class="form-label">Date d'Embauche</label>
+                            <input type="date" id="dateDebut" name="T4_DateDebutComptable" name="T4_DateDebutComptable"
+                                class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-success"><i class="bi bi-person-plus"></i> Ajouter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="message" class="mt-3"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/auth.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Fonction pour afficher/masquer le mot de passe
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordInput = document.getElementById('motDePasse');
+            const icon = this.querySelector('i');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.replace('bi-eye', 'bi-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.replace('bi-eye-slash', 'bi-eye');
+            }
+        });
+    </script>
+    <script src="js/comptables.js"></script>
+</body>
+
+</html>
