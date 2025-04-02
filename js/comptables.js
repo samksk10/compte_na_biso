@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             <button class="btn btn-warning btn-sm edit-btn" 
                                 data-id="${ comptable.T4_NumComptable }" 
                                 data-nom="${ comptable.T4_NomComptable }" 
-                                data-email="${ comptable.T4_Email }">
+                                data-email="${ comptable.T4_Email }" data-role="${ comptable.T4_Role }"> <!-- Ajout du rôle -->
                                 Modifier
                             </button>
                             <button class="btn btn-danger btn-sm delete-btn" 
