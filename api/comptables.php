@@ -26,25 +26,36 @@ if (!in_array($currentUserRole, ['super_admin', 'admin'])) {
 $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
-    case 'GET':
-        try {
-            if (isset($_GET['search'])) {
-                $search = "%" . $_GET['search'] . "%";
-                $stmt = $pdo->prepare("SELECT T4_NumComptable, T4_CodeComptable, T4_NomComptable, T4_DateDebutComptable, T4_Email 
-                                       FROM t4_comptable 
-                                       WHERE T4_NomComptable LIKE ? OR T4_Email LIKE ? OR T4_CodeComptable LIKE ? 
-                                       ORDER BY T4_NumComptable ASC");
-                $stmt->execute([$search, $search, $search]);
-            } else {
-                $stmt = $pdo->query("SELECT T4_NumComptable, T4_CodeComptable, T4_NomComptable, T4_DateDebutComptable, T4_Email FROM t4_comptable ORDER BY T4_NumComptable ASC");
-            }
-
-            $comptables = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            jsonResponse($comptables);
-        } catch (Exception $e) {
-            jsonResponse(["error" => "Erreur lors de la récupération des comptables"], 500);
+   case 'GET':
+    try {
+        if (isset($_GET['search'])) {
+            $search = "%" . $_GET['search'] . "%";
+            $stmt = $pdo->prepare("
+                SELECT c.T4_NumComptable, c.T4_CodeComptable, c.T4_NomComptable, c.T4_DateDebutComptable, c.T4_Email, 
+                       u.role AS T4_Role
+                FROM t4_comptable c
+                LEFT JOIN users u ON c.user_id = u.id
+                WHERE c.T4_NomComptable LIKE ? OR c.T4_Email LIKE ? OR c.T4_CodeComptable LIKE ? 
+                ORDER BY c.T4_NumComptable ASC
+            ");
+            $stmt->execute([$search, $search, $search]);
+        } else {
+            $stmt = $pdo->query("
+                SELECT c.T4_NumComptable, c.T4_CodeComptable, c.T4_NomComptable, c.T4_DateDebutComptable, c.T4_Email, 
+                       u.role AS T4_Role
+                FROM t4_comptable c
+                LEFT JOIN users u ON c.user_id = u.id
+                ORDER BY c.T4_NumComptable ASC
+            ");
         }
-        break;
+
+        $comptables = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        jsonResponse($comptables);
+    } catch (Exception $e) {
+        jsonResponse(["error" => "Erreur lors de la récupération des comptables"], 500);
+    }
+    break;
+
 
     case 'POST':
         $data = json_decode(file_get_contents("php://input"), true);
