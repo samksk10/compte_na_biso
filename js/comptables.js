@@ -136,18 +136,3 @@ document.addEventListener("DOMContentLoaded", function () {
 
     setupLogoutButton();
 });
-
-// Affichage/Masquage du mot de passe
-const togglePasswordBtn = document.getElementById("togglePassword");
-if (togglePasswordBtn) {
-    togglePasswordBtn.addEventListener("click", function () {
-        const passwordField = document.getElementById("motDePasse");
-        if (passwordField.type === "password") {
-            passwordField.type = "text";
-            this.innerHTML = '<i class="bi bi-eye-slash"></i>';
-        } else {
-            passwordField.type = "password";
-            this.innerHTML = '<i class="bi bi-eye"></i>';
-        }
-    });
-}
