@@ -4,159 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>journal caisse</title>
+    <title>Journal Opérations Diverses | Comptabilité Na Biso</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-    <script src="js/auth.js"></script>
-    <style>
-        /* Variables CSS */
-        :root {
-            --sidebar-bg: #15202b;
-            /* Fond de la barre latérale */
-            --sidebar-text: #ffffff;
-            /* Texte de la barre latérale */
-            --sidebar-hover-bg: rgba(29, 161, 242, 0.1);
-            /* Fond au survol */
-            --sidebar-hover-text: #1da1f2;
-            /* Texte au survol */
-            --logout-btn-bg: #e0245e;
-            /* Bouton de déconnexion */
-            --logout-btn-hover-bg: #b81d4b;
-            /* Bouton de déconnexion au survol */
-            --main-bg: #f5f8fa;
-            /* Fond du contenu principal */
-            --main-text: #15202b;
-            /* Texte du contenu principal */
-            --main-subtext: #657786;
-            /* Sous-texte du contenu principal */
-            --shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-            /* Ombre de la barre latérale */
-            --transition: all 0.3s ease;
-            /* Transition par défaut */
-        }
-
-        /* Style général de la barre latérale */
-        .sidebar {
-            background-color: var(--sidebar-bg);
-            color: var(--sidebar-text);
-            width: 250px;
-            height: 100vh;
-            padding: 20px;
-            box-shadow: var(--shadow);
-            position: fixed;
-            top: 0;
-            left: 0;
-        }
-
-        /* Style des liens de la barre latérale */
-        .nav-link {
-            color: var(--sidebar-text) !important;
-            font-weight: 500;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-        }
-
-        .nav-link:hover {
-            background-color: var(--sidebar-hover-bg);
-            transform: translateX(5px);
-            color: var(--sidebar-hover-text) !important;
-        }
-
-        .nav-link .bi {
-            margin-right: 10px;
-            font-size: 1.2rem;
-        }
-
-        /* Style du bouton de déconnexion */
-        .logout-btn {
-            margin-top: 30px;
-            background-color: var(--logout-btn-bg);
-            color: var(--sidebar-text) !important;
-            border-radius: 8px;
-            padding: 10px 15px;
-            text-align: center;
-            transition: var(--transition);
-        }
-
-        .logout-btn:hover {
-            background-color: var(--logout-btn-hover-bg);
-        }
-
-        /* Style du contenu principal */
-        .main-content {
-            background-color: var(--main-bg);
-            padding: 20px;
-            margin-left: 250px;
-            /* Pour compenser la largeur de la barre latérale */
-            flex-grow: 1;
-            min-height: 100vh;
-        }
-
-        h4 {
-            color: var(--main-text);
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-
-        .lead {
-            color: var(--main-subtext);
-            font-size: 1.1rem;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-                padding: 10px;
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .nav-link {
-                padding: 8px 12px;
-            }
-
-            .logout-btn {
-                margin-top: 20px;
-            }
-
-            .fade-in {
-                opacity: 1;
-                transition: translateY(20px);
-                animation: fadeIn 0.6s ease-out forwards;
-            }
-
-            @keyframes fadeIn {
-                from {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-
-            /* Responsive centré pour mobile */
-            @media (max-width: 768px) {
-                .main-content {
-                    text-align: center;
-                }
-
-                .main-content h4,
-                .main-content p {
-                    font-size: 1.1rem;
-                }
-            }
-        }
-    </style>
+    <script src="js/auth.js"></script> <!-- Auth éventuelle -->
+    <link rel="stylesheet" href="stylesAll.css">
 </head>
 
-<body>
+<body class="d-flex">
     <nav class="sidebar">
         <h2 class="text-center mb-4">Menu</h2>
         <ul class="nav flex-column">
@@ -225,7 +80,7 @@
                 <div class="collapse ps-3" id="journauxSubmenu">
                     <ul class="nav flex-column">
                         <li class="nav-item comptable_caisse-only">
-                            <a class="nav-link ps-3 d-flex align-items-center" href="journalCaisse.html">
+                            <a class="nav-link ps-3 d-flex align-items-center active" href="journalCaisse.html">
                                 <i class="bi bi-cash-coin me-2"></i>
                                 Journal Caisse
                             </a>
@@ -263,60 +118,189 @@
             </li>
         </ul>
     </nav>
-    <div class="container mt-4">
-        <h2>Enregistrer un Mouvement Comptable dans le journal des opérations diverses</h2>
-        <form id="mouvementForm">
-            <div class="mb-3">
-                <label for="numPiece" class="form-label">Numéro de Pièce</label>
-                <input type="text" class="form-control" id="numPiece" name="numPiece" required>
-            </div>
-            <div class="mb-3">
-                <label for="datePiece" class="form-label">Date de la Pièce</label>
-                <input type="date" class="form-control" id="datePiece" name="datePiece" required>
-            </div>
-            <div class="mb-3">
-                <label for="devise" class="form-label">Devise</label>
-                <select class="form-control" id="devise" name="devise" required>
-                    <option value="USD">USD</option>
-                    <option value="EUR">EUR</option>
-                    <option value="CDF">CDF</option>
-                </select>
-            </div>
-            <h4>Détails des opérations</h4>
-            <table class="table" id="operationsTable">
-                <thead>
-                    <tr>
-                        <th>Compte</th>
-                        <th>Libellé</th>
-                        <th>Débit</th>
-                        <th>Crédit</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-            <button type="button" class="btn btn-primary" onclick="ajouterLigne()">Ajouter Ligne</button>
-            <button type="submit" class="btn btn-success">Enregistrer</button>
-        </form>
-    </div>
+    <div class="main-content fade-in">
+        <div class="container-fluid py-4">
+            <h4 class="mb-4">Journal des opérations diverses - <strong>Comptabilité na biso</strong></h4>
+            <p class="lead mb-4">Vous êtes connecté en tant que : <strong id="userRole"></strong></p>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        function ajouterLigne() {
-            let row = `<tr>
-                <td><input type="text" class="form-control" name="compte[]" required></td>
-                <td><input type="text" class="form-control" name="libelle[]" required></td>
-                <td><input type="number" class="form-control" name="debit[]" step="0.01" min="0"></td>
-                <td><input type="number" class="form-control" name="credit[]" step="0.01" min="0"></td>
-                <td><button type="button" class="btn btn-danger" onclick="supprimerLigne(this)">Supprimer</button></td>
-            </tr>`;
-            $("#operationsTable tbody").append(row);
-        }
+            <form id="mouvementForm">
+                <!-- En-tête mouvement -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Enregistrer un mouvement comptable</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="numPiece" class="form-label">Numéro de l'opération</label>
+                                <input type="text" class="form-control" id="numPiece" name="numPiece" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="datePiece" class="form-label">Date d'enregistrement</label>
+                                <input type="date" class="form-control" id="datePiece" name="datePiece" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="dateOperation" class="form-label">Date de l'opération</label>
+                                <input type="date" class="form-control" id="dateOperation" name="dateOperation"
+                                    required>
+                            </div>
+                        </div>
 
-        function supprimerLigne(btn) {
-            $(btn).closest("tr").remove();
-        }
-    </script>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="codeJournal" class="form-label">Code de journal</label>
+                                <select class="form-select" id="codeJournal" name="codeJournal" required>
+                                    <option value="">Sélectionnez...</option>
+                                    <option value="note">Journal Des Opérations (C)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="typeDocument" class="form-label">Type du document</label>
+                                <select class="form-select" id="typeDocument" name="typeDocument" required>
+                                    <option value="">Sélectionnez...</option>
+                                    <option value="facture">Facture</option>
+                                    <option value="note">Note</option>
+                                    <option value="cheque">Chèque</option>
+                                    <option value="autres">Autres</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="nomDocument" class="form-label">Nom du document</label>
+                                <select class="form-select" id="nomDocument" name="nomDocument" required>
+                                    <option value="">Sélectionnez...</option>
+                                    <option value="note">Opération diverses (OD)</option>
+                                    <option value="note">Justificatif des Opérations (JD)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="codeComptable" class="form-label">Code Comptable</label>
+                                <input type="text" class="form-control" id="codeComptable" name="codeComptable"
+                                    required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="exercice" class="form-label">Exercice</label>
+                                <input type="text" class="form-control" id="exercice" name="exercice" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="devise" class="form-label">Devise</label>
+                                <select class="form-select" id="devise" name="devise" required>
+                                    <option value="">Sélectionnez...</option>
+                                    <option value="USD">USD</option>
+                                    <option value="EUR">EUR</option>
+                                    <option value="CDF">CDF</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="beneficiaire" class="form-label">Nom du bénéficiaire</label>
+                                <input type="text" class="form-control" id="beneficiaire" name="beneficiaire">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="debiteur" class="form-label">Nom du débiteur</label>
+                                <input type="text" class="form-control" id="debiteur" name="debiteur">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label for="motif" class="form-label">Motif général</label>
+                                <textarea class="form-control" id="motif" name="motif" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Détails opérations -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Détails des opérations</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered align-middle" id="operationsTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Numéro Mouvement</th>
+                                        <th>
+                                            <label for="codeAnalytique" class="form-label">Code Analytique</label>
+                                            <select class="form-control" id="codeAnalytique" name="codeAnalytique[]"
+                                                required>
+                                                <option value="">Sélectionnez un compte...</option>
+                                                <option value="000">000</option>
+                                                <option value="100">100</option>
+                                                <option value="101">101</option>
+                                                <option value="102">102</option>
+                                                <option value="111">111</option>
+                                                <option value="112">112</option>
+                                            </select>
+                                        </th>
+                                        <th>
+                                            <label for="Imputation" class="form-label">Imputation</label>
+                                            <select class="form-control" id="Imputation" name="Imputation[]" required>
+                                                <option value="">Sélectionnez...</option>
+                                                <option value="DEBIT">Débit</option>
+                                                <option value="CREDIT">Crédit</option>
+                                            </select>
+                                        </th>
+                                        <th>
+                                            <label for="CompteOperation" class="form-label">Compte opération</label>
+                                            <select class="form-control" id="CompteOperation" name="CompteOperation[]"
+                                                required>
+                                                <option value="">Sélectionnez...</option>
+                                                <option value="000">000</option>
+                                                <option value="100">100</option>
+                                                <option value="101">101</option>
+                                                <option value="102">102</option>
+                                                <option value="111">111</option>
+                                                <option value="112">112</option>
+                                                <option value="113">113</option>
+                                                <option value="114">114</option>
+                                                <option value="120">120</option>
+                                                <option value="121">121</option>
+                                                <option value="122">122</option>
+                                                <option value="123">123</option>
+                                                <option value="124">124</option>
+                                                <option value="125">125</option>
+                                                <option value="131">131</option>
+                                        </th>
+                                        <th>
+                                            <label for="libelleOperation" class="form-label">Libellé opération</label>
+                                            <select class="form-control" id="libelleOperation" name="libelleOperation[]"
+                                                required>
+                                                <option value="">Sélectionnez...</option>
+                                                <option value="000">en cours</option>
+                                                <option value="100">en cours</option>
+                                                <option value="101">en cours</option>
+                                        </th>
+                                        <th>Montant Débit</th>
+                                        <th>Montant Crédit</th>
+                                        <th>Compte Débit</th>
+                                        <th>Compte Crédit</th>
+                                        <th>Sous-compte</th>
+                                        <th>Solde</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+
+                        <!-- Boutons -->
+                        <div class="d-flex gap-2 mt-3">
+                            <button type="button" class="btn btn-primary" onclick="ajouterLigne()">Ajouter
+                                Ligne</button>
+                            <button type="submit" class="btn btn-success">Enregistrer</button>
+                        </div>
+            </form>
+        </div>
+
+        <!-- Scripts -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="js/mouvement.js"></script>
+        <script src="js/journaux.js"></script>
 </body>
 
 </html>
