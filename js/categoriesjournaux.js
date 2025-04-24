@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!codeJournal || !nomJournal || !comptableId) {
             alert("Veuillez remplir tous les champs.");
             return;
-        }
+        } 0
 
         const formData = {
             T3_CodeJournal: codeJournal,
