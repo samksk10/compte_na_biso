@@ -140,7 +140,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const mois = (date.getMonth() + 1).toString().padStart(2, '0');
         const jour = date.getDate().toString().padStart(2, '0');
         const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-        return `OPB${ annee }${ mois }${ jour }-${ random }`;
+        return `OPC${ annee }${ mois }${ jour }-${ random }`;
     }
 
     // Fonction pour définir la date du jour et l'exercice
