@@ -9,11 +9,10 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <link rel="stylesheet" href="stylesAll.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
         rel="stylesheet" />
-    <script src="js/enregistrerOp.js" defer></script>
     <script src="js/auth.js" defer></script>
+    <script src="js/enregistrerOp.js" defer></script>
 </head>
 
 <body class="d-flex">
@@ -154,7 +153,7 @@
                                 <label for="codeJournal" class="form-label">Code de journal</label>
                                 <select class="form-select" id="codeJournal" name="codeJournal" required>
                                     <option value="">Sélectionnez...</option>
-                                    <option value="journalCaisse">journal Des Opérations (C)</option>
+                                    <option value="journalOperations">journal Des Opérations (C)</option>
                                 </select>
                             </div>
                             <div class="col-md-4">
@@ -164,6 +163,8 @@
                                     <option value="facture">Facture</option>
                                     <option value="note">Note</option>
                                     <option value="cheque">Chèque</option>
+                                    <option value="virement">Virement</option>
+                                    <option value="bordereau">Bordereau</option>
                                     <option value="autres">Autres</option>
                                 </select>
                             </div>
@@ -178,7 +179,7 @@
                                 <select class="form-select" id="typeDocument" name="typeDocument" required>
                                     <option value="">Sélectionnez...</option>
                                     <option value="OD">Opérations Diverses(OD)</option>
-                                    <option value="JD">Justificatif des Opérations (JD)</option>
+                                    <option value="JD">Justificatif des Opérations</option>
                                 </select>
                             </div>
                             <div class="col-md-4">
@@ -205,7 +206,7 @@
                                 <label for="beneficiaire" class="form-label">Nom du bénéficiaire</label>
                                 <input type="text" class="form-control" id="beneficiaire" name="beneficiaire">
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="debiteur" class="form-label">Nom du débiteur</label>
                                 <input type="text" class="form-control" id="debiteur" name="debiteur">
                             </div>
@@ -310,6 +311,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 </body>
 
 </html>
