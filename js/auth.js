@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             chef_comptable: "Chef Comptable",
             comptable_caisse: "Comptable Caisse",
             comptable_banque: "Comptable Banque",
-            comptable_od: "Comptable OD"
+            comptable_od: "Comptable Des Opérations Diverses"
         }[ role ];
 
         if (document.getElementById("userNom")) {
