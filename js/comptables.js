@@ -61,10 +61,31 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(error => console.error("Erreur :", error));
     }
 
+    // Ajout d'une fonction de vérification du rôle
+    function validateRole() {
+        const roleSelect = document.getElementById('userRole');
+        if (!roleSelect) return false;
+
+        const selectedRole = roleSelect.value;
+        if (!selectedRole) {
+            roleSelect.classList.add('is-invalid');
+            return false;
+        }
+
+        roleSelect.classList.remove('is-invalid');
+        return true;
+    }
+
     // ✅ Exécuter uniquement si le formulaire existe
     if (form) {
         form.addEventListener("submit", function (event) {
             event.preventDefault();
+
+            // Validation du rôle
+            if (!validateRole()) {
+                console.log("Erreur: Rôle non sélectionné");
+                return;
+            }
 
             const codeComptable = document.getElementById("codeComptable");
             const motDePasse = document.getElementById("motDePasse");
@@ -101,16 +122,40 @@ document.addEventListener("DOMContentLoaded", function () {
                     return response.json();
                 })
                 .then(data => {
-                    document.getElementById("message").innerHTML =
-                        `<div class="alert alert-success">${ data.message }</div>`;
-                    form.reset();
-                    loadComptables();
+                    if (data.success) {
+                        form.reset();
+                        document.getElementById("message").innerHTML = `
+                            <div class="alert alert-success">
+                                ${ escapeHTML(data.message) }
+                            </div>
+                        `;
+                        // Réinitialiser le select du rôle
+                        userRole.selectedIndex = 0;
+                        loadComptables();
+                    } else {
+                        throw new Error(data.message || "Erreur lors de l'ajout du comptable");
+                    }
                 })
                 .catch(error => {
-                    document.getElementById("message").innerHTML =
-                        `<div class="alert alert-danger">${ error.message }</div>`;
+                    console.error("Erreur:", error);
+                    document.getElementById("message").innerHTML = `
+                        <div class="alert alert-danger">
+                            ${ escapeHTML(error.message) }
+                        </div>
+                    `;
                 });
         });
+
+        // Ajouter un écouteur d'événements pour le select de rôle
+        const roleSelect = document.getElementById('userRole');
+        if (roleSelect) {
+            roleSelect.addEventListener('change', function () {
+                this.classList.remove('is-invalid');
+                if (this.value) {
+                    this.classList.add('is-valid');
+                }
+            });
+        }
     } else {
         console.warn("⚠️ Aucun formulaire trouvé. Cette page est probablement seulement pour afficher les comptables.");
     }
