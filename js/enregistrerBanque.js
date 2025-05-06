@@ -169,43 +169,93 @@ document.addEventListener("DOMContentLoaded", async () => {
         setDateDuJour();
     }
 
+    function handleImputationChange(row) {
+        const imputationSelect = row.querySelector('select[name="imputation[]"]');
+        const compteOperationSelect = row.querySelector('select[name="numero_compte[]"]');
+        const compteDebitInput = row.querySelector('input[name="CompteDebit[]"]');
+        const compteCreditInput = row.querySelector('input[name="CompteCredit[]"]');
+        const montantDebitInput = row.querySelector('input[name="MontantDebit[]"]');
+        const montantCreditInput = row.querySelector('input[name="MontantCredit[]"]');
+
+        const selectedAccount = compteOperationSelect.value;
+        const selectedImputation = imputationSelect.value;
+
+        // Réinitialiser tous les champs
+        compteDebitInput.value = '';
+        compteCreditInput.value = '';
+        montantDebitInput.value = '';
+        montantCreditInput.value = '';
+
+        // Activer tous les champs montants
+        montantDebitInput.disabled = false;
+        montantCreditInput.disabled = false;
+
+        if (selectedAccount && selectedImputation) {
+            if (selectedImputation === 'DEBIT') {
+                // Pour le débit
+                compteDebitInput.value = selectedAccount;
+                compteCreditInput.value = '';
+                // Activer montant débit, désactiver montant crédit
+                montantDebitInput.disabled = false;
+                montantCreditInput.disabled = true;
+            } else if (selectedImputation === 'CREDIT') {
+                // Pour le crédit
+                compteCreditInput.value = selectedAccount;
+                compteDebitInput.value = '';
+                // Activer montant crédit, désactiver montant débit
+                montantCreditInput.disabled = false;
+                montantDebitInput.disabled = true;
+            }
+        }
+
+        // Recalculer les totaux après changement
+        recalculerTotaux();
+    }
+
+    function updateSelectOptions(select, value, text) {
+        // Vider les options existantes sauf la première (placeholder)
+        while (select.options.length > 1) {
+            select.remove(1);
+        }
+
+        // Ajouter la nouvelle option
+        const option = new Option(text, value, true, true);
+        select.add(option);
+        select.value = value;
+    }
+
     window.ajouterLigne = () => {
         const clone = ligneTemplate.content.cloneNode(true);
         const newRow = clone.querySelector("tr");
-        const newSelect = newRow.querySelector('select[name="numero_compte[]"]');
         const ligneNumero = tableBody.querySelectorAll("tr").length + 1;
 
         // Mise à jour du numéro de ligne
         newRow.querySelector("td").textContent = ligneNumero;
 
-        // Synchronisation avec le numéro d'opération
-        const numPieceBase = document.getElementById('numPiece').value.split('-')[ 0 ];
-        document.getElementById('numPiece').value = `${ numPieceBase }-L${ ligneNumero }`;
+        // Récupérer les selects
+        const imputationSelect = newRow.querySelector('select[name="imputation[]"]');
+        const compteOperationSelect = newRow.querySelector('select[name="numero_compte[]"]');
+
+        // Ajouter les écouteurs d'événements
+        imputationSelect.addEventListener('change', () => handleImputationChange(newRow));
+        compteOperationSelect.addEventListener('change', () => handleImputationChange(newRow));
+
+        // Initialiser Select2
+        $(compteOperationSelect).select2({
+            theme: 'bootstrap-5',
+            width: '100%',
+            language: {
+                noResults: () => "Aucun compte trouvé",
+                searching: () => "Recherche...",
+                inputTooShort: () => "Veuillez entrer au moins 1 caractère"
+            },
+            placeholder: "Rechercher un compte...",
+            allowClear: true,
+            minimumInputLength: 1
+        }).on('select2:select', () => handleImputationChange(newRow));
 
         tableBody.appendChild(newRow);
-        chargerOptionsCompte(newSelect);
-        recalculerTotaux();
-
-        // Ajouter écouteurs d'événements pour la validation en temps réel
-        newRow.querySelectorAll('input[type="number"]').forEach(input => {
-            input.addEventListener('input', function () {
-                const debitInput = newRow.querySelector('input[name="MontantDebit[]"]');
-                const creditInput = newRow.querySelector('input[name="MontantCredit[]"]');
-
-                if (this.value && this.name.includes('Debit')) {
-                    creditInput.value = '';
-                    creditInput.disabled = true;
-                } else if (this.value && this.name.includes('Credit')) {
-                    debitInput.value = '';
-                    debitInput.disabled = true;
-                } else {
-                    debitInput.disabled = false;
-                    creditInput.disabled = false;
-                }
-
-                recalculerTotaux();
-            });
-        });
+        chargerOptionsCompte(compteOperationSelect);
     };
 
     window.resetForm = () => {
