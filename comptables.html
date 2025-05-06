@@ -6,9 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des Comptables | Comptabilité Na Biso</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <script src="js/auth.js" defer></script>
     <style>
         :root {
             --sidebar-bg: #15202b;
@@ -240,24 +238,6 @@
                 }
             }
         }
-
-        .role-select.is-invalid {
-            border-color: #dc3545;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
-            padding-right: calc(1.5em + 0.75rem);
-            background-repeat: no-repeat;
-            background-position: right calc(0.375em + 0.1875rem) center;
-            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
-        }
-
-        .role-select.is-valid {
-            border-color: #198754;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
-            padding-right: calc(1.5em + 0.75rem);
-            background-repeat: no-repeat;
-            background-position: right calc(0.375em + 0.1875rem) center;
-            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
-        }
     </style>
 
 </head>
@@ -267,25 +247,32 @@
     <nav class="sidebar">
         <h2 class="text-center mb-4">Menu</h2>
         <ul class="nav flex-column">
+            <!-- Tableau de bord - Accessible à tous -->
             <li class="nav-item">
                 <a class="nav-link" href="dashboard.html">
                     <i class="bi bi-speedometer2"></i> Tableau de bord
                 </a>
             </li>
+
+            <!-- Taux de change - Accessible à tous -->
             <li class="nav-item">
                 <a class="nav-link" href="taux_change.html">
-                    <i class="bi bi-currency-exchange"></i>Gestion de Taux de Change
+                    <i class="bi bi-currency-exchange"></i> Gestion de Taux de Change
                 </a>
             </li>
+
+            <!-- Administration (Super Admin seulement) -->
             <li class="nav-item super_admin-only">
                 <a class="nav-link" href="register.html">
                     <i class="bi bi-person-add"></i> Ajouter un administrateur
                 </a>
             </li>
+
+            <!-- Gestion des Comptables (Super Admin + Admin) -->
             <li class="nav-item super_admin-only admin-only">
                 <a class="nav-link" data-bs-toggle="collapse" href="#comptablesSubmenu" role="button"
                     aria-expanded="false" aria-controls="comptablesSubmenu">
-                    <i class="bi bi-person-lines-fill"></i>Gestions des Comptables <i
+                    <i class="bi bi-person-lines-fill"></i> Gestion des Comptables <i
                         class="bi bi-chevron-down ms-auto"></i>
                 </a>
                 <div class="collapse ps-3" id="comptablesSubmenu">
@@ -299,6 +286,8 @@
                     </ul>
                 </div>
             </li>
+
+            <!-- Catégories journaux (Super Admin + Admin) -->
             <li class="nav-item super_admin-only admin-only">
                 <a class="nav-link" data-bs-toggle="collapse" href="#categoriesSubmenu" role="button"
                     aria-expanded="false" aria-controls="categoriesSubmenu">
@@ -315,12 +304,16 @@
                     </ul>
                 </div>
             </li>
+
+            <!-- Gestion des Entreprises (Super Admin + Admin) -->
             <li class="nav-item super_admin-only admin-only">
                 <a class="nav-link" href="entreprise.html">
-                    <i class="bi bi-building"></i> Gestions des Entreprises
+                    <i class="bi bi-building"></i> Gestion des Entreprises
                 </a>
             </li>
-            <li class="nav-item">
+
+            <!-- Journaux Comptables (Comptables + Chef Comptable) -->
+            <li class="nav-item comptable_caisse-only comptable_banque-only comptable_od-only chef_comptable-only">
                 <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
                     href="#journauxSubmenu" role="button" aria-expanded="false" aria-controls="journauxSubmenu">
                     <span>
@@ -331,19 +324,19 @@
                 </a>
                 <div class="collapse ps-3" id="journauxSubmenu">
                     <ul class="nav flex-column">
-                        <li class="nav-item comptable_caisse-only">
+                        <li class="nav-item comptable_caisse-only chef_comptable-only">
                             <a class="nav-link ps-3 d-flex align-items-center" href="journalCaisse.html">
                                 <i class="bi bi-cash-coin me-2"></i>
                                 Journal Caisse
                             </a>
                         </li>
-                        <li class="nav-item comptable_banque-only">
+                        <li class="nav-item comptable_banque-only chef_comptable-only">
                             <a class="nav-link ps-3 d-flex align-items-center" href="journalBanque.html">
                                 <i class="bi bi-bank2 me-2"></i>
                                 Journal Banque
                             </a>
                         </li>
-                        <li class="nav-item comptable_od-only">
+                        <li class="nav-item comptable_od-only chef_comptable-only">
                             <a class="nav-link ps-3 d-flex align-items-center" href="journalOperations.html">
                                 <i class="bi bi-file-earmark-text me-2"></i>
                                 Journal des Opérations
@@ -352,17 +345,23 @@
                     </ul>
                 </div>
             </li>
+
+            <!-- Grand Livre - Accessible à tous -->
             <li class="nav-item">
                 <a class="nav-link d-flex align-items-center" href="granLivre.html">
                     <i class="bi bi-journal-text me-2"></i>
                     Grand Livre
                 </a>
             </li>
+
+            <!-- Balances Comptables - Accessible à tous -->
             <li class="nav-item">
                 <a class="nav-link" href="balance.html">
                     <i class="bi bi-clipboard-data"></i> Balances Comptables
                 </a>
             </li>
+
+            <!-- Déconnexion - Accessible à tous -->
             <li class="nav-item">
                 <a class="nav-link logout-btn" href="index.html" id="logoutBtn">
                     <i class="bi bi-box-arrow-left"></i> Déconnexion
@@ -380,27 +379,31 @@
                 <form id="comptableForm">
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="codeComptable" class="form-label">Code Comptable</label>
+                            <label for="codeComptable" class="form-label">Code</label>
                             <input type="text" id="codeComptable" name="T4_CodeComptable" class="form-control" required>
+                            <div class="form-text">(ex: C0MPT-001)
+                            </div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="nomComptable" class="form-label">Nom Comptable</label>
+                            <label for="nomComptable" class="form-label">Nom</label>
                             <input type="text" id="nomComptable" name="T4_NomComptable" class="form-control" required>
+                            <div class="form-text">(ex: Samuel KISENGE)
+                            </div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="emailComptable" class="form-label">Email Comptable</label>
                             <input type="email" id="emailComptable" name="T4_Email" class="form-control" required>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="userRole" class="form-label">Rôle</label>
-                            <select id="userRole" name="T4_Role" class="form-select role-select" required>
-                                <option value="" disabled selected>Choisir le rôle</option>
+                            <label for="userRole" class="form-label">Rôle <span class="text-danger">*</span></label>
+                            <select id="userRole" name="T4_Role" class="form-select role-select" required
+                                aria-required="true" aria-describedby="roleHelp">
+                                <option value="" disabled selected hidden>Choisir le rôle...</option>
                                 <option value="chef_comptable">Chef Comptable</option>
                                 <option value="comptable_caisse">Comptable Caisse</option>
                                 <option value="comptable_banque">Comptable Banque</option>
                                 <option value="comptable_od">Comptable Opérations diverses</option>
                             </select>
-                            <div class="invalid-feedback">Veuillez sélectionner un rôle</div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="motDePasse" class="form-label">Mot de Passe</label>
@@ -427,6 +430,7 @@
         </div>
         <div id="message" class="mt-3"></div>
     </div>
+    <script type="module" src="js/auth.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Fonction pour afficher/masquer le mot de passe

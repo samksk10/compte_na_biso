@@ -1,80 +1,73 @@
+import { CONFIG, Utils } from './config.js';
+
 document.addEventListener("DOMContentLoaded", async () => {
     try {
-        // 1. Vérification de session via l'API
-        const response = await fetch("http://localhost/compte_na_biso/api/check_session.php", {
-            credentials: "include"
-        });
+        // === 1. Vérifier la session via l'API ===
+        const response = await fetch(Utils.buildApiUrl('CHECK_SESSION'), CONFIG.FETCH_OPTIONS);
 
-        if (!response.ok) throw new Error("Erreur de session");
+        if (!response.ok) throw new Error(CONFIG.MESSAGES.ERRORS.SESSION);
 
-        const { role } = await response.json();
-        console.log("Rôle détecté :", role);
+        const data = await response.json();
+        const { role, nom } = data;
 
-        // 2. Définition des permissions par rôle
-        const rolePermissions = {
-            super_admin: [ "super_admin", "admin", "chef_comptable", "comptable_caisse", "comptable_banque", "comptable_od" ],
-            admin: [ "admin", "chef_comptable", "comptable_caisse", "comptable_banque", "comptable_od" ],
-            chef_comptable: [ "chef_comptable", "comptable_caisse", "comptable_banque", "comptable_od" ],
-            comptable_caisse: [ "comptable_caisse" ],
-            comptable_banque: [ "comptable_banque" ],
-            comptable_od: [ "comptable_od" ]
-        };
+        // === 2. Vérifier que le rôle est autorisé ===
+        if (!CONFIG.ROLES.PERMISSIONS[ role ]) {
+            console.warn(CONFIG.MESSAGES.ERRORS.ROLE, role);
+            return redirectToLogin(CONFIG.MESSAGES.ERRORS.ROLE);
+        }
 
-        // 3. Cacher tous les éléments restreints au départ
-        const protectedElements = document.querySelectorAll('[class$="-only"]');
-        protectedElements.forEach(el => el.style.display = 'none');
+        // === 3. Masquer puis afficher les éléments autorisés ===
+        document.querySelectorAll('[class$="-only"]').forEach(el => el.style.display = 'none');
 
-        // 4. Afficher les éléments autorisés pour ce rôle
-        const authorizedClasses = rolePermissions[ role ]?.map(r => `.${ r }-only`).join(', ');
-        if (authorizedClasses) {
-            document.querySelectorAll(authorizedClasses).forEach(el => {
+        const allowedClasses = CONFIG.ROLES.PERMISSIONS[ role ].map(r => `.${ r }-only`).join(', ');
+        if (allowedClasses) {
+            document.querySelectorAll(allowedClasses).forEach(el => {
                 el.style.display = 'block';
             });
         }
 
-        // 5. Affichage dynamique du nom et rôle dans la page (si présent)
-        const nom = localStorage.getItem("nom");
-        const roleText = {
-            super_admin: "Super Administrateur",
-            admin: "Administrateur",
-            chef_comptable: "Chef Comptable",
-            comptable_caisse: "Comptable Caisse",
-            comptable_banque: "Comptable Banque",
-            comptable_od: "Comptable Des Opérations Diverses"
-        }[ role ];
+        // === 4. Afficher nom et rôle dans l'en-tête ===
+        const roleText = Utils.getRoleDisplay(role);
 
         if (document.getElementById("userNom")) {
             document.getElementById("userNom").textContent = nom || "";
         }
         if (document.getElementById("userRole")) {
-            document.getElementById("userRole").textContent = roleText || role;
+            document.getElementById("userRole").textContent = roleText;
         }
 
-        // 6. Vérification de rôle valide
-        if (!rolePermissions[ role ]) {
-            console.warn("Rôle non reconnu :", role);
-            redirectToLogin();
+        // === 5. Vérifier l'accès à la page selon le rôle ===
+        const currentPage = window.location.pathname.split('/').pop();
+        const pagePermissions = CONFIG.PAGES.PERMISSIONS;
+
+        if (pagePermissions[ currentPage ] && !pagePermissions[ currentPage ].includes(role)) {
+            return redirectTo("accueil.html", CONFIG.MESSAGES.ERRORS.ACCESS);
         }
 
-        // 7. Gestion déconnexion
-        document.getElementById("logoutBtn")?.addEventListener("click", (e) => {
+        // === 6. Déconnexion sécurisée ===
+        document.getElementById("logoutBtn")?.addEventListener("click", async (e) => {
             e.preventDefault();
-            localStorage.clear(); // Nettoyer le localStorage
-            fetch("http://localhost/compte_na_biso/api/logout.php", {
-                method: "POST",
-                credentials: "include"
-            }).finally(() => {
-                window.location.href = "index.html";
-            });
+            localStorage.clear();
+            try {
+                await fetch(Utils.buildApiUrl('LOGOUT'), CONFIG.FETCH_OPTIONS);
+            } catch (logoutError) {
+                console.warn(CONFIG.MESSAGES.ERRORS.LOGOUT, logoutError);
+            }
+            redirectTo("index.html");
         });
 
     } catch (error) {
-        console.error("Erreur:", error);
-        redirectToLogin();
+        console.error("Erreur :", error);
+        redirectToLogin(CONFIG.MESSAGES.ERRORS.SESSION);
     }
 });
 
-function redirectToLogin() {
-    sessionStorage.setItem('loginRedirectMessage', 'Session expirée ou non authentifiée');
-    window.location.href = "index.html";
+// === Fonction de redirection sécurisée ===
+function redirectTo(url, message = '') {
+    if (message) sessionStorage.setItem('loginRedirectMessage', message);
+    window.location.href = url;
+}
+
+function redirectToLogin(message = '') {
+    redirectTo("index.html", message);
 }

@@ -49,6 +49,8 @@ if ($result) {
 
 function validateJournalBanque($entete, $operations) {
     $errors = [];
+    $totalDebit = 0;
+    $totalCredit = 0;
 
     $required_fields = [
         'numPiece' => 'Numéro de pièce',
@@ -101,6 +103,21 @@ function validateJournalBanque($entete, $operations) {
         if (!empty($operation['MontantCredit']) && !is_numeric($operation['MontantCredit'])) {
             $errors[] = "Le montant crédit doit être un nombre pour l'opération #" . ($index + 1);
         }
+
+        if (!empty($operation['MontantDebit']) && !empty($operation['MontantCredit'])) {
+            $errors[] = "Une opération ne peut pas avoir à la fois un débit et un crédit #" . ($index + 1);
+        }
+
+        if (!empty($operation['MontantDebit'])) {
+            $totalDebit += floatval($operation['MontantDebit']);
+        }
+        if (!empty($operation['MontantCredit'])) {
+            $totalCredit += floatval($operation['MontantCredit']);
+        }
+    }
+
+    if (round($totalDebit, 2) !== round($totalCredit, 2)) {
+        $errors[] = "Le total des débits doit être égal au total des crédits";
     }
 
     return $errors;

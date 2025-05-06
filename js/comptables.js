@@ -1,183 +1,235 @@
-// Fonction pour échapper les caractères HTML dangereux
+// Fonction pour échapper les caractères HTML dangereux (XSS protection)
 function escapeHTML(str) {
-    return str.replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
 }
+
+// Fonction pour afficher les messages à l'utilisateur
+function showMessage(type, message, elementId = 'message') {
+    const messageElement = document.getElementById(elementId);
+    if (!messageElement) return;
+
+    messageElement.innerHTML = `
+        <div class="alert alert-${ type } alert-dismissible fade show">
+            ${ escapeHTML(message) }
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `;
+}
+
+// Fonction principale
 document.addEventListener("DOMContentLoaded", function () {
+    // Constantes et variables
+    const API_URL = "http://localhost/compte_na_biso/api/comptables.php";
     const tableBody = document.getElementById("comptablesList");
     const form = document.getElementById("comptableForm");
     const searchInput = document.getElementById("searchComptable");
 
-    // ✅ Fonction accessible globalement
+    // 1. Fonction pour charger les comptables
     function loadComptables(search = "") {
-        let url = "http://localhost/compte_na_biso/api/comptables.php";
-        if (search) url += "?search=" + encodeURIComponent(search);
+        let url = API_URL;
+        if (search) url += `?search=${ encodeURIComponent(search) }`;
 
-        fetch(url, { credentials: "include" })
-            .then(response => response.json())
+        fetch(url, {
+            credentials: "include",
+            headers: {
+                'Cache-Control': 'no-cache'
+            }
+        })
+            .then(handleResponse)
             .then(data => {
-                if (!tableBody) return; // 🔹 Vérifie si la table existe avant de l'utiliser
+                if (!tableBody) return;
 
-                tableBody.innerHTML = "";
-                data.forEach(comptable => {
-                    const row = document.createElement("tr");
-                    row.innerHTML = `
-                        <td>${ comptable.T4_NumComptable }</td>
-                        <td>${ escapeHTML(comptable.T4_CodeComptable) }</td>
-                        <td>${ escapeHTML(comptable.T4_NomComptable) }</td>
-                        <td>${ escapeHTML(comptable.T4_Email) }</td>
-                        <td>${ comptable.T4_DateDebutComptable || 'Non renseigné' }</td>
-                        <td>${ comptable.T4_Role || 'Non défini' }</td>
-                        <td>
-                            <button class="btn btn-warning btn-sm edit-btn" 
-                                data-id="${ comptable.T4_NumComptable }" 
-                                data-nom="${ comptable.T4_NomComptable }" 
-                                data-email="${ comptable.T4_Email }" data-role="${ comptable.T4_Role }"> <!-- Ajout du rôle -->
-                                Modifier
-                            </button>
-                            <button class="btn btn-danger btn-sm delete-btn" 
-                                data-id="${ comptable.T4_NumComptable }">
-                                Supprimer
-                            </button>
-                        </td>
-                    `;
-                    tableBody.appendChild(row);
-                });
+                tableBody.innerHTML = data.map(comptable => `
+                <tr>
+                    <td>${ comptable.T4_NumComptable }</td>
+                    <td>${ escapeHTML(comptable.T4_CodeComptable) }</td>
+                    <td>${ escapeHTML(comptable.T4_NomComptable) }</td>
+                    <td>${ escapeHTML(comptable.T4_Email) }</td>
+                    <td>${ comptable.T4_DateDebutComptable || 'Non renseigné' }</td>
+                    <td>${ getRoleDisplayName(comptable.T4_Role) || 'Non défini' }</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm edit-btn" 
+                            data-id="${ comptable.T4_NumComptable }" 
+                            data-nom="${ escapeHTML(comptable.T4_NomComptable) }" 
+                            data-email="${ escapeHTML(comptable.T4_Email) }" 
+                            data-role="${ comptable.T4_Role }">
+                            <i class="bi bi-pencil"></i> Modifier
+                        </button>
+                        <button class="btn btn-danger btn-sm delete-btn ms-2" 
+                            data-id="${ comptable.T4_NumComptable }">
+                            <i class="bi bi-trash"></i> Supprimer
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
 
-                document.querySelectorAll(".edit-btn").forEach(btn => {
-                    btn.addEventListener("click", function () {
-                        editComptable(this.dataset.id, this.dataset.nom, this.dataset.email);
-                    });
-                });
-
-                document.querySelectorAll(".delete-btn").forEach(btn => {
-                    btn.addEventListener("click", function () {
-                        deleteComptable(this.dataset.id);
-                    });
-                });
+                setupEventListeners();
             })
-            .catch(error => console.error("Erreur :", error));
+            .catch(error => {
+                console.error("Erreur:", error);
+                showMessage('danger', 'Erreur lors du chargement des comptables');
+            });
     }
 
-    // Ajout d'une fonction de vérification du rôle
-    function validateRole() {
-        const roleSelect = document.getElementById('userRole');
-        if (!roleSelect) return false;
-
-        const selectedRole = roleSelect.value;
-        if (!selectedRole) {
-            roleSelect.classList.add('is-invalid');
-            return false;
+    // 2. Fonction pour gérer la réponse de l'API
+    function handleResponse(response) {
+        if (!response.ok) {
+            return response.json().then(err => {
+                throw new Error(err.error || "Erreur serveur");
+            });
         }
-
-        roleSelect.classList.remove('is-invalid');
-        return true;
+        return response.json();
     }
 
-    // ✅ Exécuter uniquement si le formulaire existe
-    if (form) {
-        form.addEventListener("submit", function (event) {
-            event.preventDefault();
+    // 3. Fonction pour obtenir le nom affichable du rôle
+    function getRoleDisplayName(role) {
+        const roles = {
+            'chef_comptable': 'Chef Comptable',
+            'comptable_caisse': 'Comptable Caisse',
+            'comptable_banque': 'Comptable Banque',
+            'comptable_od': 'Comptable Opérations diverses'
+        };
+        return roles[ role ] || role;
+    }
 
-            // Validation du rôle
-            if (!validateRole()) {
-                console.log("Erreur: Rôle non sélectionné");
-                return;
-            }
-
-            const codeComptable = document.getElementById("codeComptable");
-            const motDePasse = document.getElementById("motDePasse");
-            const dateDebut = document.getElementById("dateDebut");
-            const nomComptable = document.getElementById("nomComptable");
-            const emailComptable = document.getElementById("emailComptable");
-            const userRole = document.getElementById("userRole");
-
-            if (!codeComptable.value.trim() || !motDePasse.value.trim() || !dateDebut.value.trim() ||
-                !nomComptable.value.trim() || !emailComptable.value.trim() || !userRole.value) {
-                alert("Erreur : Veuillez remplir tous les champs du formulaire.");
-                return;
-            }
-
-            const formData = {
-                T4_CodeComptable: codeComptable.value.trim(),
-                T4_MotDePasseCompta: motDePasse.value.trim(),
-                T4_DateDebutComptable: dateDebut.value.trim(),
-                T4_NomComptable: nomComptable.value.trim(),
-                T4_Email: emailComptable.value.trim(),
-                T4_Role: userRole.value
-            };
-
-            fetch("http://localhost/compte_na_biso/api/comptables.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
-                credentials: "include"
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => { throw new Error(err.error || "Erreur inconnue"); });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        form.reset();
-                        document.getElementById("message").innerHTML = `
-                            <div class="alert alert-success">
-                                ${ escapeHTML(data.message) }
-                            </div>
-                        `;
-                        // Réinitialiser le select du rôle
-                        userRole.selectedIndex = 0;
-                        loadComptables();
-                    } else {
-                        throw new Error(data.message || "Erreur lors de l'ajout du comptable");
-                    }
-                })
-                .catch(error => {
-                    console.error("Erreur:", error);
-                    document.getElementById("message").innerHTML = `
-                        <div class="alert alert-danger">
-                            ${ escapeHTML(error.message) }
-                        </div>
-                    `;
-                });
+    // 4. Configuration des écouteurs d'événements
+    function setupEventListeners() {
+        document.querySelectorAll(".edit-btn").forEach(btn => {
+            btn.addEventListener("click", function () {
+                editComptable(
+                    this.dataset.id,
+                    this.dataset.nom,
+                    this.dataset.email,
+                    this.dataset.role
+                );
+            });
         });
 
-        // Ajouter un écouteur d'événements pour le select de rôle
-        const roleSelect = document.getElementById('userRole');
-        if (roleSelect) {
-            roleSelect.addEventListener('change', function () {
-                this.classList.remove('is-invalid');
-                if (this.value) {
-                    this.classList.add('is-valid');
+        document.querySelectorAll(".delete-btn").forEach(btn => {
+            btn.addEventListener("click", function () {
+                if (confirm("Êtes-vous sûr de vouloir supprimer ce comptable ?")) {
+                    deleteComptable(this.dataset.id);
                 }
             });
+        });
+    }
+
+    // 5. Validation du formulaire
+    function validateForm() {
+        let isValid = true;
+        const requiredFields = [
+            'codeComptable', 'nomComptable', 'emailComptable',
+            'motDePasse', 'dateDebut', 'userRole'
+        ];
+
+        requiredFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (!field || !field.value.trim()) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+
+        // Validation spécifique de l'email
+        const email = document.getElementById("emailComptable");
+        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
+            email.classList.add('is-invalid');
+            isValid = false;
         }
-    } else {
-        console.warn("⚠️ Aucun formulaire trouvé. Cette page est probablement seulement pour afficher les comptables.");
+
+        return isValid;
     }
 
-    // ✅ Exécuter uniquement si la table existe
-    if (tableBody) {
-        loadComptables();
-    } else {
-        console.warn("⚠️ Aucun tableau trouvé. Cette page ne nécessite pas de chargement des comptables.");
+    // 6. Gestion de la soumission du formulaire
+    if (form) {
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            if (!validateForm()) {
+                showMessage('warning', 'Veuillez remplir tous les champs correctement');
+                return;
+            }
+
+            try {
+                const formData = {
+                    T4_CodeComptable: document.getElementById("codeComptable").value.trim(),
+                    T4_MotDePasseCompta: document.getElementById("motDePasse").value.trim(),
+                    T4_DateDebutComptable: document.getElementById("dateDebut").value.trim(),
+                    T4_NomComptable: document.getElementById("nomComptable").value.trim(),
+                    T4_Email: document.getElementById("emailComptable").value.trim(),
+                    T4_Role: document.getElementById("userRole").value
+                };
+
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(formData),
+                    credentials: "include"
+                });
+
+                const data = await handleResponse(response);
+
+                if (data.success) {
+                    form.reset();
+                    showMessage('success', data.message);
+                    loadComptables();
+                }
+            } catch (error) {
+                console.error("Erreur:", error);
+                showMessage('danger', error.message);
+            }
+        });
     }
 
-    // Gestion de la déconnexion
-    function setupLogoutButton() {
-        const logoutBtn = document.getElementById("logoutBtn");
-        if (logoutBtn) {
-            logoutBtn.addEventListener("click", function (event) {
-                event.preventDefault();
-                localStorage.clear();
-                window.location.href = "index.html";
+    // 7. Fonctions CRUD
+    async function editComptable(id, nom, email, role) {
+        // Implémentez la logique d'édition ici
+        console.log(`Édition du comptable ${ id }: ${ nom }, ${ email }, ${ role }`);
+        // Exemple: pré-remplir un formulaire de modification
+    }
+
+    async function deleteComptable(id) {
+        try {
+            const response = await fetch(`${ API_URL }?id=${ id }`, {
+                method: "DELETE",
+                credentials: "include"
             });
+
+            const data = await handleResponse(response);
+
+            if (data.success) {
+                showMessage('success', data.message);
+                loadComptables();
+            }
+        } catch (error) {
+            console.error("Erreur:", error);
+            showMessage('danger', error.message);
         }
     }
 
-    setupLogoutButton();
+    // 8. Initialisation
+    if (tableBody) loadComptables();
+    if (searchInput) {
+        searchInput.addEventListener("input", debounce(() => {
+            loadComptables(searchInput.value.trim());
+        }, 300));
+    }
+
+    // Fonction de debounce pour la recherche
+    function debounce(func, wait) {
+        let timeout;
+        return function () {
+            const context = this, args = arguments;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), wait);
+        };
+    }
 });

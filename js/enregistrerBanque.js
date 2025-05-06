@@ -19,7 +19,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (!cachedCompteOptions) {
                 const response = await fetch("http://localhost/compte_na_biso/api/lister.php", {
                     method: "GET",
-                    headers: { "Content-Type": "application/json" }
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Cache-Control": "no-cache" // Ajout important
+                    },
+                    credentials: "include"  // Ajout important
                 });
                 if (!response.ok) throw new Error("Erreur de chargement");
                 cachedCompteOptions = await response.text();
@@ -181,6 +185,27 @@ document.addEventListener("DOMContentLoaded", async () => {
         tableBody.appendChild(newRow);
         chargerOptionsCompte(newSelect);
         recalculerTotaux();
+
+        // Ajouter écouteurs d'événements pour la validation en temps réel
+        newRow.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('input', function () {
+                const debitInput = newRow.querySelector('input[name="MontantDebit[]"]');
+                const creditInput = newRow.querySelector('input[name="MontantCredit[]"]');
+
+                if (this.value && this.name.includes('Debit')) {
+                    creditInput.value = '';
+                    creditInput.disabled = true;
+                } else if (this.value && this.name.includes('Credit')) {
+                    debitInput.value = '';
+                    debitInput.disabled = true;
+                } else {
+                    debitInput.disabled = false;
+                    creditInput.disabled = false;
+                }
+
+                recalculerTotaux();
+            });
+        });
     };
 
     window.resetForm = () => {

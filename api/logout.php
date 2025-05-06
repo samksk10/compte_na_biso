@@ -1,22 +1,29 @@
 <?php
 session_start();
 
-// Détruire toutes les variables de session
+// 1. Vider toutes les variables de session
 $_SESSION = [];
 
-// Supprimer la session côté serveur
-session_destroy();
-
-// Supprimer les cookies de session s'ils existent
+// 2. Supprimer le cookie de session si présent
 if (ini_get("session.use_cookies")) {
     $params = session_get_cookie_params();
-    setcookie(session_name(), '', time() - 42000,
-        $params["path"], $params["domain"],
-        $params["secure"], $params["httponly"]
+    setcookie(
+        session_name(),
+        '',
+        [
+            'expires' => time() - 42000,
+            'path' => $params["path"],
+            'domain' => $params["domain"],
+            'secure' => $params["secure"],
+            'httponly' => $params["httponly"],
+            'samesite' => 'Strict' // Optionnel mais recommandé
+        ]
     );
 }
 
-// Réponse JSON
+// 3. Détruire la session sur le serveur
+session_destroy();
+
+// 4. Répondre proprement
 header('Content-Type: application/json');
 echo json_encode(["message" => "Déconnexion réussie"]);
-?>
