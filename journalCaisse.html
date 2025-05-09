@@ -11,7 +11,7 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
         rel="stylesheet" />
-    <script src="js/enregistrerCaisse.js"></script>
+    <script src="js/enregistrerJournaux.js"></script>
 </head>
 
 <body class="d-flex">
@@ -299,14 +299,12 @@
                                         name="MontantCredit[]" step="0.01" min="0">
                                 </td>
                                 <td>
-                                    <select class="form-select form-select-sm" name="CompteDebit[]" required>
-                                        <option value="">Sélectionnez...</option>
-                                    </select>
+                                    <input type="text" class="form-control form-control-sm" name="CompteDebit[]"
+                                        readonly required>
                                 </td>
                                 <td>
-                                    <select class="form-select form-select-sm" name="CompteCredit[]" required>
-                                        <option value="">Sélectionnez...</option>
-                                    </select>
+                                    <input type="text" class="form-control form-control-sm" name="CompteCredit[]"
+                                        readonly required>
                                 </td>
                             </tr>
                         </template>
