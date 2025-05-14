@@ -142,9 +142,88 @@
     <div class="main-content">
         <h4 class="mb-3">Bienvenue dans votre tableau de bord, <span id="userNom">Utilisateur</span></h4>
         <p class="lead">Vous êtes connecté ici en tant que : <strong id="userRole">Rôle</strong></p>
+
+        <!-- Tableaux de bord spécifiques -->
+        <div class="row mt-4">
+            <!-- Admin Dashboard -->
+            <div id="adminDashboard" class="dashboard-section admin-only super_admin-only">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body">
+                                <h5><i class="bi bi-people"></i> Comptables</h5>
+                                <h2 id="totalComptables">0</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-success text-white">
+                            <div class="card-body">
+                                <h5><i class="bi bi-building"></i> Entreprises</h5>
+                                <h2 id="totalEntreprises">0</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comptable Dashboard -->
+            <div id="comptableDashboard"
+                class="dashboard-section comptable_banque-only comptable_caisse-only comptable_od-only">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card bg-info text-black">
+                            <div class="card-body">
+                                <h5><i class="bi bi-journal-text"></i> Opérations du jour</h5>
+                                <h2 id="totalOperationsJour">0</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-warning text-dark">
+                            <div class="card-body">
+                                <h5><i class="bi bi-calendar-check"></i> Total du mois</h5>
+                                <h2 id="totalOperationsMois">0</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chef Comptable Dashboard -->
+            <div id="chefComptableDashboard" class="dashboard-section chef_comptable-only">
+                <div class="row g-4">
+                    <div class="col-md-3">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body">
+                                <h5>Opérations Banque</h5>
+                                <h2 id="totalOpBanque">0</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-success text-white">
+                            <div class="card-body">
+                                <h5>Opérations Caisse</h5>
+                                <h2 id="totalOpCaisse">0</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-info text-white">
+                            <div class="card-body">
+                                <h5>Opérations Diverses</h5>
+                                <h2 id="totalOpDiverses">0</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Scripts -->
+    <script type="module" src="js/dashboard.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/accueil.js"></script>
 </body>
