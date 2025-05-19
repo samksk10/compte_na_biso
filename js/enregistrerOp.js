@@ -198,8 +198,18 @@ document.addEventListener("DOMContentLoaded", async () => {
                 // Activer montant débit, désactiver montant crédit
                 montantDebitInput.disabled = false;
                 montantCreditInput.disabled = true;
+                montantCreditInput.value = ''; // Réinitialiser le montant crédit
+
+                // Ajouter validation du montant débit
+                montantDebitInput.addEventListener('input', function () {
+                    const montant = parseFloat(this.value) || 0;
+                    if (montant <= 0) {
+                        this.setCustomValidity('Le montant doit être supérieur à 0');
+                    } else {
+                        this.setCustomValidity('');
+                    }
+                });
             } else if (selectedImputation === 'CREDIT') {
-                // Pour le crédit
                 compteCreditInput.value = selectedAccount;
                 compteDebitInput.value = '';
                 // Activer montant crédit, désactiver montant débit
