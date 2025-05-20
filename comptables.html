@@ -358,7 +358,7 @@
                         <div class="col-md-6 mb-3">
                             <label for="codeComptable" class="form-label">Code</label>
                             <input type="text" id="codeComptable" name="T4_CodeComptable" class="form-control" required>
-                            <div class="form-text">(ex: C0MPT-001)
+                            <div class="form-text">(ex: COMPT-001)
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
@@ -372,10 +372,9 @@
                             <input type="email" id="emailComptable" name="T4_Email" class="form-control" required>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="userRole" class="form-label">Rôle <span class="text-danger">*</span></label>
-                            <select id="userRole" name="T4_Role" class="form-select role-select" required
-                                aria-required="true" aria-describedby="roleHelp">
-                                <option value="" disabled selected hidden>Choisir le rôle...</option>
+                            <label for="Role" class="form-label">Rôle <span class="text-danger">*</span></label>
+                            <select id="Role" name="T4_Role" class="form-select role-select" required>
+                                <option value="" disabled selected>Choisir le rôle...</option>
                                 <option value="chef_comptable">Chef Comptable</option>
                                 <option value="comptable_caisse">Comptable Caisse</option>
                                 <option value="comptable_banque">Comptable Banque</option>

@@ -14,8 +14,9 @@ function showMessage(type, message, elementId = 'message') {
     const messageElement = document.getElementById(elementId);
     if (!messageElement) return;
 
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
     messageElement.innerHTML = `
-        <div class="alert alert-${ type } alert-dismissible fade show">
+        <div class="alert ${ alertClass } alert-dismissible fade show" role="alert">
             ${ escapeHTML(message) }
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
@@ -153,38 +154,41 @@ document.addEventListener("DOMContentLoaded", function () {
         form.addEventListener("submit", async function (event) {
             event.preventDefault();
 
-            if (!validateForm()) {
-                showMessage('warning', 'Veuillez remplir tous les champs correctement');
-                return;
-            }
-
             try {
                 const formData = {
                     T4_CodeComptable: document.getElementById("codeComptable").value.trim(),
-                    T4_MotDePasseCompta: document.getElementById("motDePasse").value.trim(),
-                    T4_DateDebutComptable: document.getElementById("dateDebut").value.trim(),
                     T4_NomComptable: document.getElementById("nomComptable").value.trim(),
                     T4_Email: document.getElementById("emailComptable").value.trim(),
-                    T4_Role: document.getElementById("userRole").value
+                    T4_Role: document.getElementById("Role").value, // Changé de userRole à Role
+                    T4_MotDePasseCompta: document.getElementById("motDePasse").value.trim(),
+                    T4_DateDebutComptable: document.getElementById("dateDebut").value.trim()
                 };
 
                 const response = await fetch(API_URL, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(formData),
-                    credentials: "include"
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Cache-Control": "no-cache"
+                    },
+                    credentials: "include",
+                    body: JSON.stringify(formData)
                 });
 
-                const data = await handleResponse(response);
+                const data = await response.json();
 
-                if (data.success) {
-                    form.reset();
+                if (data.message) {
                     showMessage('success', data.message);
-                    loadComptables();
+                    form.reset();
+                    if (typeof loadComptables === 'function') {
+                        loadComptables();
+                    }
+                } else if (data.error) {
+                    throw new Error(data.error);
                 }
+
             } catch (error) {
                 console.error("Erreur:", error);
-                showMessage('danger', error.message);
+                showMessage('danger', error.message || 'Une erreur est survenue');
             }
         });
     }
