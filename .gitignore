@@ -1,0 +1,33 @@
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# Fichiers temporaires
+*.log
+*.tmp
+*.bak
+*.cache
+
+# Environnement
+.env
+
+# Dossiers à ignorer
+/vendor/
+/node_modules/
+/dist/
+/build/
+/*.sqlite
+*.zip
+
+# Fichiers IDE
+*.sublime-project
+*.sublime-workspace
+.idea/
+.vscode/
+
+# XAMPP
+xampp/
+htdocs/vendor/
+
+# Autres
+*.swp
