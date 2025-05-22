@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Vérifier si l'utilisateur est déjà connecté
     if (localStorage.getItem("role")) {
         console.log("Utilisateur déjà connecté, redirection vers accueil.html");
-        window.location.href = "accueil.html";
+        window.location.href = "dashboard.html";
     }
 
     document.getElementById("loginForm").addEventListener("submit", function (event) {
@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     localStorage.setItem("email", email);
                     localStorage.setItem("nom", data.nom);
                     console.log("Utilisateur connecté :", data.nom, "Rôle :", data.role);
-                    window.location.href = "accueil.html";
+                    window.location.href = "dashboard.html";
                 } else {
                     message.innerText = data.error;
                 }
