@@ -8,252 +8,15 @@
     <!-- Liens vers les bibliothèques externes -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-    <!-- Styles personnalisés -->
-    <style>
-        /* Variables CSS */
-        :root {
-            --sidebar-bg: #15202b;
-            /* Fond de la barre latérale */
-            --sidebar-text: #ffffff;
-            /* Texte de la barre latérale */
-            --sidebar-hover-bg: rgba(29, 161, 242, 0.1);
-            /* Fond au survol */
-            --sidebar-hover-text: #1da1f2;
-            /* Texte au survol */
-            --logout-btn-bg: #e0245e;
-            /* Rouge pour le bouton de déconnexion */
-            --logout-btn-hover-bg: #b81d4b;
-            /* Rouge plus foncé au survol */
-            --success-btn-bg: #1da1f2;
-            /* Bleu pour les boutons */
-            --success-btn-hover-bg: #1991db;
-            /* Bleu plus foncé au survol */
-            --main-bg: #f5f8fa;
-            /* Fond du contenu principal */
-            --main-text: #15202b;
-            /* Texte du contenu principal */
-            --main-subtext: #657786;
-            /* Sous-texte du contenu principal */
-            --shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-            /* Ombre de la barre latérale */
-            --transition: all 0.3s ease;
-            /* Transition par défaut */
-        }
-
-        /* Style général de la barre latérale */
-        .sidebar {
-            background-color: var(--sidebar-bg);
-            color: var(--sidebar-text);
-            width: 250px;
-            height: 100vh;
-            padding: 20px;
-            box-shadow: var(--shadow);
-            position: fixed;
-            top: 0;
-            left: 0;
-        }
-
-        /* Style des liens de la barre latérale */
-        .nav-link {
-            color: var(--sidebar-text) !important;
-            font-weight: 500;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-        }
-
-        .nav-link:hover {
-            background-color: var(--sidebar-hover-bg);
-            transform: translateX(5px);
-            color: var(--sidebar-hover-text) !important;
-        }
-
-        .nav-link .bi {
-            margin-right: 10px;
-            font-size: 1.2rem;
-        }
-
-        /* Style du bouton de déconnexion */
-        .logout-btn {
-            margin-top: 30px;
-            background-color: var(--logout-btn-bg);
-            color: var(--sidebar-text) !important;
-            border-radius: 8px;
-            padding: 10px 15px;
-            text-align: center;
-            transition: var(--transition);
-        }
-
-        .logout-btn:hover {
-            background-color: var(--logout-btn-hover-bg);
-        }
-
-        /* Style du contenu principal */
-        .main-content {
-            background-color: var(--main-bg);
-            padding: 20px;
-            margin-left: 250px;
-            /* Pour compenser la largeur de la barre latérale */
-            flex-grow: 1;
-            min-height: 100vh;
-        }
-
-        .main-content {
-            background-color: var(--main-bg);
-            padding: 20px;
-            margin-left: 250px;
-            flex-grow: 1;
-            min-height: 100vh;
-            animation: fadeIn 0.6s ease-out forwards;
-        }
-
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-
-        h4 {
-            color: var(--main-text);
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-
-        h5 {
-            color: var(--main-text);
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .lead {
-            color: var(--main-subtext);
-            font-size: 1.1rem;
-        }
-
-        /* Style du formulaire */
-        .form-control {
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin-bottom: 15px;
-        }
-
-        /* Bouton de succès */
-        .btn-success {
-            background-color: var(--success-btn-bg);
-            border: none;
-            border-radius: 8px;
-            padding: 10px 20px;
-            transition: var(--transition);
-            width: 100%;
-        }
-
-        .btn-success:hover {
-            background-color: var(--success-btn-hover-bg);
-            transform: translateY(-2px);
-        }
-
-        .btn-success:active {
-            transform: translateY(0);
-        }
-
-        /* Style du tableau */
-        .table {
-            margin-top: 20px;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .table th,
-        .table td {
-            padding: 12px;
-            text-align: left;
-        }
-
-        .table th {
-            background-color: var(--success-btn-bg);
-            color: var(--sidebar-text);
-        }
-
-        .table-striped tbody tr:nth-of-type(odd) {
-            background-color: rgba(29, 161, 242, 0.1);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-                padding: 10px;
-            }
-
-            .main-content {
-                margin-left: 0;
-                padding: 15px;
-            }
-
-            .nav-link {
-                padding: 8px 12px;
-                font-size: 0.9rem;
-            }
-
-            .logout-btn {
-                margin-top: 20px;
-                padding: 8px 12px;
-                font-size: 0.9rem;
-            }
-
-            h4 {
-                font-size: 1.5rem;
-            }
-
-            h5 {
-                font-size: 1.25rem;
-            }
-
-            .lead {
-                font-size: 1rem;
-            }
-
-            .form-control {
-                font-size: 0.9rem;
-                padding: 8px;
-            }
-
-            .btn-success {
-                padding: 8px 12px;
-                font-size: 0.9rem;
-            }
-
-            .table-responsive {
-                overflow-x: auto;
-
-            }
-
-            .table {
-                min-width: 600px;
-            }
-        }
-    </style>
-
+    <link rel="stylesheet" href="stylesAll.css">
 </head>
 
 <body class="d-flex">
-    <!-- Sidebar -->
-    <nav class="sidebar">
+    <!-- Bouton toggle sidebar -->
+    <button id="sidebarToggle" class="btn btn-dark sidebar-toggle-btn" aria-label="Toggle Menu" title="Toggle Menu">
+        <i class="bi bi-list" aria-hidden="true"></i>
+    </button>
+    <nav class="sidebar" id="sidebar">
         <h2 class="text-center mb-4">Menu</h2>
         <ul class="nav flex-column">
             <!-- Tableau de bord -->
@@ -355,21 +118,28 @@
         </ul>
     </nav>
     <div class="main-content">
-        <h3 class="mb-4">Liste des Comptables</h3>
-        <div class="table table-striped">
-            <table class="table table-striped">
-                <thead>
+        <div class="content-header d-flex justify-content-between align-items-center mb-4">
+            <h4 class="mb-0">Liste des Comptables</h4>
+            <div class="actions">
+                <button class="btn btn-outline-primary" onclick="exportToExcel()">
+                    <i class="bi bi-file-earmark-excel me-2"></i>Exporter
+                </button>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered">
+                <thead class="table-dark">
                     <tr>
-                        <th>ID</th>
-                        <th>Code Comptable</th>
-                        <th>Nom</th>
-                        <th>Email</th>
-                        <th>Date d'Embauche</th>
-                        <th>Rôle</th>
-                        <th>Actions</th>
+                        <th scope="col" class="text-center" width="5%">ID</th>
+                        <th scope="col" width="10%">Code Comptable</th>
+                        <th scope="col" width="20%">Nom</th>
+                        <th scope="col" width="20%">Email</th>
+                        <th scope="col" width="15%">Date d'Embauche</th>
+                        <th scope="col" width="15%">Rôle</th>
+                        <th scope="col" class="text-center" width="15%">Actions</th>
                     </tr>
                 </thead>
-                <tbody id="comptablesList">
+                <tbody id="comptablesList" class="table-group-divider">
                     <!-- Les données seront ajoutées ici dynamiquement -->
                 </tbody>
             </table>
@@ -380,6 +150,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/comptables.js"></script>
     <script src="js/gestionsComptables.js" defer></script>
+    <script src="js/sidebar.js"></script>
 </body>
 
 </html>

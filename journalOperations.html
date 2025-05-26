@@ -15,8 +15,10 @@
 </head>
 
 <body class="d-flex">
-    <!-- Sidebar -->
-    <nav class="sidebar">
+    <button id="sidebarToggle" class="btn btn-dark sidebar-toggle-btn" aria-label="Toggle Menu" title="Toggle Menu">
+        <i class="bi bi-list" aria-hidden="true"></i>
+    </button>
+    <nav class="sidebar" id="sidebar">
         <h2 class="text-center mb-4">Menu</h2>
         <ul class="nav flex-column">
             <!-- Tableau de bord -->
@@ -119,7 +121,7 @@
     </nav>
     <div class="main-content fade-in">
         <div class="container-fluid py-4">
-            <h2 class="mb-4">Journal des opérations Diverses - <strong>Comptabilité na biso</strong></h2>
+            <h4 class="mb-4">Journal des opérations Diverses - <strong>Comptabilité na biso</strong></h4>
             <p class="mb-4">Nom du comptable titulaire du journal : <strong id="userNom"></strong></p>
             <p class="mb-4">Vous êtes connecté ici en tant que : <strong id="userRole"></strong></p>
             <form id="mouvementForm">
@@ -302,6 +304,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="js/sidebar.js"></script>
 </body>
 
 </html>
