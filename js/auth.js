@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const pagePermissions = CONFIG.PAGES.PERMISSIONS;
 
         if (pagePermissions[ currentPage ] && !pagePermissions[ currentPage ].includes(role)) {
-            return redirectTo("accueil.html", CONFIG.MESSAGES.ERRORS.ACCESS);
+            return redirectTo("dashboard.html", CONFIG.MESSAGES.ERRORS.ACCESS);
         }
 
         // === 6. Déconnexion sécurisée ===

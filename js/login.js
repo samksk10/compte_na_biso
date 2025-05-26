@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Vérifier si l'utilisateur est déjà connecté
     if (localStorage.getItem("role")) {
-        console.log("Utilisateur déjà connecté, redirection vers accueil.html");
+        console.log("Utilisateur déjà connecté, redirection vers dashboard.html");
         window.location.href = "dashboard.html";
     }
 
