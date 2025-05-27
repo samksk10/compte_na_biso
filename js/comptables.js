@@ -9,6 +9,13 @@ function escapeHTML(str) {
         .replace(/'/g, "&#039;");
 }
 
+// Vérifier si la variable userRole est définie
+const userRole = localStorage.getItem('role');
+if (!userRole || (userRole.trim() !== "super_admin" && userRole.trim() !== "admin")) {
+    alert("Accès refusé ! Seuls les administrateurs peuvent accéder à cette page.");
+    window.location.href = "dashboard.html";
+}
+
 // Fonction pour afficher les messages à l'utilisateur
 function showMessage(type, message, elementId = 'message') {
     const messageElement = document.getElementById(elementId);
@@ -46,29 +53,40 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(data => {
                 if (!tableBody) return;
 
-                tableBody.innerHTML = data.map(comptable => `
-                <tr>
-                    <td>${ comptable.T4_NumComptable }</td>
-                    <td>${ escapeHTML(comptable.T4_CodeComptable) }</td>
-                    <td>${ escapeHTML(comptable.T4_NomComptable) }</td>
-                    <td>${ escapeHTML(comptable.T4_Email) }</td>
-                    <td>${ comptable.T4_DateDebutComptable || 'Non renseigné' }</td>
-                    <td>${ getRoleDisplayName(comptable.T4_Role) || 'Non défini' }</td>
-                    <td>
-                        <button class="btn btn-warning btn-sm edit-btn" 
-                            data-id="${ comptable.T4_NumComptable }" 
-                            data-nom="${ escapeHTML(comptable.T4_NomComptable) }" 
-                            data-email="${ escapeHTML(comptable.T4_Email) }" 
-                            data-role="${ comptable.T4_Role }">
-                            <i class="bi bi-pencil"></i> Modifier
-                        </button>
-                        <button class="btn btn-danger btn-sm delete-btn ms-2" 
-                            data-id="${ comptable.T4_NumComptable }">
-                            <i class="bi bi-trash"></i> Supprimer
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
+                tableBody.innerHTML = data.map(comptable => {
+                    // Échapper toutes les données avant insertion
+                    const safeData = {
+                        id: escapeHTML(comptable.T4_NumComptable),
+                        code: escapeHTML(comptable.T4_CodeComptable),
+                        nom: escapeHTML(comptable.T4_NomComptable),
+                        email: escapeHTML(comptable.T4_Email),
+                        date: escapeHTML(comptable.T4_DateDebutComptable || 'Non renseigné'),
+                        role: escapeHTML(getRoleDisplayName(comptable.T4_Role))
+                    };
+
+                    return `
+                    <tr>
+                        <td>${ safeData.id }</td>
+                        <td>${ safeData.code }</td>
+                        <td>${ safeData.nom }</td>
+                        <td>${ safeData.email }</td>
+                        <td>${ safeData.date }</td>
+                        <td>${ safeData.role }</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm edit-btn" 
+                                data-id="${ safeData.id }" 
+                                data-nom="${ safeData.nom }" 
+                                data-email="${ safeData.email }" 
+                                data-role="${ escapeHTML(comptable.T4_Role) }">
+                                <i class="bi bi-pencil"></i> Modifier
+                            </button>
+                            <button class="btn btn-danger btn-sm delete-btn ms-2" 
+                                data-id="${ safeData.id }">
+                                <i class="bi bi-trash"></i> Supprimer
+                            </button>
+                        </td>
+                    </tr>`;
+                }).join('');
 
                 setupEventListeners();
             })
@@ -79,13 +97,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // 2. Fonction pour gérer la réponse de l'API
-    function handleResponse(response) {
+    async function handleResponse(response) {
+        const data = await response.json();
         if (!response.ok) {
-            return response.json().then(err => {
-                throw new Error(err.error || "Erreur serveur");
-            });
+            throw new Error(data.error || `Erreur HTTP: ${ response.status }`);
         }
-        return response.json();
+        return data;
     }
 
     // 3. Fonction pour obtenir le nom affichable du rôle
@@ -101,6 +118,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 4. Configuration des écouteurs d'événements
     function setupEventListeners() {
+        // Nettoyer les anciens événements
+        document.querySelectorAll(".edit-btn, .delete-btn").forEach(btn => {
+            btn.replaceWith(btn.cloneNode(true));
+        });
+
+        // Ajouter les nouveaux événements
         document.querySelectorAll(".edit-btn").forEach(btn => {
             btn.addEventListener("click", function () {
                 editComptable(
@@ -195,9 +218,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 7. Fonctions CRUD
     async function editComptable(id, nom, email, role) {
-        // Implémentez la logique d'édition ici
-        console.log(`Édition du comptable ${ id }: ${ nom }, ${ email }, ${ role }`);
-        // Exemple: pré-remplir un formulaire de modification
+        try {
+            // Pré-remplir le formulaire
+            document.getElementById('codeComptable').value = id;
+            document.getElementById('nomComptable').value = nom;
+            document.getElementById('emailComptable').value = email;
+            document.getElementById('Role').value = role;
+
+            // Changer le texte du bouton submit
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.textContent = 'Modifier';
+
+            // Changer l'action du formulaire
+            form.dataset.mode = 'edit';
+            form.dataset.editId = id;
+
+            // Scroll vers le formulaire
+            form.scrollIntoView({ behavior: 'smooth' });
+        } catch (error) {
+            console.error("Erreur lors de l'édition:", error);
+            showMessage('danger', "Erreur lors de l'édition du comptable");
+        }
     }
 
     async function deleteComptable(id) {

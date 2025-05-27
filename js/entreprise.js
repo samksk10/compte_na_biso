@@ -2,6 +2,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const entrepriseForm = document.getElementById("entrepriseForm");
     const messageDiv = document.getElementById("message");
     const submitBtn = entrepriseForm.querySelector('button[type="submit"]');
+    const entrepriseListDiv = document.getElementById("entrepriseList"); // Pour afficher la liste
+
+    // Vérifier si la variable userRole est définie
+    const userRole = localStorage.getItem('role');
+    if (!userRole || (userRole.trim() !== "super_admin" && userRole.trim() !== "admin")) {
+        alert("Accès refusé ! Seuls les administrateurs peuvent accéder à cette page.");
+        window.location.href = "dashboard.html";
+    }
 
     // Fonction pour afficher les messages
     function showMessage(message, type = 'success') {
@@ -39,9 +47,102 @@ document.addEventListener("DOMContentLoaded", function () {
             return false;
         }
 
+        // Validation de la commune
+        if (!formData.T1_NomCommune) {
+            showMessage("Le nom de la commune est requis", "danger");
+            return false;
+        }
+
         return true;
     }
 
+    // ✅ NOUVELLE FONCTION : Charger la liste des entreprises
+    async function loadEntreprises() {
+        try {
+            const response = await fetch("http://localhost/compte_na_biso/api/entreprise.php", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Requested-With": "XMLHttpRequest"
+                },
+                credentials: "include"
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || "Erreur lors du chargement");
+            }
+
+            // Afficher les entreprises si l'élément existe
+            if (entrepriseListDiv && result.data) {
+                displayEntreprises(result.data);
+            }
+
+        } catch (error) {
+            console.error("Erreur lors du chargement:", error);
+            if (entrepriseListDiv) {
+                entrepriseListDiv.innerHTML = `
+                    <div class="alert alert-warning">
+                        Erreur lors du chargement des entreprises : ${ error.message }
+                    </div>
+                `;
+            }
+        }
+    }
+
+    // ✅ NOUVELLE FONCTION : Afficher la liste des entreprises
+    function displayEntreprises(entreprises) {
+        if (!entrepriseListDiv) return;
+
+        if (entreprises.length === 0) {
+            entrepriseListDiv.innerHTML = `
+                <div class="alert alert-info">
+                    Aucune entreprise enregistrée pour le moment.
+                </div>
+            `;
+            return;
+        }
+
+        let html = `
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Code</th>
+                            <th>Nom</th>
+                            <th>Adresse</th>
+                            <th>Commune</th>
+                            <th>Responsable</th>
+                            <th>Téléphone</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        entreprises.forEach(entreprise => {
+            html += `
+                <tr>
+                    <td>${ entreprise.T1_CodeEntreprise }</td>
+                    <td>${ entreprise.T1_NomEntreprise }</td>
+                    <td>${ entreprise.T1_Adresse }</td>
+                    <td>${ entreprise.T1_NomCommune }</td>
+                    <td>${ entreprise.T1_NomRespo || '-' }</td>
+                    <td>${ entreprise.T1_NumTel || '-' }</td>
+                </tr>
+            `;
+        });
+
+        html += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+
+        entrepriseListDiv.innerHTML = html;
+    }
+
+    // ✅ GESTION DU FORMULAIRE (création d'entreprise)
     entrepriseForm.addEventListener("submit", async function (event) {
         event.preventDefault();
 
@@ -73,7 +174,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-Requested-With": "XMLHttpRequest" // Pour identifier les requêtes AJAX
+                    "X-Requested-With": "XMLHttpRequest"
                 },
                 credentials: "include",
                 body: JSON.stringify(formData)
@@ -87,6 +188,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
             showMessage(data.message || "Entreprise enregistrée avec succès");
             entrepriseForm.reset();
+
+            // ✅ Recharger la liste après ajout
+            loadEntreprises();
 
         } catch (error) {
             console.error("Erreur:", error);
@@ -103,4 +207,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("T1_NumTel").addEventListener("input", function (e) {
         this.value = this.value.replace(/\D/g, '').slice(0, 10);
     });
+
+    // ✅ Charger les entreprises au démarrage
+    loadEntreprises();
 });

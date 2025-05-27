@@ -3,8 +3,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Vérifier si l'utilisateur est Super Admin, sinon rediriger
     if (userRole !== "super_admin") {
-        alert("Accès refusé ! Seul le super_admin peut ajouter un administrateur.");
-        window.location.href = "accueil.html";
+        alert("Accès refusé ! Seul le super administrateur peut ajouter un administrateur.");
+        window.location.href = "dashboard.html";
     }
 
     document.getElementById("registerForm").addEventListener("submit", function (event) {

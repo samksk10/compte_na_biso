@@ -1,3 +1,11 @@
+// Vérifier si l'utilisateur est Super Admin ou Admin, sinon rediriger
+const userRole = localStorage.getItem('role');
+if (!userRole || (userRole.trim() !== "super_admin" && userRole.trim() !== "admin")) {
+    // Afficher un message d'alerte et rediriger vers le tableau de bord
+    alert("Accès refusé ! Seuls les administrateurs peuvent ajouter un comptable.");
+    window.location.href = "dashboard.html";
+}
+
 // Fonction pour modifier un comptable
 function editComptable(id, nom, email, role) {
     // Demander le nom, email et rôle à modifier

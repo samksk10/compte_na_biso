@@ -5,7 +5,6 @@ export const CONFIG = {
         ENDPOINTS: {
             // Fichiers PHP existants uniquement
             CHECK_SESSION: '/check_session.php',
-            CATEGORIES_JOURNAUX: 'categoriesjournaux.php',
             COMPTABLES: 'comptables.php',
             ENREGISTRER_BANQUE: 'enregistrerBanque.php',
             ENTREPRISE: 'entreprise.php',
@@ -16,7 +15,8 @@ export const CONFIG = {
             PLANCOMPTABLE: 'plancomptable.php',
             REGISTER: 'register.php',
             STATS: 'stats.php',
-            TAUXCHANGE: 'tauxchange.php'
+            TAUXCHANGE: 'tauxchange.php',
+            LAST_OPERATION: 'last_operations.php'
 
         }
     },
@@ -50,12 +50,10 @@ export const CONFIG = {
             'register.html': [ 'super_admin' ],
             'comptables.html': [ 'super_admin', 'admin' ],
             'entreprise.html': [ 'super_admin', 'admin' ],
-            'categoriesjournaux.html': [ 'super_admin', 'admin' ],
-            'listerCategoriesJournaux.html': [ 'super_admin', 'admin' ],
-            'listerComptables.html': [ 'super_admin', 'admin' ],
-            'journalBanque.html': [ 'comptable_banque', 'chef_comptable' ],
-            'journalCaisse.html': [ 'comptable_caisse', 'chef_comptable' ],
-            'journalOperations.html': [ 'comptable_od', 'chef_comptable' ]
+            'listerComptables.html': [ 'super_admin', 'admin', 'super_admin', 'admin' ],
+            'journalBanque.html': [ 'super_admin', 'admin', 'comptable_banque', 'chef_comptable' ],
+            'journalCaisse.html': [ 'super_admin', 'admin', 'comptable_caisse', 'chef_comptable' ],
+            'journalOperations.html': [ 'super_admin', 'admin', 'comptable_od', 'chef_comptable' ]
         }
     },
 
