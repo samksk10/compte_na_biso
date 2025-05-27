@@ -1,33 +1,80 @@
+# Configuration et environnement
+.env
+config.php
+*.config.js
+
+# Dépendances
+/vendor/
+/node_modules/
+
+# Fichiers de build et distribution
+/dist/
+/build/
+/public/assets/
+
+# Base de données
+*.sql
+*.sqlite
+*.sqlite3
+/database/backups/
+
+# Fichiers de logs et debug
+/logs/
+*.log
+debug.log
+error_log
+php_errors.log
+
 # Fichiers système
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # Fichiers temporaires
-*.log
 *.tmp
 *.bak
 *.cache
+*.swp
 
-# Environnement
-.env
-
-# Dossiers à ignorer
-/vendor/
-/node_modules/
-/dist/
-/build/
-/*.sqlite
-*.zip
-
-# Fichiers IDE
-*.sublime-project
-*.sublime-workspace
+# IDE et éditeurs
 .idea/
 .vscode/
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+.project
+.settings/
+*.phpproj
+nbproject/
 
-# XAMPP
+# Fichiers de configuration XAMPP
 xampp/
 htdocs/vendor/
 
-# Autres
-*.swp
+# Fichiers uploads
+/uploads/
+/public/uploads/
+/storage/uploads/
+
+# Fichiers de session PHP
+/sessions/
+*.sess
+
+# Fichiers de cache
+/cache/
+*.cache
+
+# Documentation générée
+/docs/
+/phpdoc/
+
+# Tests et coverage
+/tests/coverage/
+.phpunit.result.cache
+
+# Fichiers compressés
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
