@@ -243,14 +243,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function deleteComptable(id) {
         try {
-            const response = await fetch(`${ API_URL }?id=${ id }`, {
+            const response = await fetch(API_URL, {
                 method: "DELETE",
-                credentials: "include"
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include",
+                body: JSON.stringify({ T4_NumComptable: id })  // Envoyer l'ID dans le body
             });
 
             const data = await handleResponse(response);
-
-            if (data.success) {
+            if (data.message) {
                 showMessage('success', data.message);
                 loadComptables();
             }

@@ -224,6 +224,13 @@ button[type="submit"]:hover {
     transition: all 0.3s ease-in-out;
 }
 
+p {
+    color: var(--main-text);
+    font-weight: 700;
+    margin-bottom: 1rem;
+    margin-left: 35px;
+}
+
 h4 {
     color: var(--main-text);
     font-weight: 700;

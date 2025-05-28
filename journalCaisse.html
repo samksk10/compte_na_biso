@@ -29,77 +29,6 @@
                     <i class="bi bi-speedometer2"></i> Tableau de bord
                 </a>
             </li>
-
-            <!-- Taux de change -->
-            <li class="nav-item">
-                <a class="nav-link" href="taux_change.html">
-                    <i class="bi bi-currency-exchange"></i> Gestion de Taux de Change
-                </a>
-            </li>
-
-            <!-- Administration -->
-            <li class="nav-item super_admin-only">
-                <a class="nav-link" href="register.html">
-                    <i class="bi bi-person-add"></i> Ajouter un administrateur
-                </a>
-            </li>
-
-            <!-- Gestion des Comptables -->
-            <li class="nav-item super_admin-only admin-only">
-                <a class="nav-link" data-bs-toggle="collapse" href="#comptablesSubmenu" role="button">
-                    <i class="bi bi-person-lines-fill"></i> Gestion des Comptables
-                    <i class="bi bi-chevron-down ms-auto"></i>
-                </a>
-                <div class="collapse ps-3" id="comptablesSubmenu">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="comptables.html">
-                                <i class="bi bi-plus-circle"></i> Ajouter un Comptable
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="listerComptables.html">
-                                <i class="bi bi-list-ul"></i> Lister les Comptables
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-
-            <!-- Gestion des Entreprises -->
-            <li class="nav-item super_admin-only admin-only">
-                <a class="nav-link" href="entreprise.html">
-                    <i class="bi bi-building"></i> Gestion des Entreprises
-                </a>
-            </li>
-
-            <!-- Journaux Comptables -->
-            <li class="nav-item comptable_caisse-only comptable_banque-only comptable_od-only chef_comptable-only">
-                <a class="nav-link" data-bs-toggle="collapse" href="#journauxSubmenu" role="button">
-                    <i class="bi bi-journal-bookmark-fill"></i> Journaux Comptables
-                    <i class="bi bi-chevron-down ms-auto"></i>
-                </a>
-                <div class="collapse ps-3" id="journauxSubmenu">
-                    <ul class="nav flex-column">
-                        <li class="nav-item comptable_caisse-only chef_comptable-only">
-                            <a class="nav-link" href="journalCaisse.html">
-                                <i class="bi bi-cash-coin"></i> Journal Caisse
-                            </a>
-                        </li>
-                        <li class="nav-item comptable_banque-only chef_comptable-only">
-                            <a class="nav-link" href="journalBanque.html">
-                                <i class="bi bi-bank2"></i> Journal Banque
-                            </a>
-                        </li>
-                        <li class="nav-item comptable_od-only chef_comptable-only">
-                            <a class="nav-link" href="journalOperations.html">
-                                <i class="bi bi-file-earmark-text"></i> Journal des Opérations
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-
             <!-- Grand Livre -->
             <li class="nav-item">
                 <a class="nav-link" href="granLivre.html">
@@ -111,6 +40,32 @@
             <li class="nav-item">
                 <a class="nav-link" href="balance.html">
                     <i class="bi bi-clipboard-data"></i> Balances Comptables
+                </a>
+            </li>
+            <!-- Administration -->
+            <li class="nav-item super_admin-only">
+                <a class="nav-link" href="register.html">
+                    <i class="bi bi-person-add"></i> Ajouter un administrateur
+                </a>
+            </li>
+
+            <!-- Gestion des Comptables -->
+            <li class="nav-item super_admin-only admin-only">
+                <a class="nav-link" href="comptables.html">
+                    <i class="bi bi-person-lines-fill"></i> Gestion des Comptables
+                </a>
+            </li>
+
+            <!-- Gestion des Entreprises -->
+            <li class="nav-item super_admin-only admin-only">
+                <a class="nav-link" href="entreprise.html">
+                    <i class="bi bi-building"></i> Gestion des Entreprises
+                </a>
+            </li>
+            <!-- Taux de change -->
+            <li class="nav-item">
+                <a class="nav-link" href="taux_change.html">
+                    <i class="bi bi-currency-exchange"></i> Gestion de Taux de Change
                 </a>
             </li>
 
@@ -125,8 +80,10 @@
     <div class="main-content fade-in">
         <div class="container-fluid py-4">
             <h4 class="mb-4">Journal de Caisse - <strong>Comptabilité na biso</strong></h4>
-            <p class="mb-4">Nom du comptable titulaire du journal : <strong id="userNom"></strong></p>
-            <p class="mb-4">Vous êtes connecté ici en tant que : <strong id="userRole"></strong></p>
+            <p class="mb-4">Nom et Role de l'utilisateur :
+                <span id="userNom"></span>,
+                <strong id="userRole"></strong>
+            </p>
             <form id="mouvementForm">
                 <div class="card mb-4">
                     <div class="card-header bg-primary text-white">

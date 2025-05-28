@@ -118,34 +118,36 @@ switch ($method) {
     case 'DELETE':
         try {
             $data = json_decode(file_get_contents("php://input"), true);
-            error_log("Données reçues (DELETE) : " . json_encode($data));
-
+            
             if (empty($data['T4_NumComptable'])) {
                 jsonResponse(["error" => "ID du comptable manquant"], 400);
             }
 
-            // 🔍 Étape 1 : récupérer user_id lié à ce comptable
+            $pdo->beginTransaction();
+            
+            // Récupérer d'abord l'user_id
             $stmt = $pdo->prepare("SELECT user_id FROM t4_comptable WHERE T4_NumComptable = ?");
             $stmt->execute([$data['T4_NumComptable']]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$result) {
+                $pdo->rollBack();
                 jsonResponse(["error" => "Comptable non trouvé"], 404);
             }
 
-            $userId = $result['user_id'];
-
-            // 🔍 Étape 2 : supprimer le comptable
+            // Supprimer de t4_comptable
             $stmt = $pdo->prepare("DELETE FROM t4_comptable WHERE T4_NumComptable = ?");
             $stmt->execute([$data['T4_NumComptable']]);
 
-            // 🔍 Étape 3 : supprimer l'utilisateur
+            // Supprimer de users
             $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
-            $stmt->execute([$userId]);
+            $stmt->execute([$result['user_id']]);
 
+            $pdo->commit();
             jsonResponse(["message" => "Comptable supprimé avec succès"]);
+
         } catch (Exception $e) {
-            error_log("Erreur DELETE : " . $e->getMessage());
+            $pdo->rollBack();
             jsonResponse(["error" => "Erreur lors de la suppression : " . $e->getMessage()], 500);
         }
         break;
