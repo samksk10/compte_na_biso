@@ -1,42 +1,51 @@
 import { CONFIG, Utils } from './config.js';
 
-document.addEventListener('DOMContentLoaded', async function () {
-    const userRole = localStorage.getItem("role");
+document.addEventListener('DOMContentLoaded', function () {
+    // Récupérer les informations de l'utilisateur depuis le localStorage
+    const userName = localStorage.getItem('userName');
+    const userRole = localStorage.getItem('role');
 
-    if (!userRole) {
-        window.location.href = "index.html";
-        return;
+    // Afficher le nom et le rôle
+    document.getElementById('userName').textContent = userName || 'Utilisateur';
+    document.getElementById('userRole').textContent = userRole || 'Non défini';
+
+    // Fonction pour charger les statistiques
+    async function loadStatistics() {
+        try {
+            const response = await fetch('http://localhost/compte_na_biso/api/statistics.php', {
+                method: 'GET',
+                credentials: 'include'
+            });
+            const data = await response.json();
+
+            // Mise à jour des statistiques admin
+            if (data.admin) {
+                document.getElementById('totalComptables').textContent = data.admin.totalComptables || 0;
+                document.getElementById('totalEntreprises').textContent = data.admin.totalEntreprises || 0;
+            }
+
+            // Mise à jour des statistiques comptable
+            if (data.comptable) {
+                document.getElementById('totalOperationsJour').textContent = data.comptable.operationsJour || 0;
+                document.getElementById('totalOperationsMois').textContent = data.comptable.operationsMois || 0;
+            }
+
+            // Mise à jour des statistiques chef comptable
+            if (data.chefComptable) {
+                document.getElementById('totalOpBanque').textContent = data.chefComptable.opBanque || 0;
+                document.getElementById('totalOpCaisse').textContent = data.chefComptable.opCaisse || 0;
+                document.getElementById('totalOpDiverses').textContent = data.chefComptable.opDiverses || 0;
+            }
+        } catch (error) {
+            console.error('Erreur lors du chargement des statistiques:', error);
+        }
     }
 
-    document.getElementById("userRole").innerText = CONFIG.ROLES.DISPLAY_NAMES[ userRole ] || userRole;
+    // Charger les statistiques au chargement de la page
+    loadStatistics();
 
-    // Charger les statistiques
-    try {
-        const response = await fetch(Utils.buildApiUrl('STATS'), CONFIG.FETCH_OPTIONS);
-        if (!response.ok) throw new Error('Erreur réseau');
-
-        const stats = await response.json();
-        updateDashboardStats(stats);
-    } catch (error) {
-        console.error('Erreur lors du chargement des stats :', error);
-    }
-
-    // Charger les dernières opérations
-    try {
-        const response = await fetch(`${ CONFIG.API.BASE_URL }/last_operations.php`);
-        const data = await response.json();
-
-        const operationsTable = document.getElementById("operationsTable");
-        operationsTable.innerHTML = data.map(op => `
-            <tr>
-                <td>${ op.T8_Libelle }</td>
-                <td>${ op.T8_DMontant } CDF</td>
-                <td>${ op.T8_CMontant } CDF</td>
-            </tr>
-        `).join('');
-    } catch (error) {
-        console.error("Erreur lors du chargement des opérations :", error);
-    }
+    // Actualiser les statistiques toutes les 5 minutes
+    setInterval(loadStatistics, 300000);
 
     // Déconnexion
     document.getElementById("logoutBtn").addEventListener("click", () => {
@@ -44,20 +53,3 @@ document.addEventListener('DOMContentLoaded', async function () {
         window.location.href = "index.html";
     });
 });
-
-function updateDashboardStats(stats) {
-    const ids = {
-        totalComptables: stats.totalComptables,
-        totalEntreprises: stats.totalEntreprises,
-        totalOperationsJour: stats.operationsJour,
-        totalOperationsMois: stats.operationsMois,
-        totalOpBanque: stats.opBanque,
-        totalOpCaisse: stats.opCaisse,
-        totalOpDiverses: stats.opDiverses
-    };
-
-    for (const [ id, value ] of Object.entries(ids)) {
-        const element = document.getElementById(id);
-        if (element) element.textContent = value || 0;
-    }
-}
