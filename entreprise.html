@@ -172,15 +172,22 @@
                             </h5>
                         </div>
                         <div class="card-body">
-                            <!-- ✅ CORRECTION PRINCIPALE : Bon ID pour JavaScript -->
-                            <div id="entrepriseList">
-                                <div class="text-center">
-                                    <div class="spinner-border" role="status">
-                                        <span class="visually-hidden">Chargement...</span>
-                                    </div>
-                                    <p class="mt-2">Chargement des entreprises...</p>
-                                </div>
-                            </div>
+                            <!-- Remplacer la section du tableau dans displayEntreprises -->
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Nom</th>
+                                        <th>Adresse</th>
+                                        <th>Commune</th>
+                                        <th>Responsable</th>
+                                        <th>Téléphone</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="entrepriseTableBody">
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

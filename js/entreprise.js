@@ -74,77 +74,107 @@ document.addEventListener("DOMContentLoaded", function () {
                 throw new Error(result.error || "Erreur lors du chargement");
             }
 
-            // Afficher les entreprises si l'élément existe
-            if (entrepriseListDiv && result.data) {
+            // Afficher les entreprises dans le tbody
+            const tableBody = document.getElementById("entrepriseTableBody");
+            if (tableBody && result.data) {
                 displayEntreprises(result.data);
             }
 
         } catch (error) {
             console.error("Erreur lors du chargement:", error);
-            if (entrepriseListDiv) {
-                entrepriseListDiv.innerHTML = `
-                    <div class="alert alert-warning">
-                        Erreur lors du chargement des entreprises : ${ error.message }
-                    </div>
-                `;
-            }
+            showMessage("Erreur lors du chargement des entreprises: " + error.message, "danger");
         }
     }
 
+    // Ajouter ces fonctions dans le scope global
+    window.editEntreprise = function (code) {
+        fetch(`http://localhost/compte_na_biso/api/entreprise.php?code=${ code }`, {
+            method: "GET",
+            credentials: "include"
+        })
+            .then(response => response.json())
+            .then(result => {
+                if (result.error) throw new Error(result.error);
+                const data = result.data[ 0 ]; // Récupérer le premier élément du tableau
+
+                // Remplir le formulaire avec les données
+                document.getElementById("T1_CodeEntreprise").value = data.T1_CodeEntreprise;
+                document.getElementById("T1_NomEntreprise").value = data.T1_NomEntreprise;
+                document.getElementById("T1_Adresse").value = data.T1_Adresse;
+                document.getElementById("T1_NomCommune").value = data.T1_NomCommune;
+                document.getElementById("T1_NomRespo").value = data.T1_NomRespo || '';
+                document.getElementById("T1_NumTel").value = data.T1_NumTel || '';
+
+                // Modifier le formulaire pour la mise à jour
+                const form = document.getElementById("entrepriseForm");
+                form.dataset.editMode = "true";
+                document.querySelector('button[type="submit"]').innerHTML = `<i class="bi bi-save"></i> Modifier`;
+                document.getElementById("T1_CodeEntreprise").readOnly = true;
+            })
+            .catch(error => {
+                console.error("Erreur:", error);
+                showMessage(error.message, "danger");
+            });
+    };
+
+    window.deleteEntreprise = function (code) {
+        if (confirm("Êtes-vous sûr de vouloir supprimer cette entreprise ?")) {
+            fetch(`http://localhost/compte_na_biso/api/entreprise.php?code=${ code }`, {
+                method: "DELETE",
+                credentials: "include"
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) throw new Error(data.error);
+                    showMessage(data.message || "Entreprise supprimée avec succès");
+                    loadEntreprises();
+                })
+                .catch(error => showMessage(error.message, "danger"));
+        }
+    };
+
     // ✅ NOUVELLE FONCTION : Afficher la liste des entreprises
     function displayEntreprises(entreprises) {
-        if (!entrepriseListDiv) return;
+        const tableBody = document.getElementById("entrepriseTableBody");
+        if (!tableBody) return;
 
         if (entreprises.length === 0) {
-            entrepriseListDiv.innerHTML = `
-                <div class="alert alert-info">
-                    Aucune entreprise enregistrée pour le moment.
-                </div>
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center">Aucune entreprise enregistrée.</td>
+                </tr>
             `;
             return;
         }
 
-        let html = `
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Code</th>
-                            <th>Nom</th>
-                            <th>Adresse</th>
-                            <th>Commune</th>
-                            <th>Responsable</th>
-                            <th>Téléphone</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-        `;
-
-        entreprises.forEach(entreprise => {
-            html += `
-                <tr>
-                    <td>${ entreprise.T1_CodeEntreprise }</td>
-                    <td>${ entreprise.T1_NomEntreprise }</td>
-                    <td>${ entreprise.T1_Adresse }</td>
-                    <td>${ entreprise.T1_NomCommune }</td>
-                    <td>${ entreprise.T1_NomRespo || '-' }</td>
-                    <td>${ entreprise.T1_NumTel || '-' }</td>
-                </tr>
-            `;
-        });
-
-        html += `
-                    </tbody>
-                </table>
-            </div>
-        `;
-
-        entrepriseListDiv.innerHTML = html;
+        tableBody.innerHTML = entreprises.map(entreprise => `
+            <tr>
+                <td>${ entreprise.T1_CodeEntreprise }</td>
+                <td>${ entreprise.T1_NomEntreprise }</td>
+                <td>${ entreprise.T1_Adresse }</td>
+                <td>${ entreprise.T1_NomCommune }</td>
+                <td>${ entreprise.T1_NomRespo || '-' }</td>
+                <td>${ entreprise.T1_NumTel || '-' }</td>
+                <td>
+                    <button onclick="editEntreprise(${ entreprise.T1_CodeEntreprise })" 
+                            class="btn btn-warning btn-sm">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button onclick="deleteEntreprise(${ entreprise.T1_CodeEntreprise })" 
+                            class="btn btn-danger btn-sm">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
     }
 
     // ✅ GESTION DU FORMULAIRE (création d'entreprise)
     entrepriseForm.addEventListener("submit", async function (event) {
         event.preventDefault();
+
+        const isEditMode = this.dataset.editMode === "true";
+        const method = isEditMode ? "PUT" : "POST";
 
         // Désactiver le bouton pendant l'envoi
         submitBtn.disabled = true;
@@ -171,7 +201,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         try {
             const response = await fetch("http://localhost/compte_na_biso/api/entreprise.php", {
-                method: "POST",
+                method: method,
                 headers: {
                     "Content-Type": "application/json",
                     "X-Requested-With": "XMLHttpRequest"
@@ -191,6 +221,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // ✅ Recharger la liste après ajout
             loadEntreprises();
+
+            // Réinitialiser le mode édition
+            if (isEditMode) {
+                this.dataset.editMode = "false";
+                submitBtn.innerHTML = `<i class="bi bi-save"></i> Enregistrer`;
+                document.getElementById("T1_CodeEntreprise").readOnly = false;
+            }
 
         } catch (error) {
             console.error("Erreur:", error);
