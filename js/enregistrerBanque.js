@@ -242,13 +242,24 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Mise à jour du numéro de ligne
         newRow.querySelector("td").textContent = ligneNumero;
 
-        // Récupérer les selects
+        // Récupérer les selects et inputs nécessaires
         const imputationSelect = newRow.querySelector('select[name="imputation[]"]');
         const compteOperationSelect = newRow.querySelector('select[name="numero_compte[]"]');
+        const codeAnalInput = newRow.querySelector('input[name="t6_CodeAnal[]"]');
 
         // Ajouter les écouteurs d'événements
         imputationSelect.addEventListener('change', () => handleImputationChange(newRow));
         compteOperationSelect.addEventListener('change', () => handleImputationChange(newRow));
+
+        // Format du code analytique (optionnel)
+        codeAnalInput.addEventListener('input', function () {
+            // Convertir en majuscules
+            this.value = this.value.toUpperCase();
+            // Limiter à 10 caractères par exemple
+            if (this.value.length > 10) {
+                this.value = this.value.slice(0, 10);
+            }
+        });
 
         // Initialiser Select2
         $(compteOperationSelect).select2({
