@@ -7,6 +7,20 @@ document.addEventListener("DOMContentLoaded", function () {
         window.location.href = "dashboard.html";
     }
 
+    // Fonction pour basculer la visibilité du mot de passe
+    const togglePassword = document.getElementById('togglePassword');
+    const password = document.getElementById('password');
+
+    togglePassword.addEventListener('click', function () {
+        // Basculer entre type "password" et "text"
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
+
+        // Changer l'icône en fonction de l'état
+        this.classList.toggle('bi-eye');
+        this.classList.toggle('bi-eye-slash');
+    });
+
     document.getElementById("loginForm").addEventListener("submit", function (event) {
         event.preventDefault();
 
