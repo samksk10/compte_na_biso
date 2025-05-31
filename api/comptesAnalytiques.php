@@ -75,20 +75,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // ============= RÉCUPÉRATION DES COMPTES ANALYTIQUES =============
     try {
         if (isset($_GET['code'])) {
+            // Récupérer un compte spécifique
             $stmt = $pdo->prepare("SELECT * FROM comptes_analytiques WHERE code_anal = ?");
             $stmt->execute([$_GET['code']]);
             $compte = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$compte) {
+                jsonResponse(["error" => "Compte non trouvé"], 404);
+            }
+            
             jsonResponse(["data" => $compte]);
+        } else if (isset($_GET['search'])) {
+            // Recherche de comptes
+            $search = '%' . $_GET['search'] . '%';
+            $stmt = $pdo->prepare("
+                SELECT * FROM comptes_analytiques 
+                WHERE num_anal LIKE ? 
+                OR code_anal LIKE ? 
+                OR desi_anal LIKE ?
+                ORDER BY num_anal ASC
+            ");
+            $stmt->execute([$search, $search, $search]);
         } else {
+            // Liste complète
             $stmt = $pdo->prepare("SELECT * FROM comptes_analytiques ORDER BY num_anal ASC");
             $stmt->execute();
-            $comptes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            jsonResponse(["data" => $comptes]);
         }
+        
+        $comptes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        jsonResponse(["data" => $comptes]);
+        
     } catch (Exception $e) {
         jsonResponse(["error" => "Erreur serveur: " . $e->getMessage()], 500);
     }
+} elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+    if (!isset($_GET['code'])) {
+        jsonResponse(["error" => "Code analytique non spécifié"], 400);
+    }
 
+    try {
+        $stmt = $pdo->prepare("DELETE FROM comptes_analytiques WHERE code_anal = ?");
+        $stmt->execute([$_GET['code']]);
+        
+        if ($stmt->rowCount() === 0) {
+            jsonResponse(["error" => "Compte non trouvé"], 404);
+        }
+        
+        jsonResponse(["success" => true, "message" => "Compte supprimé avec succès"]);
+    } catch (Exception $e) {
+        jsonResponse(["error" => "Erreur serveur: " . $e->getMessage()], 500);
+    }
 } else {
     // Méthode non supportée
     jsonResponse(["error" => "Méthode non autorisée"], 405);

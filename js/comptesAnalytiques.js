@@ -105,12 +105,20 @@ async function loadComptesAnalytiques(searchTerm = '') {
 
         const data = await response.json();
 
-        if (data.error) {
-            throw new Error(data.error);
+        if (!response.ok) {
+            throw new Error(data.error || 'Erreur lors du chargement des données');
         }
 
         const tbody = document.getElementById('comptesAnalytiquesList');
         tbody.innerHTML = '';
+
+        if (!data.data || data.data.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center">Aucun compte analytique trouvé</td>
+                </tr>`;
+            return;
+        }
 
         data.data.forEach(compte => {
             const row = document.createElement('tr');
@@ -120,9 +128,17 @@ async function loadComptesAnalytiques(searchTerm = '') {
                 <td>${ compte.desi_anal }</td>
                 <td>${ new Date(compte.date_anal).toLocaleDateString() }</td>
                 <td>
-                    <button class="btn btn-sm btn-info" title="Voir les détails">
-                        <i class="bi bi-eye"></i>
-                    </button>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-info" title="Voir les détails" onclick="viewCompte('${ compte.code_anal }')">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-warning" title="Modifier" onclick="editCompte('${ compte.code_anal }')">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-danger" title="Supprimer" onclick="deleteCompte('${ compte.code_anal }')">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
                 </td>
             `;
             tbody.appendChild(row);
@@ -132,7 +148,7 @@ async function loadComptesAnalytiques(searchTerm = '') {
     }
 }
 
-// Gestionnaire de recherche
+// Gestionnaires d'événements pour la recherche
 document.getElementById('searchButton')?.addEventListener('click', () => {
     const searchTerm = document.getElementById('searchCompte').value;
     loadComptesAnalytiques(searchTerm);
@@ -144,6 +160,48 @@ document.getElementById('searchCompte')?.addEventListener('keyup', (e) => {
         loadComptesAnalytiques(searchTerm);
     }
 });
+
+// Fonctions pour les actions CRUD
+async function viewCompte(code) {
+    try {
+        const response = await fetch(`api/comptesAnalytiques.php?code=${ code }`, {
+            credentials: 'include'
+        });
+        const data = await response.json();
+
+        if (!response.ok) throw new Error(data.error);
+
+        // Afficher les détails dans un modal Bootstrap
+        // TODO: Implémenter l'affichage des détails
+    } catch (error) {
+        showMessage(error.message, 'danger');
+    }
+}
+
+async function editCompte(code) {
+    // TODO: Implémenter la modification
+    console.log('Édition du compte:', code);
+}
+
+async function deleteCompte(code) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce compte ?')) return;
+
+    try {
+        const response = await fetch(`api/comptesAnalytiques.php?code=${ code }`, {
+            method: 'DELETE',
+            credentials: 'include'
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) throw new Error(data.error);
+
+        showMessage('Compte supprimé avec succès', 'success');
+        loadComptesAnalytiques(); // Recharger la liste
+    } catch (error) {
+        showMessage(error.message, 'danger');
+    }
+}
 
 // Charger les comptes au chargement de la page
 document.addEventListener('DOMContentLoaded', () => {
