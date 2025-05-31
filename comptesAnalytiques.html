@@ -97,12 +97,53 @@
     </nav>
     <!-- Contenu principal -->
     <div class="main-content">
-        <h4 class="mb-3">ajouter un compte analytique- <strong>Comptabilité Na Biso</strong>, <span id="userNom"></span>
+        <h4 class="mb-3">Ajouter un compte analytique - <strong>Comptabilité Na Biso</strong>, <span
+                id="userNom"></span>
         </h4>
         <p class="lead">Vous êtes connecté en tant que : <strong id="userRole"></strong></p>
+
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h2 class="h5 mb-0">Formulaire pour créer un compte analytique</h2>
+            </div>
+            <div class="card-body">
+                <!-- Ajoutez cette div pour les messages -->
+                <div id="messageContainer" class="alert message-container" role="alert"></div>
+
+                <!-- UN SEUL FORM -->
+                <form id="analytiqueForm">
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <label for="T6_NumAnal" class="form-label">Numéro</label>
+                            <input type="number" class="form-control" id="T6_NumAnal" name="T6_NumAnal" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="T6_CodeAnal" class="form-label">Code analytique</label>
+                            <input type="text" class="form-control" id="T6_CodeAnal" name="T6_CodeAnal" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="T6_DesiAnal" class="form-label">Désignation</label>
+                            <input type="text" class="form-control" id="T6_DesiAnal" name="T6_DesiAnal" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="T6_DateAnal" class="form-label">Date de création</label>
+                            <input type="date" class="form-control" id="T6_DateAnal" name="T6_DateAnal" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary" aria-label="Enregistrer le compte analytique">
+                                <i class="bi bi-save"></i> Enregistrer
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/sidebar.js"></script>
+    <script src="js/comptesAnalytiques.js"></script>
     <script type="module" src="js/auth.js"></script>
 </body>
 

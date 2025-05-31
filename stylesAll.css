@@ -316,6 +316,18 @@ h5 {
     border-color: #dc3545;
 }
 
+/* Styles pour le conteneur de messages */
+.message-container {
+    display: none;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 0.25rem;
+}
+
+.message-container.show {
+    display: block;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .sidebar {
