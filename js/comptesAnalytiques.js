@@ -91,3 +91,61 @@ function showMessage(message, type = 'success') {
         messageContainer.className = `alert alert-${ type } message-container`;
     }, 5000);
 }
+
+// Fonction pour charger les comptes analytiques
+async function loadComptesAnalytiques(searchTerm = '') {
+    try {
+        const url = searchTerm
+            ? `api/comptesAnalytiques.php?search=${ encodeURIComponent(searchTerm) }`
+            : 'api/comptesAnalytiques.php';
+
+        const response = await fetch(url, {
+            credentials: 'include'
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+            throw new Error(data.error);
+        }
+
+        const tbody = document.getElementById('comptesAnalytiquesList');
+        tbody.innerHTML = '';
+
+        data.data.forEach(compte => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${ compte.num_anal }</td>
+                <td>${ compte.code_anal }</td>
+                <td>${ compte.desi_anal }</td>
+                <td>${ new Date(compte.date_anal).toLocaleDateString() }</td>
+                <td>
+                    <button class="btn btn-sm btn-info" title="Voir les détails">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    } catch (error) {
+        showMessage(error.message, 'danger');
+    }
+}
+
+// Gestionnaire de recherche
+document.getElementById('searchButton')?.addEventListener('click', () => {
+    const searchTerm = document.getElementById('searchCompte').value;
+    loadComptesAnalytiques(searchTerm);
+});
+
+document.getElementById('searchCompte')?.addEventListener('keyup', (e) => {
+    if (e.key === 'Enter') {
+        const searchTerm = e.target.value;
+        loadComptesAnalytiques(searchTerm);
+    }
+});
+
+// Charger les comptes au chargement de la page
+document.addEventListener('DOMContentLoaded', () => {
+    loadComptesAnalytiques();
+});
