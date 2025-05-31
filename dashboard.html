@@ -102,13 +102,25 @@
         <!-- Tableaux de bord spécifiques -->
         <div class="row mt-4">
             <!-- Admin Dashboard -->
+            <div id="superAdminDashboard" class="dashboard-section super_admin-only">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body">
+                                <h5><i class="bi bi-people"></i> Administrateurs</h5>
+                                <h2 id="totalAdministrateurs">2</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div id="adminDashboard" class="dashboard-section admin-only super_admin-only">
                 <div class="row g-4">
                     <div class="col-md-4">
                         <div class="card bg-primary text-white">
                             <div class="card-body">
                                 <h5><i class="bi bi-people"></i> Comptables</h5>
-                                <h2 id="totalComptables">0</h2>
+                                <h2 id="totalComptables">3</h2>
                             </div>
                         </div>
                     </div>
@@ -116,7 +128,15 @@
                         <div class="card bg-success text-white">
                             <div class="card-body">
                                 <h5><i class="bi bi-building"></i> Entreprises</h5>
-                                <h2 id="totalEntreprises">0</h2>
+                                <h2 id="totalEntreprises">1</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-success text-white">
+                            <div class="card-body">
+                                <h5><i class="bi bi-person-badge-fill"></i> Chefs Comptables</h5>
+                                <h2 id="totalChefsComptables">1</h2>
                             </div>
                         </div>
                     </div>
@@ -131,7 +151,7 @@
                         <div class="card bg-info text-black">
                             <div class="card-body">
                                 <h5><i class="bi bi-journal-text"></i> Opérations du jour</h5>
-                                <h2 id="totalOperationsJour">0</h2>
+                                <h2 id="totalOperationsJour">13</h2>
                             </div>
                         </div>
                     </div>
@@ -139,7 +159,7 @@
                         <div class="card bg-warning text-dark">
                             <div class="card-body">
                                 <h5><i class="bi bi-calendar-check"></i> Total du mois</h5>
-                                <h2 id="totalOperationsMois">0</h2>
+                                <h2 id="totalOperationsMois">47</h2>
                             </div>
                         </div>
                     </div>
@@ -170,6 +190,14 @@
                             <div class="card-body">
                                 <h5>Opérations Diverses</h5>
                                 <h2 id="totalOpDiverses">0</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-info text-white">
+                            <div class="card-body">
+                                <h5>Comptes Analytiques</h5>
+                                <h2 id="comptesAnalytiques">8</h2>
                             </div>
                         </div>
                     </div>
