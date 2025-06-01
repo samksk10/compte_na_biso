@@ -18,10 +18,16 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             const data = await response.json();
 
+            // Mise à jour des statistiques Super-admin
+            if (data.admin) {
+                document.getElementById('totalAdministrateurs').textContent = data.super_admin.totalAdministrateurs || 0;
+            }
+
             // Mise à jour des statistiques admin
             if (data.admin) {
                 document.getElementById('totalComptables').textContent = data.admin.totalComptables || 0;
                 document.getElementById('totalEntreprises').textContent = data.admin.totalEntreprises || 0;
+                document.getElementById('totalChefsComptables').textContent = data.admin.totalChefsComptables || 0;
             }
 
             // Mise à jour des statistiques comptable
