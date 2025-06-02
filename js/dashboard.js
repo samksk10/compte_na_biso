@@ -1,9 +1,9 @@
 import { CONFIG, Utils } from './config.js';
 
 document.addEventListener('DOMContentLoaded', function () {
-    // Récupérer les informations de l'utilisateur depuis le localStorage
-    const userName = localStorage.getItem('userName');
-    const userRole = localStorage.getItem('role');
+    // Récupérer les informations de l'utilisateur avec Utils
+    const userName = Utils.getFromStorage('userName');
+    const userRole = Utils.getFromStorage('role');
 
     // Afficher le nom et le rôle
     document.getElementById('userName').textContent = userName || 'Utilisateur';
@@ -12,15 +12,22 @@ document.addEventListener('DOMContentLoaded', function () {
     // Fonction pour charger les statistiques
     async function loadStatistics() {
         try {
-            const response = await fetch('http://localhost/compte_na_biso/api/statistics.php', {
+            const response = await fetch("http://localhost/compte_na_biso/api/statistics.php", {
                 method: 'GET',
-                credentials: 'include'
+                credentials: 'include',
+                headers: Utils.getHeaders()
             });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${ response.status }`);
+            }
+
             const data = await response.json();
 
             // Mise à jour des statistiques Super-admin
-            if (data.admin) {
-                document.getElementById('totalAdministrateurs').textContent = data.super_admin.totalAdministrateurs || 0;
+            if (data.super_admin) {
+                document.getElementById('totalAdministrateurs').textContent =
+                    data.super_admin.totalAdministrateurs || 0;
             }
 
             // Mise à jour des statistiques admin
@@ -43,19 +50,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('totalOpDiverses').textContent = data.chefComptable.opDiverses || 0;
             }
         } catch (error) {
-            console.error('Erreur lors du chargement des statistiques:', error);
+            Utils.showError('Erreur lors du chargement des statistiques:', error);
         }
     }
 
     // Charger les statistiques au chargement de la page
     loadStatistics();
 
-    // Actualiser les statistiques toutes les 5 minutes
-    setInterval(loadStatistics, 300000);
+    // Actualiser les statistiques selon la configuration
+    setInterval(loadStatistics, CONFIG.REFRESH_INTERVAL || 300000);
 
-    // Déconnexion
+    // Déconnexion avec Utils
     document.getElementById("logoutBtn").addEventListener("click", () => {
-        localStorage.removeItem("role");
-        window.location.href = "index.html";
+        Utils.clearStorage();
+        Utils.redirect('index.html');
     });
 });

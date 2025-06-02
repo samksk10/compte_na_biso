@@ -6,17 +6,18 @@ export const CONFIG = {
             // Fichiers PHP existants uniquement
             CHECK_SESSION: '/check_session.php',
             COMPTABLES: 'comptables.php',
+            COMPTESANALYTIQUES: 'comptesAnalytiques.php',
             ENREGISTRER_BANQUE: 'enregistrerBanque.php',
             ENTREPRISE: 'entreprise.php',
             JOURNAL: 'journal.php',
+            LAST_OPERATION: 'last_operations.php',
             LISTER: 'lister.php',
             LOGIN: 'login.php',
             LOGOUT: 'logout.php',
-            PLANCOMPTABLE: 'plancomptable.php',
             REGISTER: 'register.php',
+            STATISTICS: 'statistics.php',
             STATS: 'stats.php',
-            TAUXCHANGE: 'tauxchange.php',
-            LAST_OPERATION: 'last_operations.php'
+            TAUXCHANGE: 'tauxchange.php'
 
         }
     },

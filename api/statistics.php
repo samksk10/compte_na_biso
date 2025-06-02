@@ -1,67 +1,66 @@
 <?php
 include "../config.php";
-header("Content-Type: application/json");
 session_start();
-
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['role'])) {
-    echo json_encode(["error" => "Non autorisé"]);
-    exit;
-}
-
-$role = $_SESSION['role'];
-$response = [];
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Headers: Content-Type');
 
 try {
-    // Statistiques pour admin et super_admin
-    if (in_array($role, ['admin', 'super_admin'])) {
-        $stmt = $pdo->query("SELECT COUNT(*) as total FROM users WHERE role LIKE 'comptable%'");
-        $totalComptables = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+    $pdo = new PDO("mysql:host=localhost;dbname=cicaf_sass;charset=utf8", "root", "");
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $stmt = $pdo->query("SELECT COUNT(*) as total FROM t1_entreprise");
-        $totalEntreprises = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+    $role = $_SESSION['role'] ?? '';
+    $response = [];
 
-        $response['admin'] = [
-            'totalComptables' => $totalComptables,
-            'totalEntreprises' => $totalEntreprises
-        ];
-    }
+    // Stats selon le rôle
+    switch($role) {
+        case 'super_admin':
+            $response['super_admin'] = [
+                'totalAdministrateurs' => getCount($pdo, "SELECT COUNT(*) FROM users WHERE role = 'admin'"),
+            ];
+            // Inclure aussi les stats d'admin pour super_admin
+            // no break intentionally
+        case 'admin':
+            $response['admin'] = [
+                'totalComptables' => getCount($pdo, "SELECT COUNT(*) FROM t4_comptable"),
+                'totalEntreprises' => getCount($pdo, "SELECT COUNT(*) FROM t1_entreprise"),
+                'totalChefsComptables' => getCount($pdo, "SELECT COUNT(*) FROM users WHERE role = 'chef_comptable'")
+            ];
+            break;
 
-    // Statistiques pour les comptables
-    if (strpos($role, 'comptable') !== false) {
-        $today = date('Y-m-d');
-        $firstDayOfMonth = date('Y-m-01');
+        case 'chef_comptable':
+            $response['chefComptable'] = [
+                'opBanque' => getCount($pdo, "SELECT COUNT(*) FROM operations WHERE type = 'banque'"),
+                'opCaisse' => getCount($pdo, "SELECT COUNT(*) FROM operations WHERE type = 'caisse'"),
+                'opDiverses' => getCount($pdo, "SELECT COUNT(*) FROM operations WHERE type = 'diverses'")
+            ];
+            break;
 
-        $stmt = $pdo->prepare("SELECT 
-            COUNT(*) as today_ops,
-            (SELECT COUNT(*) FROM operations WHERE DATE(date_operation) >= ?) as month_ops
-            FROM operations WHERE DATE(date_operation) = ?");
-        $stmt->execute([$firstDayOfMonth, $today]);
-        $stats = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        $response['comptable'] = [
-            'operationsJour' => $stats['today_ops'],
-            'operationsMois' => $stats['month_ops']
-        ];
-    }
-
-    // Statistiques pour le chef comptable
-    if ($role === 'chef_comptable') {
-        $stmt = $pdo->query("SELECT 
-            SUM(CASE WHEN type_operation = 'banque' THEN 1 ELSE 0 END) as op_banque,
-            SUM(CASE WHEN type_operation = 'caisse' THEN 1 ELSE 0 END) as op_caisse,
-            SUM(CASE WHEN type_operation = 'diverse' THEN 1 ELSE 0 END) as op_diverses
-            FROM operations");
-        $stats = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        $response['chefComptable'] = [
-            'opBanque' => $stats['op_banque'],
-            'opCaisse' => $stats['op_caisse'],
-            'opDiverses' => $stats['op_diverses']
-        ];
+        default:
+            $response['comptable'] = [
+                'operationsJour' => getCount($pdo, "SELECT COUNT(*) FROM operations WHERE DATE(date_creation) = CURDATE()"),
+                'operationsMois' => getCount($pdo, "SELECT COUNT(*) FROM operations WHERE MONTH(date_creation) = MONTH(CURDATE())")
+            ];
+            break;
     }
 
     echo json_encode($response);
 
-} catch (Exception $e) {
-    echo json_encode(["error" => $e->getMessage()]);
+} catch(Exception $e) {
+    error_log($e->getMessage());
+    http_response_code(500);
+    echo json_encode([
+        'error' => 'Erreur lors de la récupération des statistiques'
+    ]);
+}
+
+function getCount($pdo, $query) {
+    $stmt = $pdo->query($query);
+    return $stmt->fetchColumn();
+}
+
+function getRecentActivity($pdo, $limit = 5) {
+    $stmt = $pdo->prepare("SELECT * FROM activity_log ORDER BY timestamp DESC LIMIT ?");
+    $stmt->execute([$limit]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
