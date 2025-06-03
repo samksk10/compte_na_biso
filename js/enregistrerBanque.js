@@ -71,6 +71,50 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    // Fonction pour charger les codes analytiques
+    async function chargerCodesAnalytiques() {
+        try {
+            const response = await fetch('api/comptesAnalytiques.php', {
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${ response.status }`);
+            }
+
+            const data = await response.json();
+            return data.data || [];
+        } catch (error) {
+            console.error('Erreur lors du chargement des codes analytiques:', error);
+            return [];
+        }
+    }
+
+    // Fonction pour initialiser Select2 sur un élément
+    function initialiserSelect2(element) {
+        $(element).select2({
+            theme: 'bootstrap-5',
+            width: '100%',
+            placeholder: 'Sélectionner un code...'
+        });
+    }
+
+    // Fonction pour remplir les options du select
+    async function remplirOptionsCodesAnalytiques(selectElement) {
+        const codes = await chargerCodesAnalytiques();
+        selectElement.innerHTML = '<option value="">Sélectionner un code...</option>';
+
+        codes.forEach(code => {
+            const option = document.createElement('option');
+            option.value = code.code_anal;
+            option.textContent = `${ code.code_anal } - ${ code.desi_anal }`;
+            selectElement.appendChild(option);
+        });
+
+        initialiserSelect2(selectElement);
+    }
+
     // Gestion de l'envoi du formulaire
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -234,6 +278,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         select.value = value;
     }
 
+    // Modifier la fonction ajouterLigne pour inclure l'initialisation du select
     window.ajouterLigne = () => {
         const clone = ligneTemplate.content.cloneNode(true);
         const newRow = clone.querySelector("tr");
@@ -246,6 +291,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const imputationSelect = newRow.querySelector('select[name="imputation[]"]');
         const compteOperationSelect = newRow.querySelector('select[name="numero_compte[]"]');
         const codeAnalInput = newRow.querySelector('input[name="t6_CodeAnal[]"]');
+        const codeAnalSelect = newRow.querySelector('select[name="t6_CodeAnal[]"]');
 
         // Ajouter les écouteurs d'événements
         imputationSelect.addEventListener('change', () => handleImputationChange(newRow));
@@ -275,6 +321,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             minimumInputLength: 1
         }).on('select2:select', () => handleImputationChange(newRow));
 
+        remplirOptionsCodesAnalytiques(codeAnalSelect);
+
         tableBody.appendChild(newRow);
         chargerOptionsCompte(compteOperationSelect);
     };
@@ -297,6 +345,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     await chargerOptionsCompte(); // Charge les comptes au démarrage
     tableBody.addEventListener("input", recalculerTotaux);
     initialiserChampsAuto(); // Initialisation des champs automatiques
+
+    // Charger les codes analytiques pour la première ligne au chargement
+    const premiereSelectAnalytique = document.querySelector('select[name="t6_CodeAnal[]"]');
+    if (premiereSelectAnalytique) {
+        remplirOptionsCodesAnalytiques(premiereSelectAnalytique);
+    }
 
     // Ajouter l'écouteur d'événements pour la date d'opération
     document.getElementById('dateOperation').addEventListener('change', updateExercice);
@@ -322,3 +376,81 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+document.addEventListener("DOMContentLoaded", function () {
+    const tableBody = document.getElementById("tableBody");
+    const ligneTemplate = document.getElementById("ligneTemplate");
+    let numeroLigne = 1;
+
+    // Fonction pour ajouter une ligne
+    window.ajouterLigne = function () {
+        // Cloner le template
+        const clone = ligneTemplate.content.cloneNode(true);
+        const newRow = clone.querySelector("tr");
+
+        // Mettre à jour le numéro de ligne
+        newRow.querySelector("td").textContent = numeroLigne++;
+
+        // Initialiser Select2 pour le code analytique
+        const codeAnalSelect = newRow.querySelector('select[name="t6_CodeAnal[]"]');
+        $(codeAnalSelect).select2({
+            theme: 'bootstrap-5',
+            width: '100%',
+            ajax: {
+                url: 'api/comptesAnalytiques.php',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        search: params.term
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data.data.map(item => ({
+                            id: item.code_anal,
+                            text: `${ item.code_anal } - ${ item.desi_anal }`
+                        }))
+                    };
+                },
+                cache: true
+            },
+            placeholder: 'Sélectionner un code...'
+        });
+
+        // Initialiser Select2 pour le compte
+        const compteSelect = newRow.querySelector('.select2-compte');
+        $(compteSelect).select2({
+            theme: 'bootstrap-5',
+            width: '100%'
+        });
+
+        // Ajouter les gestionnaires d'événements pour les montants
+        const montantDebit = newRow.querySelector('input[name="MontantDebit[]"]');
+        const montantCredit = newRow.querySelector('input[name="MontantCredit[]"]');
+
+        montantDebit.addEventListener('input', function () {
+            if (this.value !== '') {
+                montantCredit.value = '';
+                montantCredit.disabled = true;
+            } else {
+                montantCredit.disabled = false;
+            }
+        });
+
+        montantCredit.addEventListener('input', function () {
+            if (this.value !== '') {
+                montantDebit.value = '';
+                montantDebit.disabled = true;
+            } else {
+                montantDebit.disabled = false;
+            }
+        });
+
+        // Ajouter la nouvelle ligne au tableau
+        tableBody.appendChild(newRow);
+    };
+
+    // Ajouter une première ligne au chargement
+    ajouterLigne();
+});
