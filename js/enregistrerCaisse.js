@@ -71,6 +71,49 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    // Fonction pour charger les codes analytiques
+    async function chargerCodesAnalytiques() {
+        try {
+            const response = await fetch('api/comptesAnalytiques.php', {
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${ response.status }`);
+            }
+
+            const data = await response.json();
+            return data.data || [];
+        } catch (error) {
+            console.error('Erreur lors du chargement des codes analytiques:', error);
+            return [];
+        }
+    }
+
+    // Fonction pour initialiser Select2 sur un élément
+    function initialiserSelect2(element) {
+        $(element).select2({
+            theme: 'bootstrap-5',
+            width: '100%',
+            placeholder: 'Sélectionner un code...'
+        });
+    }
+    // Fonction pour remplir les options du select
+    async function remplirOptionsCodesAnalytiques(selectElement) {
+        const codes = await chargerCodesAnalytiques();
+        selectElement.innerHTML = '<option value="">Sélectionner un code...</option>';
+
+        codes.forEach(code => {
+            const option = document.createElement('option');
+            option.value = code.code_anal;
+            option.textContent = `${ code.code_anal } - ${ code.desi_anal }`;
+            selectElement.appendChild(option);
+        });
+
+        initialiserSelect2(selectElement);
+    }
+
     // Gestion de l'envoi du formulaire
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -170,6 +213,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function handleImputationChange(row) {
+        console.log('handleImputationChange appelé'); // Debug
+
         const imputationSelect = row.querySelector('select[name="imputation[]"]');
         const compteOperationSelect = row.querySelector('select[name="numero_compte[]"]');
         const compteDebitInput = row.querySelector('input[name="CompteDebit[]"]');
@@ -180,31 +225,24 @@ document.addEventListener("DOMContentLoaded", async () => {
         const selectedAccount = compteOperationSelect.value;
         const selectedImputation = imputationSelect.value;
 
-        // Réinitialiser tous les champs
+        console.log('Compte sélectionné:', selectedAccount); // Debug
+        console.log('Imputation sélectionnée:', selectedImputation); // Debug
+
+        // Réinitialiser les champs
         compteDebitInput.value = '';
         compteCreditInput.value = '';
-        montantDebitInput.value = '';
-        montantCreditInput.value = '';
-
-        // Activer tous les champs montants
-        montantDebitInput.disabled = false;
-        montantCreditInput.disabled = false;
 
         if (selectedAccount && selectedImputation) {
             if (selectedImputation === 'DEBIT') {
-                // Pour le débit
                 compteDebitInput.value = selectedAccount;
-                compteCreditInput.value = '';
-                // Activer montant débit, désactiver montant crédit
                 montantDebitInput.disabled = false;
                 montantCreditInput.disabled = true;
+                montantCreditInput.value = '';
             } else if (selectedImputation === 'CREDIT') {
-                // Pour le crédit
                 compteCreditInput.value = selectedAccount;
-                compteDebitInput.value = '';
-                // Activer montant crédit, désactiver montant débit
                 montantCreditInput.disabled = false;
                 montantDebitInput.disabled = true;
+                montantDebitInput.value = '';
             }
         }
 
@@ -224,6 +262,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         select.value = value;
     }
 
+    // Modifier la fonction ajouterLigne pour inclure l'initialisation du select
     window.ajouterLigne = () => {
         const clone = ligneTemplate.content.cloneNode(true);
         const newRow = clone.querySelector("tr");
@@ -232,29 +271,27 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Mise à jour du numéro de ligne
         newRow.querySelector("td").textContent = ligneNumero;
 
-        // Récupérer les selects
+        // Récupérer les selects et inputs
         const imputationSelect = newRow.querySelector('select[name="imputation[]"]');
         const compteOperationSelect = newRow.querySelector('select[name="numero_compte[]"]');
+        const codeAnalSelect = newRow.querySelector('select[name="t6_CodeAnal[]"]');
 
         // Ajouter les écouteurs d'événements
         imputationSelect.addEventListener('change', () => handleImputationChange(newRow));
-        compteOperationSelect.addEventListener('change', () => handleImputationChange(newRow));
 
-        // Initialiser Select2
+        // Initialiser Select2 pour le compte opération
         $(compteOperationSelect).select2({
             theme: 'bootstrap-5',
-            width: '100%',
-            language: {
-                noResults: () => "Aucun compte trouvé",
-                searching: () => "Recherche...",
-                inputTooShort: () => "Veuillez entrer au moins 1 caractère"
-            },
-            placeholder: "Rechercher un compte...",
-            allowClear: true,
-            minimumInputLength: 1
+            width: '100%'
         }).on('select2:select', () => handleImputationChange(newRow));
 
+        // Initialiser Select2 pour le code analytique
+        remplirOptionsCodesAnalytiques(codeAnalSelect);
+
+        // Ajouter la ligne au tableau
         tableBody.appendChild(newRow);
+
+        // Charger les options de compte
         chargerOptionsCompte(compteOperationSelect);
     };
 
@@ -276,6 +313,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     await chargerOptionsCompte(); // Charge les comptes au démarrage
     tableBody.addEventListener("input", recalculerTotaux);
     initialiserChampsAuto(); // Initialisation des champs automatiques
+
+    // Charger les codes analytiques pour la première ligne au chargement
+    const premiereSelectAnalytique = document.querySelector('select[name="t6_CodeAnal[]"]');
+    if (premiereSelectAnalytique) {
+        remplirOptionsCodesAnalytiques(premiereSelectAnalytique);
+    }
 
     // Ajouter l'écouteur d'événements pour la date d'opération
     document.getElementById('dateOperation').addEventListener('change', updateExercice);
