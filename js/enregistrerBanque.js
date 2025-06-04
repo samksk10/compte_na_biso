@@ -214,6 +214,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function handleImputationChange(row) {
+        console.log('handleImputationChange appelé'); // Debug
+
         const imputationSelect = row.querySelector('select[name="imputation[]"]');
         const compteOperationSelect = row.querySelector('select[name="numero_compte[]"]');
         const compteDebitInput = row.querySelector('input[name="CompteDebit[]"]');
@@ -224,41 +226,24 @@ document.addEventListener("DOMContentLoaded", async () => {
         const selectedAccount = compteOperationSelect.value;
         const selectedImputation = imputationSelect.value;
 
-        // Réinitialiser tous les champs
+        console.log('Compte sélectionné:', selectedAccount); // Debug
+        console.log('Imputation sélectionnée:', selectedImputation); // Debug
+
+        // Réinitialiser les champs
         compteDebitInput.value = '';
         compteCreditInput.value = '';
-        montantDebitInput.value = '';
-        montantCreditInput.value = '';
-
-        // Activer tous les champs montants
-        montantDebitInput.disabled = false;
-        montantCreditInput.disabled = false;
 
         if (selectedAccount && selectedImputation) {
             if (selectedImputation === 'DEBIT') {
-                // Pour le débit
                 compteDebitInput.value = selectedAccount;
-                compteCreditInput.value = '';
-                // Activer montant débit, désactiver montant crédit
                 montantDebitInput.disabled = false;
                 montantCreditInput.disabled = true;
-                montantCreditInput.value = ''; // Réinitialiser le montant crédit
-
-                // Ajouter validation du montant débit
-                montantDebitInput.addEventListener('input', function () {
-                    const montant = parseFloat(this.value) || 0;
-                    if (montant <= 0) {
-                        this.setCustomValidity('Le montant doit être supérieur à 0');
-                    } else {
-                        this.setCustomValidity('');
-                    }
-                });
+                montantCreditInput.value = '';
             } else if (selectedImputation === 'CREDIT') {
                 compteCreditInput.value = selectedAccount;
-                compteDebitInput.value = '';
-                // Activer montant crédit, désactiver montant débit
                 montantCreditInput.disabled = false;
                 montantDebitInput.disabled = true;
+                montantDebitInput.value = '';
             }
         }
 
@@ -287,43 +272,27 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Mise à jour du numéro de ligne
         newRow.querySelector("td").textContent = ligneNumero;
 
-        // Récupérer les selects et inputs nécessaires
+        // Récupérer les selects et inputs
         const imputationSelect = newRow.querySelector('select[name="imputation[]"]');
         const compteOperationSelect = newRow.querySelector('select[name="numero_compte[]"]');
-        const codeAnalInput = newRow.querySelector('input[name="t6_CodeAnal[]"]');
         const codeAnalSelect = newRow.querySelector('select[name="t6_CodeAnal[]"]');
 
         // Ajouter les écouteurs d'événements
         imputationSelect.addEventListener('change', () => handleImputationChange(newRow));
-        compteOperationSelect.addEventListener('change', () => handleImputationChange(newRow));
 
-        // Format du code analytique (optionnel)
-        codeAnalInput.addEventListener('input', function () {
-            // Convertir en majuscules
-            this.value = this.value.toUpperCase();
-            // Limiter à 10 caractères par exemple
-            if (this.value.length > 10) {
-                this.value = this.value.slice(0, 10);
-            }
-        });
-
-        // Initialiser Select2
+        // Initialiser Select2 pour le compte opération
         $(compteOperationSelect).select2({
             theme: 'bootstrap-5',
-            width: '100%',
-            language: {
-                noResults: () => "Aucun compte trouvé",
-                searching: () => "Recherche...",
-                inputTooShort: () => "Veuillez entrer au moins 1 caractère"
-            },
-            placeholder: "Rechercher un compte...",
-            allowClear: true,
-            minimumInputLength: 1
+            width: '100%'
         }).on('select2:select', () => handleImputationChange(newRow));
 
+        // Initialiser Select2 pour le code analytique
         remplirOptionsCodesAnalytiques(codeAnalSelect);
 
+        // Ajouter la ligne au tableau
         tableBody.appendChild(newRow);
+
+        // Charger les options de compte
         chargerOptionsCompte(compteOperationSelect);
     };
 
@@ -376,81 +345,3 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
-
-document.addEventListener("DOMContentLoaded", function () {
-    const tableBody = document.getElementById("tableBody");
-    const ligneTemplate = document.getElementById("ligneTemplate");
-    let numeroLigne = 1;
-
-    // Fonction pour ajouter une ligne
-    window.ajouterLigne = function () {
-        // Cloner le template
-        const clone = ligneTemplate.content.cloneNode(true);
-        const newRow = clone.querySelector("tr");
-
-        // Mettre à jour le numéro de ligne
-        newRow.querySelector("td").textContent = numeroLigne++;
-
-        // Initialiser Select2 pour le code analytique
-        const codeAnalSelect = newRow.querySelector('select[name="t6_CodeAnal[]"]');
-        $(codeAnalSelect).select2({
-            theme: 'bootstrap-5',
-            width: '100%',
-            ajax: {
-                url: 'api/comptesAnalytiques.php',
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        search: params.term
-                    };
-                },
-                processResults: function (data) {
-                    return {
-                        results: data.data.map(item => ({
-                            id: item.code_anal,
-                            text: `${ item.code_anal } - ${ item.desi_anal }`
-                        }))
-                    };
-                },
-                cache: true
-            },
-            placeholder: 'Sélectionner un code...'
-        });
-
-        // Initialiser Select2 pour le compte
-        const compteSelect = newRow.querySelector('.select2-compte');
-        $(compteSelect).select2({
-            theme: 'bootstrap-5',
-            width: '100%'
-        });
-
-        // Ajouter les gestionnaires d'événements pour les montants
-        const montantDebit = newRow.querySelector('input[name="MontantDebit[]"]');
-        const montantCredit = newRow.querySelector('input[name="MontantCredit[]"]');
-
-        montantDebit.addEventListener('input', function () {
-            if (this.value !== '') {
-                montantCredit.value = '';
-                montantCredit.disabled = true;
-            } else {
-                montantCredit.disabled = false;
-            }
-        });
-
-        montantCredit.addEventListener('input', function () {
-            if (this.value !== '') {
-                montantDebit.value = '';
-                montantDebit.disabled = true;
-            } else {
-                montantDebit.disabled = false;
-            }
-        });
-
-        // Ajouter la nouvelle ligne au tableau
-        tableBody.appendChild(newRow);
-    };
-
-    // Ajouter une première ligne au chargement
-    ajouterLigne();
-});
