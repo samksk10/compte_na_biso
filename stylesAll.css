@@ -328,6 +328,19 @@ h5 {
     display: block;
 }
 
+/* Sections spécifiques au tableau de bord */
+.dashboard-section {
+    display: none;
+}
+
+/* Rôles et affichage des sections */
+body[data-role="super_admin"] .super_admin-only,
+body[data-role="admin"] .admin-only,
+body[data-role="chef_comptable"] .chef_comptable-only,
+body[data-role="comptable"] .comptable-only {
+    display: block;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .sidebar {

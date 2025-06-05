@@ -1,13 +1,21 @@
 import { CONFIG, Utils } from './config.js';
 
 document.addEventListener('DOMContentLoaded', function () {
-    // Récupérer les informations de l'utilisateur avec Utils
-    const userName = Utils.getFromStorage('userName');
+    // Définir le rôle sur le body
     const userRole = Utils.getFromStorage('role');
+    document.body.setAttribute('data-role', userRole);
 
-    // Afficher le nom et le rôle
-    document.getElementById('userName').textContent = userName || 'Utilisateur';
-    document.getElementById('userRole').textContent = userRole || 'Non défini';
+    // Afficher les informations utilisateur
+    const userName = Utils.getFromStorage('userName');
+    const userNameElement = document.getElementById('userName');
+    const userRoleElement = document.getElementById('userRole');
+
+    if (userNameElement) {
+        userNameElement.textContent = userName || 'Utilisateur';
+    }
+    if (userRoleElement) {
+        userRoleElement.textContent = userRole || 'Non défini';
+    }
 
     // Fonction pour charger les statistiques
     async function loadStatistics() {
@@ -15,41 +23,57 @@ document.addEventListener('DOMContentLoaded', function () {
             const response = await fetch("http://localhost/compte_na_biso/api/statistics.php", {
                 method: 'GET',
                 credentials: 'include',
-                headers: Utils.getHeaders()
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${ response.status }`);
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
+            console.log('Données brutes reçues:', data);
 
-            // Mise à jour des statistiques Super-admin
+            // Afficher le rôle actuel
+            console.log('Rôle actuel:', Utils.getFromStorage('role'));
+
+            // Vérifier l'affichage pour super_admin
             if (data.super_admin) {
-                document.getElementById('totalAdministrateurs').textContent =
-                    data.super_admin.totalAdministrateurs || 0;
+                console.log('Mise à jour stats super_admin');
+                const adminCount = data.super_admin.totalAdministrateurs;
+                const element = document.getElementById('totalAdministrateurs');
+                if (element) {
+                    element.textContent = adminCount;
+                    console.log('totalAdministrateurs mis à jour:', adminCount);
+                } else {
+                    console.error("L'élément totalAdministrateurs n'existe pas");
+                }
             }
 
-            // Mise à jour des statistiques admin
+            // Vérifier l'affichage pour admin
             if (data.admin) {
-                document.getElementById('totalComptables').textContent = data.admin.totalComptables || 0;
-                document.getElementById('totalEntreprises').textContent = data.admin.totalEntreprises || 0;
-                document.getElementById('totalChefsComptables').textContent = data.admin.totalChefsComptables || 0;
+                console.log('Mise à jour stats admin');
+                const adminStats = {
+                    'totalComptables': data.admin.totalComptables,
+                    'totalEntreprises': data.admin.totalEntreprises,
+                    'totalChefsComptables': data.admin.totalChefsComptables
+                };
+
+                Object.entries(adminStats).forEach(([id, value]) => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.textContent = value;
+                        console.log(`${id} mis à jour:`, value);
+                    } else {
+                        console.error(`L'élément ${id} n'existe pas`);
+                    }
+                });
             }
 
-            // Mise à jour des statistiques comptable
-            if (data.comptable) {
-                document.getElementById('totalOperationsJour').textContent = data.comptable.operationsJour || 0;
-                document.getElementById('totalOperationsMois').textContent = data.comptable.operationsMois || 0;
-            }
-
-            // Mise à jour des statistiques chef comptable
-            if (data.chefComptable) {
-                document.getElementById('totalOpBanque').textContent = data.chefComptable.opBanque || 0;
-                document.getElementById('totalOpCaisse').textContent = data.chefComptable.opCaisse || 0;
-                document.getElementById('totalOpDiverses').textContent = data.chefComptable.opDiverses || 0;
-            }
         } catch (error) {
+            console.error('Erreur détaillée:', error);
             Utils.showError('Erreur lors du chargement des statistiques:', error);
         }
     }

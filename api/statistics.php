@@ -2,8 +2,10 @@
 include "../config.php";
 session_start();
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Origin: http://localhost');
+header('Access-Control-Allow-Credentials: true');
+header('Access-Control-Allow-Methods: GET');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
 try {
     $pdo = new PDO("mysql:host=localhost;dbname=cicaf_sass;charset=utf8", "root", "");

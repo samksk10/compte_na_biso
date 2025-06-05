@@ -76,7 +76,10 @@ export const CONFIG = {
             "Content-Type": "application/json",
             "Cache-Control": "no-cache"
         }
-    }
+    },
+
+    REFRESH_INTERVAL: 300000, // 5 minutes
+    API_URL: 'http://localhost/compte_na_biso/api'
 };
 
 // Fonctions utilitaires
@@ -96,5 +99,33 @@ export const Utils = {
 
     hasPermission(userRole, requiredRole) {
         return CONFIG.ROLES.PERMISSIONS[ userRole ]?.includes(requiredRole) || false;
+    },
+
+    getFromStorage(key) {
+        return localStorage.getItem(key);
+    },
+
+    setInStorage(key, value) {
+        localStorage.setItem(key, value);
+    },
+
+    clearStorage() {
+        localStorage.clear();
+    },
+
+    redirect(url) {
+        window.location.href = url;
+    },
+
+    showError(message, error) {
+        console.error(message, error);
+        // Vous pouvez ajouter ici une logique pour afficher l'erreur à l'utilisateur
+    },
+
+    getHeaders() {
+        return {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        };
     }
 };
