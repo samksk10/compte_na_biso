@@ -191,4 +191,4 @@ Ce projet est sous licence privée. Tous droits réservés.
 ---
 
 > Version 1.0.0  
-> Dernière mise à jour : Mai 2024
+> Dernière mise à jour : Juin 2024
