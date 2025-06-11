@@ -17,6 +17,81 @@
 - Grand livre comptable
 - Balance comptable
 - Gestion dynamique des taux de change
+### Fonctionnement du Journal Banque dans Comptabilité Na Biso
+Introduction
+Le Journal Banque est un module essentiel qui permet d'enregistrer toutes les opérations bancaires (entrées et sorties) de manière structurée et conforme aux normes comptables.
+
+Caractéristiques Principales
+1. Identification de l'Opération
+Génération automatique d'un numéro d'opération unique
+Enregistrement automatique de la date de saisie
+Possibilité de spécifier la date réelle de l'opération
+Gestion de l'exercice comptable automatique basé sur la date
+2. Informations Générales
+Choix du code journal (Journal Banque)
+Types de documents supportés :
+Entrée Banque (EB)
+Sortie Banque (SB)
+Documentation associée :
+Factures
+Notes
+Chèques
+Virements
+Bordereaux
+3. Gestion Multi-Devises
+Support de plusieurs devises :
+USD (Dollar américain)
+EUR (Euro)
+CDF (Franc congolais)
+4. Détail des Opérations
+Saisie ligne par ligne avec :
+Code analytique (pour analyse détaillée)
+Imputation (Débit/Crédit)
+Compte d'opération
+Libellé détaillé
+Montants (Débit/Crédit)
+Gestion automatique des contreparties
+5. Contrôles Automatiques
+Vérification de l'équilibre débit/crédit
+Calcul automatique des totaux
+Affichage de la balance en temps réel
+Validation des champs obligatoires
+Avantages
+Sécurité
+
+Contrôle des accès par rôle utilisateur
+Traçabilité des opérations
+Ergonomie
+
+Interface intuitive
+Saisie assistée avec Select2
+Calculs automatiques
+Fiabilité
+
+Double contrôle (débit/crédit)
+Validation des données
+Gestion des erreurs
+Flexibilité
+
+Support multi-devises
+Adaptable à différents types d'opérations
+Possibilité d'annulation/modification
+Processus d'Utilisation
+Création d'une Opération
+
+Remplissage des informations générales
+Ajout des lignes d'opération
+Vérification des totaux
+Validation
+
+Contrôle automatique de l'équilibre
+Vérification des champs obligatoires
+Confirmation de l'enregistrement
+Archivage
+
+Stockage en base de données
+Possibilité de consultation ultérieure
+Ce journal permet ainsi une gestion rigoureuse et professionnelle des opérations bancaires, tout en respectant les principes comptables fondamentaux.
 
 ### Administration
 - Gestion des entreprises
