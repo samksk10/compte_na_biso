@@ -149,23 +149,42 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // ---------- Fonctions utilitaires ----------
 
-    function validerFormulaire() {
-        const form = document.getElementById('mouvementForm');
-        if (!form) {
-            console.error('Form not found');
+    function validerEquilibre() {
+        let totalDebit = 0;
+        let totalCredit = 0;
+
+        const rows = tableBody.querySelectorAll('tr');
+        rows.forEach(row => {
+            const montantDebit = parseFloat(row.querySelector('input[name="MontantDebit[]"]').value || 0);
+            const montantCredit = parseFloat(row.querySelector('input[name="MontantCredit[]"]').value || 0);
+
+            totalDebit += montantDebit;
+            totalCredit += montantCredit;
+        });
+
+        if (Math.abs(totalDebit - totalCredit) > 0.01) {
+            afficherMessage('Le total débit doit égaler le total crédit', 'danger');
             return false;
         }
 
-        // Check if form is valid using HTML5 validation
+        return true;
+    }
+
+    function validerFormulaire() {
+        const form = document.getElementById('mouvementForm');
         if (!form.checkValidity()) {
             form.reportValidity();
             return false;
         }
 
-        // Check if at least one line of operation exists
         const tableBody = document.getElementById('tableBody');
         if (!tableBody || tableBody.children.length === 0) {
             afficherMessage('Veuillez ajouter au moins une ligne d\'opération', 'danger');
+            return false;
+        }
+
+        // Validation de l'équilibre débit/crédit
+        if (!validerEquilibre()) {
             return false;
         }
 
@@ -199,6 +218,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         // Now safely create the entete object
         return {
+            numPiece: document.getElementById('numPiece').value.trim(),
             codeJournal: document.getElementById('codeJournal').value.trim(),
             typeDocument: document.getElementById('typeDocument').value.trim(),
             nomDocument: document.getElementById('nomDocument').value.trim(),
@@ -209,7 +229,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             motif: document.getElementById('motif').value.trim(),
             dateOperation: document.getElementById('dateOperation').value,
             datePiece: document.getElementById('datePiece').value,
-            devise: document.getElementById('devise').value || 'USD'
+            devise: document.getElementById('devise').value || 'USD',
+            tauxChange: 1.0
         };
     }
 
@@ -382,7 +403,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // ---------- Initialisation ----------
-    await chargerOptionsCompte(); // Charge les comptes au démarrage
+    await chargerOptionsCompte();
     tableBody.addEventListener("input", recalculerTotaux);
     initialiserChampsAuto(); // Initialisation des champs automatiques
 

@@ -36,8 +36,8 @@ try {
         throw new Exception("Structure de données invalide");
     }
 
-    // Correction : la variable $entete n'est pas définie avant utilisation
-    $entete = $data['entete']; // Ajouter cette ligne avant la vérification des champs obligatoires
+    // Récupération de l'entête
+    $entete = $data['entete'];
 
     // Vérifier l'équilibre débit/crédit
     $totalDebit = $totalCredit = 0;
@@ -56,16 +56,13 @@ try {
     // Démarrer la transaction
     $pdo->beginTransaction();
 
-    // Validation des champs obligatoires de l'entête
+    // Validation des champs obligatoires de l'entête (sans codeComptable)
     $champsObligatoires = [
         'codeJournal' => 'Code journal',
         'typeDocument' => 'Type de document',
         'nomDocument' => 'Nom du document',
         'numDoc' => 'Numéro du document',
-        'codeComptable' => 'Code comptable',
         'exercice' => 'Exercice',
-        'beneficiaire' => 'Bénéficiaire',
-        'debiteur' => 'Débiteur',
         'motif' => 'Motif'
     ];
 
@@ -80,7 +77,11 @@ try {
         throw new Exception("Champs obligatoires manquants : " . implode(", ", $champsManquants));
     }
 
-    // 1. Insérer dans t7_entetemouv
+    // Valeurs par défaut pour les champs optionnels
+    $beneficiaire = !empty($entete['beneficiaire']) ? trim($entete['beneficiaire']) : '';
+    $debiteur = !empty($entete['debiteur']) ? trim($entete['debiteur']) : '';
+
+    // 1. Insérer dans t7_entetemouv (sans codeComptable)
     $stmtEntete = $pdo->prepare("
         INSERT INTO t7_entetemouv (
             numPiece,
@@ -90,14 +91,13 @@ try {
             typeDocument,
             nomDocument,
             numDoc,
-            codeComptable,
             exercice,
             TauxChange,
             beneficiaire,
             debiteur,
             motif,
             devise
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
     // Nettoyer et valider les données avant insertion
@@ -106,18 +106,17 @@ try {
     $devise = !empty($entete['devise']) ? strtoupper($entete['devise']) : 'USD';
 
     $stmtEntete->execute([
-        null, // auto_increment
+        trim($entete['numPiece']), // Utiliser le numéro généré côté client
         date('Y-m-d'), // datePiece (date du jour)
         $dateOperation,
         trim($entete['codeJournal']),
         trim($entete['typeDocument']),
         trim($entete['nomDocument']),
         trim($entete['numDoc']),
-        trim($entete['codeComptable']),
         $entete['exercice'],
         $tauxChange,
-        trim($entete['beneficiaire']),
-        trim($entete['debiteur']),
+        $beneficiaire,
+        $debiteur,
         trim($entete['motif']),
         $devise
     ]);
@@ -181,5 +180,4 @@ try {
         "message" => $e->getMessage()
     ], 400);
 }
-
-
+?>
