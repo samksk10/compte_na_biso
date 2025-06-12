@@ -102,6 +102,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             placeholder: 'Sélectionner un code...'
         });
     }
+
     // Fonction pour remplir les options du select
     async function remplirOptionsCodesAnalytiques(selectElement) {
         const codes = await chargerCodesAnalytiques();
@@ -124,17 +125,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Validation et préparation des données...
         if (!validerFormulaire()) return;
 
+        const donnees = {
+            entete: preparerEntete(),
+            lignes: preparerLignes()
+        };
+
+        console.log('Données envoyées :', donnees); // Debug log
+
         try {
             const response = await fetch("http://localhost/compte_na_biso/api/enregistrerBanque.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    entete: preparerEntete(),
-                    lignes: preparerLignes()
-                })
+                body: JSON.stringify(donnees)
             });
 
             const result = await response.json();
+            console.log('Réponse reçue :', result); // Debug log
             gererReponseAPI(result);
         } catch (error) {
             gererErreur(error);
@@ -143,28 +149,112 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // ---------- Fonctions utilitaires ----------
 
-    function validerFormulaire() {
-        const lignes = tableBody.querySelectorAll("tr");
-        if (lignes.length === 0) {
-            afficherMessage("Ajoutez au moins une ligne", "danger");
+    function validerEquilibre() {
+        let totalDebit = 0;
+        let totalCredit = 0;
+
+        const rows = tableBody.querySelectorAll('tr');
+        rows.forEach(row => {
+            const montantDebit = parseFloat(row.querySelector('input[name="MontantDebit[]"]').value || 0);
+            const montantCredit = parseFloat(row.querySelector('input[name="MontantCredit[]"]').value || 0);
+
+            totalDebit += montantDebit;
+            totalCredit += montantCredit;
+        });
+
+        if (Math.abs(totalDebit - totalCredit) > 0.01) {
+            afficherMessage('Le total débit doit égaler le total crédit', 'danger');
             return false;
         }
+
+        return true;
+    }
+
+    function validerFormulaire() {
+        const form = document.getElementById('mouvementForm');
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return false;
+        }
+
+        const tableBody = document.getElementById('tableBody');
+        if (!tableBody || tableBody.children.length === 0) {
+            afficherMessage('Veuillez ajouter au moins une ligne d\'opération', 'danger');
+            return false;
+        }
+
+        // Validation de l'équilibre débit/crédit
+        if (!validerEquilibre()) {
+            return false;
+        }
+
         return true;
     }
 
     function preparerEntete() {
+        // Create an object to store all required field IDs
+        const requiredFields = {
+            codeJournal: 'codeJournal',
+            typeDocument: 'typeDocument',
+            nomDocument: 'nomDocument',
+            numDoc: 'numDoc',
+            exercice: 'exercice',
+            beneficiaire: 'beneficiaire',
+            debiteur: 'debiteur',
+            motif: 'motif',
+            dateOperation: 'dateOperation',
+            datePiece: 'datePiece',
+            devise: 'devise'
+        };
+
+        // Check if all required elements exist
+        for (const [ key, id ] of Object.entries(requiredFields)) {
+            const element = document.getElementById(id);
+            if (!element) {
+                console.error(`Element with ID '${ id }' not found`);
+                throw new Error(`Champ requis manquant: ${ key }`);
+            }
+        }
+
+        // Now safely create the entete object
         return {
-            numMouv: form.numPiece.value.trim(),
-            dateSaisie: form.datePiece.value,
-            // ... (autres champs comme avant)
+            numPiece: document.getElementById('numPiece').value.trim(),
+            codeJournal: document.getElementById('codeJournal').value.trim(),
+            typeDocument: document.getElementById('typeDocument').value.trim(),
+            nomDocument: document.getElementById('nomDocument').value.trim(),
+            numDoc: document.getElementById('numDoc').value.trim(),
+            exercice: document.getElementById('exercice').value.trim(),
+            beneficiaire: document.getElementById('beneficiaire').value.trim(),
+            debiteur: document.getElementById('debiteur').value.trim(),
+            motif: document.getElementById('motif').value.trim(),
+            dateOperation: document.getElementById('dateOperation').value,
+            datePiece: document.getElementById('datePiece').value,
+            devise: document.getElementById('devise').value || 'USD',
+            tauxChange: 1.0
         };
     }
 
     function preparerLignes() {
-        return Array.from(tableBody.querySelectorAll("tr")).map((row, index) => ({
-            numeroLigneOperation: index + 1,
-            // ... (mapping des champs comme avant)
-        }));
+        return Array.from(tableBody.querySelectorAll("tr")).map((row, index) => {
+            const imputation = row.querySelector('select[name="imputation[]"]').value;
+            const code_anal = row.querySelector('select[name="t6_CodeAnal[]"]').value;
+            const numero_compte = row.querySelector('select[name="numero_compte[]"]').value;
+            const libelle_operation = row.querySelector('input[name="libelleOperation[]"]').value;
+            const montantDebit = row.querySelector('input[name="MontantDebit[]"]').value || '0';
+            const montantCredit = row.querySelector('input[name="MontantCredit[]"]').value || '0';
+
+            return {
+                numeroLigneOperation: index + 1,
+                code_anal: code_anal,
+                imputation: imputation,
+                numero_compte: numero_compte,
+                libelle_operation: libelle_operation,
+                montant: parseFloat(imputation === 'DEBIT' ? montantDebit : montantCredit),
+                compteDebit: imputation === 'DEBIT' ? numero_compte : '',
+                compteCredit: imputation === 'CREDIT' ? numero_compte : '',
+                solde: 0
+            };
+        });
     }
 
     function gererReponseAPI(result) {
@@ -313,7 +403,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // ---------- Initialisation ----------
-    await chargerOptionsCompte(); // Charge les comptes au démarrage
+    await chargerOptionsCompte();
     tableBody.addEventListener("input", recalculerTotaux);
     initialiserChampsAuto(); // Initialisation des champs automatiques
 
@@ -329,7 +419,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // Fonction de calcul des totaux (peut rester identique)
 function recalculerTotaux() {
-    // ... (identique à ton code actuel)
+    let totalDebit = 0;
+    let totalCredit = 0;
+
+    tableBody.querySelectorAll('tr').forEach(row => {
+        totalDebit += parseFloat(row.querySelector('input[name="MontantDebit[]"]').value || 0);
+        totalCredit += parseFloat(row.querySelector('input[name="MontantCredit[]"]').value || 0);
+    });
+
+    document.getElementById('totalDebit').textContent = totalDebit.toFixed(2);
+    document.getElementById('totalCredit').textContent = totalCredit.toFixed(2);
+    document.getElementById('balance').textContent = (totalDebit - totalCredit).toFixed(2);
 }
 
 // Ajoutez un peu de style CSS personnalisé
@@ -347,3 +447,33 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+async function sauvegarderOperation(data) {
+    try {
+        const response = await fetch('api/enregistrerBanque.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            throw new Error("Réponse non-JSON reçue du serveur");
+        }
+
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error(result.message || "Erreur inconnue");
+        }
+
+        return result;
+
+    } catch (error) {
+        console.error('Erreur détaillée:', error);
+        throw new Error(`Erreur lors de l'enregistrement: ${ error.message }`);
+    }
+}
