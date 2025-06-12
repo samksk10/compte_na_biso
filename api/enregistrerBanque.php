@@ -58,7 +58,6 @@ try {
 
     // Validation des champs obligatoires de l'entête (sans codeComptable)
     $champsObligatoires = [
-        'codeJournal' => 'Code journal',
         'typeDocument' => 'Type de document',
         'nomDocument' => 'Nom du document',
         'numDoc' => 'Numéro du document',
@@ -80,48 +79,46 @@ try {
     // Valeurs par défaut pour les champs optionnels
     $beneficiaire = !empty($entete['beneficiaire']) ? trim($entete['beneficiaire']) : '';
     $debiteur = !empty($entete['debiteur']) ? trim($entete['debiteur']) : '';
+// 1. Insérer dans t7_entetemouv (sans codeComptable ni codeJournal)
+$stmtEntete = $pdo->prepare("
+    INSERT INTO t7_entetemouv (
+        numPiece,
+        datePiece,
+        dateOperation,
+        typeDocument,
+        nomDocument,
+        numDoc,
+        exercice,
+        TauxChange,
+        beneficiaire,
+        debiteur,
+        motif,
+        devise
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+");
 
-    // 1. Insérer dans t7_entetemouv (sans codeComptable)
-    $stmtEntete = $pdo->prepare("
-        INSERT INTO t7_entetemouv (
-            numPiece,
-            datePiece,
-            dateOperation,
-            codeJournal,
-            typeDocument,
-            nomDocument,
-            numDoc,
-            exercice,
-            TauxChange,
-            beneficiaire,
-            debiteur,
-            motif,
-            devise
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ");
+// Nettoyer et valider les données avant insertion
+$dateOperation = !empty($entete['dateOperation']) ? $entete['dateOperation'] : date('Y-m-d');
+$tauxChange = !empty($entete['tauxChange']) ? floatval($entete['tauxChange']) : 1.0;
+$devise = !empty($entete['devise']) ? strtoupper($entete['devise']) : 'USD';
 
-    // Nettoyer et valider les données avant insertion
-    $dateOperation = !empty($entete['dateOperation']) ? $entete['dateOperation'] : date('Y-m-d');
-    $tauxChange = !empty($entete['tauxChange']) ? floatval($entete['tauxChange']) : 1.0;
-    $devise = !empty($entete['devise']) ? strtoupper($entete['devise']) : 'USD';
+$stmtEntete->execute([
+    trim($entete['numPiece']),         // numPiece
+    date('Y-m-d'),                     // datePiece
+    $dateOperation,                   // dateOperation
+    trim($entete['typeDocument']),    // typeDocument
+    trim($entete['nomDocument']),     // nomDocument
+    trim($entete['numDoc']),          // numDoc
+    $entete['exercice'],              // exercice
+    $tauxChange,                      // TauxChange
+    $beneficiaire,                    // beneficiaire
+    $debiteur,                        // debiteur
+    trim($entete['motif']),           // motif
+    $devise                           // devise
+]);
 
-    $stmtEntete->execute([
-        trim($entete['numPiece']), // Utiliser le numéro généré côté client
-        date('Y-m-d'), // datePiece (date du jour)
-        $dateOperation,
-        trim($entete['codeJournal']),
-        trim($entete['typeDocument']),
-        trim($entete['nomDocument']),
-        trim($entete['numDoc']),
-        $entete['exercice'],
-        $tauxChange,
-        $beneficiaire,
-        $debiteur,
-        trim($entete['motif']),
-        $devise
-    ]);
+$numPiece = $pdo->lastInsertId();
 
-    $numPiece = $pdo->lastInsertId();
 
     // 2. Insérer dans t8_corpmouv
     $stmtLigne = $pdo->prepare("
