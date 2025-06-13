@@ -183,22 +183,23 @@
             </div>
 
             <!-- Comptable Dashboard -->
-            <div id="comptableDashboard"
-                class="dashboard-section comptable_banque-only comptable_caisse-only comptable_od-only">
-                <div class="row g-4">
-                    <div class="col-md-6">
+            <div id="comptableDashboard" class="dashboard-section">
+                <!-- Ajouter ces classes pour une meilleure gestion de la visibilité -->
+                <div class="row g-4 comptable-stats">
+                    <!-- Séparer les stats par type de comptable -->
+                    <div class="col-md-6 comptable_banque-only">
                         <div class="card bg-warning text-white">
                             <div class="card-body">
-                                <h5><i class="bi bi-journal-text"></i> Opérations du jour</h5>
+                                <h5><i class="bi bi-bank2"></i> Opérations Bancaires du jour</h5>
                                 <h2 id="totalOperationsJour">0</h2>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-6 comptable_caisse-only">
                         <div class="card bg-warning text-white">
                             <div class="card-body">
-                                <h5><i class="bi bi-calendar-check"></i> Total du mois</h5>
-                                <h2 id="totalOperationsMois">0</h2>
+                                <h5><i class="bi bi-cash"></i> Opérations Caisse du jour</h5>
+                                <h2 id="totalOperationsJourCaisse">0</h2>
                             </div>
                         </div>
                     </div>

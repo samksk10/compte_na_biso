@@ -10,12 +10,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const userNameElement = document.getElementById('userName');
     const userRoleElement = document.getElementById('userRole');
 
-    if (userNameElement) {
-        userNameElement.textContent = userName || 'Utilisateur';
-    }
-    if (userRoleElement) {
-        userRoleElement.textContent = userRole || 'Non défini';
-    }
+    if (userNameElement) userNameElement.textContent = userName || 'Utilisateur';
+    if (userRoleElement) userRoleElement.textContent = userRole || 'Non défini';
 
     // Fonction pour charger les statistiques
     async function loadStatistics() {
@@ -29,48 +25,40 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`Erreur HTTP! statut: ${ response.status }`);
 
             const data = await response.json();
-            console.log('Données brutes reçues:', data);
+            console.log('Données reçues:', data);
 
-            // Afficher le rôle actuel
-            console.log('Rôle actuel:', Utils.getFromStorage('role'));
+            // Statistiques communes pour tous les rôles ayant accès
+            if (data.chefComptable) {
+                // Ces statistiques seront visibles par super_admin, admin et chef_comptable
+                updateStatElement('totalOpBanque', data.chefComptable.opBanque);
+                updateStatElement('totalOpCaisse', data.chefComptable.opCaisse);
+                updateStatElement('totalOpDiverses', data.chefComptable.opDiverses);
+                updateStatElement('comptesAnalytiques', data.chefComptable.comptesAnalytiques);
+            }
 
-            // Vérifier l'affichage pour super_admin
+            // Statistiques spécifiques au super_admin
             if (data.super_admin) {
-                console.log('Mise à jour stats super_admin');
-                const adminCount = data.super_admin.totalAdministrateurs;
-                const element = document.getElementById('totalAdministrateurs');
-                if (element) {
-                    element.textContent = adminCount;
-                    console.log('totalAdministrateurs mis à jour:', adminCount);
-                } else {
-                    console.error("L'élément totalAdministrateurs n'existe pas");
-                }
+                updateStatElement('totalAdministrateurs', data.super_admin.totalAdministrateurs);
             }
 
-            // Vérifier l'affichage pour admin
+            // Statistiques spécifiques à l'admin
             if (data.admin) {
-                console.log('Mise à jour stats admin');
-                const adminStats = {
-                    'totalComptables': data.admin.totalComptables,
-                    'totalEntreprises': data.admin.totalEntreprises,
-                    'totalChefsComptables': data.admin.totalChefsComptables
-                };
-
-                Object.entries(adminStats).forEach(([id, value]) => {
-                    const element = document.getElementById(id);
-                    if (element) {
-                        element.textContent = value;
-                        console.log(`${id} mis à jour:`, value);
-                    } else {
-                        console.error(`L'élément ${id} n'existe pas`);
-                    }
-                });
+                updateStatElement('totalComptables', data.admin.totalComptables);
+                updateStatElement('totalChefsComptables', data.admin.totalChefsComptables);
+                updateStatElement('totalEntreprises', data.admin.totalEntreprises);
             }
+
+            // Statistiques spécifiques aux comptables
+            if (data.comptable) {
+                updateStatElement('totalOperationsJour', data.comptable.operationsJour);
+                updateStatElement('totalOperationsMois', data.comptable.operationsMois);
+            }
+
+            // Afficher/masquer les sections selon le rôle
+            updateDashboardVisibility(userRole);
 
         } catch (error) {
             console.error('Erreur détaillée:', error);
@@ -78,14 +66,43 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Charger les statistiques au chargement de la page
-    loadStatistics();
+    // Fonction pour mettre à jour la visibilité des sections dashboard
+    function updateDashboardVisibility(role) {
+        document.querySelectorAll('.dashboard-section').forEach(section => {
+            section.style.display = 'none';
+        });
 
-    // Actualiser les statistiques selon la configuration
+        const showSections = {
+            'super_admin': [ 'superAdminDashboard', 'adminDashboard', 'chefComptableDashboard' ],
+            'admin': [ 'adminDashboard', 'chefComptableDashboard' ],
+            'chef_comptable': [ 'chefComptableDashboard' ],
+            'comptable': [ 'comptableDashboard' ]
+        };
+
+        (showSections[ role ] || []).forEach(id => {
+            const section = document.getElementById(id);
+            if (section) section.style.display = 'block';
+        });
+    }
+
+    // Fonction utilitaire pour mettre à jour les éléments du DOM
+    function updateStatElement(elementId, value) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.textContent = value;
+            console.log(`${ elementId } mis à jour:`, value);
+        }
+    }
+
+    // Chargement initial
+    loadStatistics();
+    updateDashboardVisibility(userRole);
+
+    // Actualisation périodique
     setInterval(loadStatistics, CONFIG.REFRESH_INTERVAL || 300000);
 
-    // Déconnexion avec Utils
-    document.getElementById("logoutBtn").addEventListener("click", () => {
+    // Gestion de la déconnexion
+    document.getElementById("logoutBtn")?.addEventListener("click", () => {
         Utils.clearStorage();
         Utils.redirect('index.html');
     });

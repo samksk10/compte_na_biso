@@ -334,57 +334,49 @@ h5 {
 }
 
 /* Rôles et affichage des sections */
-body[data-role="super_admin"] .super_admin-only,
-body[data-role="admin"] .admin-only,
-body[data-role="chef_comptable"] .chef_comptable-only,
-body[data-role="comptable"] .comptable-only {
+/* Super Admin voit tout */
+body[data-role="super_admin"] .dashboard-section#superAdminDashboard,
+body[data-role="super_admin"] .dashboard-section#adminDashboard,
+body[data-role="super_admin"] .dashboard-section#chefComptableDashboard,
+body[data-role="super_admin"] .dashboard-section#comptableDashboard,
+/* Admin voit chef comptable et comptable */
+body[data-role="admin"] .dashboard-section#adminDashboard,
+body[data-role="admin"] .dashboard-section#chefComptableDashboard,
+body[data-role="admin"] .dashboard-section#comptableDashboard,
+/* Chef comptable voit son dashboard */
+body[data-role="chef_comptable"] .dashboard-section#chefComptableDashboard,
+/* Comptables voient leur dashboard */
+body[data-role="comptable_banque"] .dashboard-section#comptableDashboard,
+body[data-role="comptable_caisse"] .dashboard-section#comptableDashboard,
+body[data-role="comptable_od"] .dashboard-section#comptableDashboard {
     display: block;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .sidebar {
-        width: 100%;
-        height: auto;
-        position: relative;
-        padding: 10px;
-    }
-
-    .main-content {
-        margin-left: 0;
-        text-align: center;
-    }
-
-    .nav-link {
-        padding: 8px 12px;
-    }
-
-    .logout-btn {
-        margin-top: 20px;
-    }
-
-    .main-content h4,
-    .main-content p {
-        font-size: 1.1rem;
-    }
+/* Affichage des sections spécifiques aux comptables */
+.comptable_banque-only,
+.comptable_caisse-only,
+.comptable_od-only {
+    display: none;
 }
 
-/* Animation fade-in */
-.fade-in {
-    opacity: 0;
-    /* Changer de 1 à 0 */
-    transform: translateY(20px);
-    animation: fadeIn 0.6s ease-out forwards;
+/* Affichage conditionnel selon le type de comptable */
+body[data-role="comptable_banque"] .comptable_banque-only,
+body[data-role="comptable_caisse"] .comptable_caisse-only,
+body[data-role="comptable_od"] .comptable_od-only {
+    display: block;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
+/* Statistiques communes */
+.stat-card {
+    margin-bottom: 1rem;
+}
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.stat-card h2 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.stat-card h5 {
+    margin-bottom: 0.5rem;
 }
