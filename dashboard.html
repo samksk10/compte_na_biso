@@ -184,22 +184,60 @@
 
             <!-- Comptable Dashboard -->
             <div id="comptableDashboard" class="dashboard-section">
-                <!-- Ajouter ces classes pour une meilleure gestion de la visibilité -->
-                <div class="row g-4 comptable-stats">
-                    <!-- Séparer les stats par type de comptable -->
-                    <div class="col-md-6 comptable_banque-only">
+                <div class="row g-4">
+                    <!-- Comptable Banque -->
+                    <div class="col-md-4 comptable_banque-only">
                         <div class="card bg-warning text-white">
                             <div class="card-body">
-                                <h5><i class="bi bi-bank2"></i> Opérations Bancaires du jour</h5>
-                                <h2 id="totalOperationsJour">0</h2>
+                                <h5><i class="bi bi-bank2"></i> Opérations Bancaires</h5>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p>Aujourd'hui</p>
+                                        <h2 id="totalOperationsJour">0</h2>
+                                    </div>
+                                    <div class="col-6">
+                                        <p>Ce mois</p>
+                                        <h2 id="totalOperationsMois">0</h2>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 comptable_caisse-only">
-                        <div class="card bg-warning text-white">
+
+                    <!-- Comptable Caisse -->
+                    <div class="col-md-4 comptable_caisse-only">
+                        <div class="card bg-success text-white">
                             <div class="card-body">
-                                <h5><i class="bi bi-cash"></i> Opérations Caisse du jour</h5>
-                                <h2 id="totalOperationsJourCaisse">0</h2>
+                                <h5><i class="bi bi-cash"></i> Opérations Caisse</h5>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p>Aujourd'hui</p>
+                                        <h2 id="totalOperationsJourCaisse">0</h2>
+                                    </div>
+                                    <div class="col-6">
+                                        <p>Ce mois</p>
+                                        <h2 id="totalOperationsMoisCaisse">0</h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comptable OD -->
+                    <div class="col-md-4 comptable_od-only">
+                        <div class="card bg-info text-white">
+                            <div class="card-body">
+                                <h5><i class="bi bi-journal-text"></i> Opérations Diverses</h5>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p>Aujourd'hui</p>
+                                        <h2 id="totalOperationsJourOD">0</h2>
+                                    </div>
+                                    <div class="col-6">
+                                        <p>Ce mois</p>
+                                        <h2 id="totalOperationsMoisOD">0</h2>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

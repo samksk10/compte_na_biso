@@ -27,7 +27,7 @@ try {
                               WHERE em.typeDocument IN ('EB', 'SB')"),
                 'opCaisse' => getCount($pdo, "SELECT COUNT(DISTINCT cm.T8_NumeroLigneOperation) FROM t8_corpmouv cm 
                               INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece 
-                              WHERE em.typeDocument IN ('RC', 'SC')"),
+                              WHERE em.typeDocument IN ('EC', 'SC')"),
                 'opDiverses' => getCount($pdo, "SELECT COUNT(DISTINCT cm.T8_NumeroLigneOperation) FROM t8_corpmouv cm 
                               INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece 
                               WHERE em.typeDocument IN ('OD', 'JD')"),
@@ -49,7 +49,7 @@ try {
                                   WHERE em.typeDocument IN ('EB', 'SB')"),
                     'opCaisse' => getCount($pdo, "SELECT COUNT(DISTINCT cm.T8_NumeroLigneOperation) FROM t8_corpmouv cm 
                                   INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece 
-                                  WHERE em.typeDocument IN ('RC', 'SC')"),
+                                  WHERE em.typeDocument IN ('EC', 'SC')"),
                     'opDiverses' => getCount($pdo, "SELECT COUNT(DISTINCT cm.T8_NumeroLigneOperation) FROM t8_corpmouv cm 
                                   INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece 
                                   WHERE em.typeDocument IN ('OD', 'JD')"),
@@ -66,7 +66,7 @@ try {
                               WHERE em.typeDocument IN ('EB', 'SB')"),
                 'opCaisse' => getCount($pdo, "SELECT COUNT(DISTINCT cm.T8_NumeroLigneOperation) FROM t8_corpmouv cm 
                               INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece 
-                              WHERE em.typeDocument IN ('RC', 'SC')"),
+                              WHERE em.typeDocument IN ('EC', 'SC')"),
                 'opDiverses' => getCount($pdo, "SELECT COUNT(DISTINCT cm.T8_NumeroLigneOperation) FROM t8_corpmouv cm 
                               INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece 
                               WHERE em.typeDocument IN ('OD', 'JD')"),
@@ -75,17 +75,28 @@ try {
             break;
 
         default:
-            $response['comptable'] = [
-                'operationsJour' => getCount($pdo, "SELECT COUNT(*) FROM t8_corpmouv cm 
-                                   INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece 
-                                   WHERE DATE(em.datePiece) = CURDATE()"),
-                'operationsMois' => getCount($pdo, "SELECT COUNT(*) FROM t8_corpmouv cm 
-                                   INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece 
-                                   WHERE MONTH(em.datePiece) = MONTH(CURDATE()) 
-                                   AND YEAR(em.datePiece) = YEAR(CURDATE())"),
-                'totalOperations' => getCount($pdo, "SELECT COUNT(*) FROM t8_corpmouv cm 
-                                   INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece")
-            ];
+            // Déterminer le type de document selon le rôle
+            $typeDocument = [
+                'comptable_banque' => ['EB', 'SB'],
+                'comptable_caisse' => ['EC', 'SC'],
+                'comptable_od' => ['OD', 'JD']
+            ][$role] ?? [];
+
+            if (!empty($typeDocument)) {
+                $response['comptable'] = [
+                    'operationsJour' => getCount($pdo, "SELECT COUNT(DISTINCT cm.T8_NumeroLigneOperation) 
+                               FROM t8_corpmouv cm 
+                               INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece 
+                               WHERE em.typeDocument IN ('" . implode("','", $typeDocument) . "')
+                               AND DATE(em.datePiece) = CURDATE()"),
+                    'operationsMois' => getCount($pdo, "SELECT COUNT(DISTINCT cm.T8_NumeroLigneOperation) 
+                               FROM t8_corpmouv cm 
+                               INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece 
+                               WHERE em.typeDocument IN ('" . implode("','", $typeDocument) . "')
+                               AND MONTH(em.datePiece) = MONTH(CURDATE()) 
+                               AND YEAR(em.datePiece) = YEAR(CURDATE())")
+                ];
+            }
             break;
     }
 
