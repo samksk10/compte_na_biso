@@ -2,48 +2,109 @@
 require_once "../config.php";
 session_start();
 
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: http://localhost');
 header('Access-Control-Allow-Credentials: true');
 
+// Fonction de test de connexion DB
+function testConnection($pdo) {
+    try {
+        $pdo->query('SELECT 1');
+        return true;
+    } catch (PDOException $e) {
+        error_log("Erreur connexion DB : " . $e->getMessage());
+        return false;
+    }
+}
+
 try {
-    // Vérifier l'authentification
+    // Vérification de session
     if (!isset($_SESSION['user_id'])) {
-        throw new Exception('Non autorisé');
+        echo json_encode([
+            'success' => false,
+            'message' => 'Session non valide'
+        ]);
+        exit;
     }
 
-    // Préparer la requête SQL
+    // Vérification de la base de données
+    if (!isset($pdo) || !testConnection($pdo)) {
+        throw new Exception('Erreur de connexion à la base de données');
+    }
+
+    // Requête SQL
     $sql = "SELECT 
                 em.numPiece,
                 em.datePiece,
+                em.dateOperation,
+                em.codeJournal,
+                em.nomDocument,
+                em.numDoc,
                 em.typeDocument,
+                em.exercice,
+                em.devise,
                 em.beneficiaire,
+                em.debiteur,
                 em.motif,
-                SUM(CASE WHEN cm.imputation = 'DEBIT' THEN cm.montant ELSE 0 END) as totalDebit,
-                SUM(CASE WHEN cm.imputation = 'CREDIT' THEN cm.montant ELSE 0 END) as totalCredit
+                cm.t6_CodeAnal,
+                cm.imputation,
+                cm.numero_compte,
+                cm.libelleOperation,
+                cm.Montant,
+                cm.CompteDebit,
+                cm.CompteCredit
             FROM t7_entetemouv em
             LEFT JOIN t8_corpmouv cm ON em.numPiece = cm.T7_NumMouv
-            GROUP BY em.numPiece, em.datePiece, em.typeDocument, em.beneficiaire, em.motif
-            ORDER BY em.datePiece DESC";
+            ORDER BY em.datePiece DESC, cm.T8_NumeroLigneOperation ASC";
 
     $stmt = $pdo->prepare($sql);
-    $stmt->execute();
-    $operations = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Formater les résultats
-    foreach ($operations as &$op) {
-        $op['totalDebit'] = floatval($op['totalDebit']);
-        $op['totalCredit'] = floatval($op['totalCredit']);
-        $op['datePiece'] = date('d/m/Y', strtotime($op['datePiece']));
+    if (!$stmt->execute()) {
+        throw new Exception("Erreur requête SQL : " . implode(', ', $stmt->errorInfo()));
     }
 
-    echo json_encode($operations);
+    $operations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if ($operations === false) {
+        throw new Exception('Erreur récupération données');
+    }
+
+    // Formatage des résultats
+    $formattedOperations = array_map(function($op) {
+        return [
+            'numPiece' => $op['numPiece'] ?? '',
+            'datePiece' => $op['datePiece'] ? date('d/m/Y', strtotime($op['datePiece'])) : '',
+            'dateOperation' => $op['dateOperation'] ? date('d/m/Y', strtotime($op['dateOperation'])) : '',
+            'codeJournal' => $op['codeJournal'] ?? '',
+            'nomDocument' => $op['nomDocument'] ?? '',
+            'numDoc' => $op['numDoc'] ?? '',
+            'typeDocument' => $op['typeDocument'] ?? '',
+            'exercice' => $op['exercice'] ?? '',
+            'devise' => $op['devise'] ?? '',
+            'beneficiaire' => $op['beneficiaire'] ?? '',
+            'debiteur' => $op['debiteur'] ?? '',
+            'motif' => $op['motif'] ?? '',
+            't6_CodeAnal' => $op['t6_CodeAnal'] ?? '',
+            'imputation' => $op['imputation'] ?? '',
+            'numero_compte' => $op['numero_compte'] ?? '',
+            'libelleOperation' => $op['libelleOperation'] ?? '',
+            'MontantDebit' => $op['imputation'] === 'DEBIT' ? floatval($op['Montant']) : 0,
+            'MontantCredit' => $op['imputation'] === 'CREDIT' ? floatval($op['Montant']) : 0,
+            'CompteDebit' => $op['CompteDebit'] ?? '',
+            'CompteCredit' => $op['CompteCredit'] ?? ''
+        ];
+    }, $operations);
+
+    echo json_encode($formattedOperations);
 
 } catch (Exception $e) {
+    error_log("Erreur dans listerOperations.php : " . $e->getMessage());
     http_response_code(500);
     echo json_encode([
         'success' => false,
         'message' => $e->getMessage()
     ]);
+    exit;
 }
 ?>

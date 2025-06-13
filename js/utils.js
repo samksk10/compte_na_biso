@@ -1,7 +1,4 @@
 const Utils = {
-    /**
-     * Gestion du stockage local
-     */
     setInStorage: (key, value) => {
         localStorage.setItem(key, JSON.stringify(value));
     },
@@ -18,19 +15,12 @@ const Utils = {
         localStorage.clear();
     },
 
-    /**
-     * Navigation
-     */
     redirect: (page) => {
         window.location.href = page;
     },
 
-    /**
-     * Gestion des messages
-     */
     showError: (message, error) => {
         console.error(message, error);
-        // Afficher le message d'erreur dans l'interface
         const messageContainer = document.getElementById('message-container');
         if (messageContainer) {
             messageContainer.innerHTML = `
@@ -40,19 +30,5 @@ const Utils = {
             `;
             setTimeout(() => messageContainer.innerHTML = '', 5000);
         }
-    },
-
-    /**
-     * Formatage des données
-     */
-    formatDate: (date) => {
-        return new Date(date).toLocaleDateString('fr-FR');
-    },
-
-    formatMontant: (montant) => {
-        return new Intl.NumberFormat('fr-FR', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        }).format(montant);
     }
 };

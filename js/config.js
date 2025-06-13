@@ -12,13 +12,14 @@ export const CONFIG = {
             JOURNAL: 'journal.php',
             LAST_OPERATION: 'last_operations.php',
             LISTER: 'lister.php',
+            LISTER_OPERATIONS: 'listerOperations.php',
             LOGIN: 'login.php',
             LOGOUT: 'logout.php',
             REGISTER: 'register.php',
             STATISTICS: 'statistics.php',
             STATS: 'stats.php',
             TAUXCHANGE: 'tauxchange.php'
-
+           
         }
     },
 
@@ -54,7 +55,8 @@ export const CONFIG = {
             'listerComptables.html': [ 'super_admin', 'admin', 'super_admin', 'admin' ],
             'journalBanque.html': [ 'super_admin', 'admin', 'comptable_banque', 'chef_comptable' ],
             'journalCaisse.html': [ 'super_admin', 'admin', 'comptable_caisse', 'chef_comptable' ],
-            'journalOperations.html': [ 'super_admin', 'admin', 'comptable_od', 'chef_comptable' ]
+            'journalOperations.html': [ 'super_admin', 'admin', 'comptable_od', 'chef_comptable' ],
+            'listerOperations.html': [ 'super_admin', 'admin', 'chef_comptable', 'comptable_banque' ]
         }
     },
 
