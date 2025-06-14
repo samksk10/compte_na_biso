@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <td>${ op.code_anal || '' }</td>
                     <td>${ op.imputation || '' }</td>
                     <td>${ op.numero_compte || '' }</td>
-                    <td>${ op.libelle_operation || '' }</td>
+                    <td>${ op.LibelleOperation || '' }</td>
                     <td class="text-end">${ Number(op.MontantDebit || 0).toFixed(2) }</td>
                     <td class="text-end">${ Number(op.MontantCredit || 0).toFixed(2) }</td>
                     <td>${ op.CompteDebit || '' }</td>

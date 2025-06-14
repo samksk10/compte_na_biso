@@ -51,7 +51,7 @@ try {
                 cm.code_anal,
                 cm.imputation,
                 cm.numero_compte,
-                cm.libelleOperation,
+                cm.LibelleOperation,
                 cm.Montant,
                 cm.CompteDebit,
                 cm.CompteCredit
@@ -86,9 +86,9 @@ try {
             'code_anal' => $op['code_anal'] ?? '',
             'imputation' => $op['imputation'] ?? '',
             'numero_compte' => $op['numero_compte'] ?? '',
-            'libelleOperation' => $op['libelleOperation'] ?? '',
-            'MontantDebit' => $op['imputation'] === 'DEBIT' ? floatval($op['Montant']) : 0,
-            'MontantCredit' => $op['imputation'] === 'CREDIT' ? floatval($op['Montant']) : 0,
+            'LibelleOperation' => $op['LibelleOperation'] ?? '',
+            'MontantDebit' => $op['imputation'] === 'D' ? floatval($op['Montant']) : 0,
+            'MontantCredit' => $op['imputation'] === 'C' ? floatval($op['Montant']) : 0,
             'CompteDebit' => $op['CompteDebit'] ?? '',
             'CompteCredit' => $op['CompteCredit'] ?? ''
         ];
