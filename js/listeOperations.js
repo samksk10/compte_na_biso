@@ -2,13 +2,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     const tableBody = document.getElementById('tableOperations');
     const messageContainer = document.getElementById('message-container');
 
-    function afficherMessage(message, type = 'info') {
-        if (messageContainer) {
-            messageContainer.innerHTML = `
-                <div class="alert alert-${ type } alert-dismissible fade show">
-                    ${ message }
-                </div>`;
+    // Fonction améliorée pour formater la date
+    function formatDate(dateStr) {
+        if (!dateStr) return '';
+
+        // Si la date est déjà au format français (dd/mm/yyyy)
+        if (dateStr.includes('/')) return dateStr;
+
+        // Gérer le format SQL (yyyy-mm-dd)
+        const [ year, month, day ] = dateStr.split('-');
+        if (year && month && day) {
+            return `${ day }/${ month }/${ year }`;
         }
+
+        return 'Date invalide';
+    }
+
+    // Fonction pour formater les montants
+    function formatMontant(montant) {
+        return Number(montant || 0).toLocaleString('fr-FR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
     }
 
     async function chargerOperations() {
@@ -21,10 +36,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 credentials: 'include'
             });
 
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || 'Erreur serveur');
-            }
+            if (!response.ok) throw new Error('Erreur réseau');
 
             const data = await response.json();
 
@@ -39,9 +51,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             tableBody.innerHTML = data.map(op => `
                 <tr>
                     <td>${ op.numPiece || '' }</td>
-                    <td>${ op.datePiece || '' }</td>
-                    <td>${ op.dateOperation || '' }</td>
-                    <td>${ op.codeJournal || '' }</td>
+                    <td>${ formatDate(op.datePiece) }</td>
+                    <td>${ formatDate(op.dateOperation) }</td>
                     <td>${ op.nomDocument || '' }</td>
                     <td>${ op.numDoc || '' }</td>
                     <td>${ op.typeDocument || '' }</td>
@@ -54,8 +65,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <td>${ op.imputation || '' }</td>
                     <td>${ op.numero_compte || '' }</td>
                     <td>${ op.LibelleOperation || '' }</td>
-                    <td class="text-end">${ Number(op.MontantDebit || 0).toFixed(2) }</td>
-                    <td class="text-end">${ Number(op.MontantCredit || 0).toFixed(2) }</td>
+                    <td class="text-end">${ formatMontant(op.MontantDebit) }</td>
+                    <td class="text-end">${ formatMontant(op.MontantCredit) }</td>
                     <td>${ op.CompteDebit || '' }</td>
                     <td>${ op.CompteCredit || '' }</td>
                     <td>
@@ -68,7 +79,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         } catch (error) {
             console.error('Erreur:', error);
-            afficherMessage(error.message, 'danger');
+            if (messageContainer) {
+                messageContainer.innerHTML = `
+                    <div class="alert alert-danger">
+                        ${ error.message || 'Erreur lors du chargement des données' }
+                    </div>`;
+            }
         }
     }
 
