@@ -22,8 +22,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     function formatMontant(montant) {
         return Number(montant || 0).toLocaleString('fr-FR', {
             minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
+            maximumFractionDigits: 2,
+            useGrouping: true
+        }).replace(/\s/g, ''); // Supprime les espaces indésirables
     }
 
     // Fonction pour charger les opérations
@@ -92,14 +93,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Export to PDF function
     document.getElementById('exportPdf').addEventListener('click', () => {
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('l', 'pt', 'a3'); // Landscape orientation
+        const doc = new jsPDF('l', 'pt', 'a3');
 
         doc.autoTable({
             html: 'table',
             theme: 'grid',
-            headStyles: { fillColor: [ 52, 58, 64 ] }, // Bootstrap dark theme color
+            headStyles: { fillColor: [ 52, 58, 64 ] },
             pageBreak: 'auto',
-            styles: { fontSize: 8 }, // Smaller font size to fit all columns
+            styles: {
+                fontSize: 8,
+                cellPadding: 2
+            },
+            columnStyles: {
+                14: { halign: 'right' }, // Pour MontantDebit
+                15: { halign: 'right' }  // Pour MontantCredit
+            },
             margin: { top: 30 },
         });
 
