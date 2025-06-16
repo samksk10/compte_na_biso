@@ -85,33 +85,80 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // Export to Excel function
-    document.getElementById('exportExcel').addEventListener('click', () => {
-        const wb = XLSX.utils.table_to_book(document.querySelector('table'), { sheet: "Operations" });
-        XLSX.writeFile(wb, `Operations_${ new Date().toISOString().split('T')[ 0 ] }.xlsx`);
+    document.getElementById('exportExcel').addEventListener('click', async () => {
+        try {
+            // Show loading spinner
+            const button = document.getElementById('exportExcel');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="bi bi-hourglass-split"></i> Export en cours...';
+            button.disabled = true;
+
+            // Use setTimeout to allow UI update
+            setTimeout(() => {
+                const wb = XLSX.utils.table_to_book(document.querySelector('table'), {
+                    sheet: "Operations",
+                    cellStyles: false // Disable cell styles for faster processing
+                });
+                XLSX.writeFile(wb, `Operations_${ new Date().toISOString().split('T')[ 0 ] }.xlsx`);
+
+                // Reset button
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }, 100);
+        } catch (error) {
+            console.error('Export Excel error:', error);
+            alert('Erreur lors de l\'export Excel');
+        }
     });
 
     // Export to PDF function
-    document.getElementById('exportPdf').addEventListener('click', () => {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('l', 'pt', 'a3');
+    document.getElementById('exportPdf').addEventListener('click', async () => {
+        try {
+            // Show loading spinner
+            const button = document.getElementById('exportPdf');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="bi bi-hourglass-split"></i> Export en cours...';
+            button.disabled = true;
 
-        doc.autoTable({
-            html: 'table',
-            theme: 'grid',
-            headStyles: { fillColor: [ 52, 58, 64 ] },
-            pageBreak: 'auto',
-            styles: {
-                fontSize: 8,
-                cellPadding: 2
-            },
-            columnStyles: {
-                14: { halign: 'right' }, // Pour MontantDebit
-                15: { halign: 'right' }  // Pour MontantCredit
-            },
-            margin: { top: 30 },
-        });
+            // Use setTimeout to allow UI update
+            setTimeout(() => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('l', 'pt', 'a3');
 
-        doc.save(`Operations_${ new Date().toISOString().split('T')[ 0 ] }.pdf`);
+                doc.autoTable({
+                    html: 'table',
+                    theme: 'grid',
+                    headStyles: { fillColor: [ 52, 58, 64 ] },
+                    pageBreak: 'auto',
+                    styles: {
+                        fontSize: 8,
+                        cellPadding: 2
+                    },
+                    columnStyles: {
+                        14: { halign: 'right' },
+                        15: { halign: 'right' }
+                    },
+                    margin: { top: 30 },
+                    didParseCell: (data) => {
+                        // Only process cells that need formatting
+                        if (data.column.index === 14 || data.column.index === 15) {
+                            if (data.cell.raw) {
+                                data.cell.text = data.cell.raw.toString().replace(/\s/g, '');
+                            }
+                        }
+                    }
+                });
+
+                doc.save(`Operations_${ new Date().toISOString().split('T')[ 0 ] }.pdf`);
+
+                // Reset button
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }, 100);
+        } catch (error) {
+            console.error('Export PDF error:', error);
+            alert('Erreur lors de l\'export PDF');
+        }
     });
 
     // Chargement initial
