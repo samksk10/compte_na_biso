@@ -50,7 +50,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             tableBody.innerHTML = data.map(op => `
                 <tr>
-                    <td>${ op.numPiece || '' }</td>
                     <td>${ formatDate(op.datePiece) }</td>
                     <td>${ formatDate(op.dateOperation) }</td>
                     <td>${ op.nomDocument || '' }</td>
@@ -69,11 +68,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <td class="text-end">${ formatMontant(op.MontantCredit) }</td>
                     <td>${ op.CompteDebit || '' }</td>
                     <td>${ op.CompteCredit || '' }</td>
-                    <td>
-                        <button class="btn btn-sm btn-info" onclick="voirDetails('${ op.numPiece }')">
-                            <i class="bi bi-eye"></i>
-                        </button>
-                    </td>
                 </tr>
             `).join('');
 

@@ -279,7 +279,7 @@ h5 {
     padding: 1rem;
     font-weight: 500;
     font-size: 0.9rem;
-    text-transform: uppercase;
+    /*text-transform: uppercase;*/
     letter-spacing: 0.5px;
     vertical-align: middle;
     color: white;
