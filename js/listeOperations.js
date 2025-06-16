@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
+    // Fonction pour charger les opérations
     async function chargerOperations() {
         try {
             const response = await fetch('api/listerOperations.php', {
@@ -81,6 +82,29 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         }
     }
+
+    // Export to Excel function
+    document.getElementById('exportExcel').addEventListener('click', () => {
+        const wb = XLSX.utils.table_to_book(document.querySelector('table'), { sheet: "Operations" });
+        XLSX.writeFile(wb, `Operations_${ new Date().toISOString().split('T')[ 0 ] }.xlsx`);
+    });
+
+    // Export to PDF function
+    document.getElementById('exportPdf').addEventListener('click', () => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('l', 'pt', 'a3'); // Landscape orientation
+
+        doc.autoTable({
+            html: 'table',
+            theme: 'grid',
+            headStyles: { fillColor: [ 52, 58, 64 ] }, // Bootstrap dark theme color
+            pageBreak: 'auto',
+            styles: { fontSize: 8 }, // Smaller font size to fit all columns
+            margin: { top: 30 },
+        });
+
+        doc.save(`Operations_${ new Date().toISOString().split('T')[ 0 ] }.pdf`);
+    });
 
     // Chargement initial
     await chargerOperations();
