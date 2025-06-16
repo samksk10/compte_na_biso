@@ -49,8 +49,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 return;
             }
 
-            // Filtrer les opérations pour ne garder que EB et SB
-            const filteredData = data.filter(op => op.typeDocument === 'EB' || op.typeDocument === 'SB');
+            // Filtrer les opérations pour ne garder que EC et SC
+            const filteredData = data.filter(op => op.typeDocument === 'EC' || op.typeDocument === 'SC');
 
             if (filteredData.length === 0) {
                 tableBody.innerHTML = '<tr><td colspan="18" class="text-center">Aucune opération EB ou SB trouvée</td></tr>';
