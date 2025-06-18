@@ -2,12 +2,12 @@
 <html lang="fr">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Balance Comptable | Comptabilité Na Biso</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
-    <link rel="stylesheet" href="stylesAll.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balance | Comptabilité Na Biso</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="stylesAll.css">
 </head>
 
 <body class="d-flex">
@@ -15,6 +15,7 @@
     <button id="sidebarToggle" class="btn btn-dark sidebar-toggle-btn" aria-label="Toggle Menu" title="Toggle Menu">
         <i class="bi bi-list" aria-hidden="true"></i>
     </button>
+
     <nav class="sidebar" id="sidebar">
         <h2 class="text-center mb-4">Menu</h2>
         <ul class="nav flex-column">
@@ -90,15 +91,86 @@
         </ul>
     </nav>
     <!-- Contenu principal -->
-    <div class="main-content">
-        <h4 class="mb-3">Bienvenue dans la page de la balance de <strong>Comptabilité Na Biso</strong>, <span
-                id="userNom"></span></h4>
-        <p class="lead">Vous êtes connecté ici en tant que : <strong id="userRole"></strong></p>
+    <div class="main-content fade-in">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4>Balance des comptes</h4>
+            <p>Utilisateur : <span id="userNom"></span> (<strong id="userRole"></strong>)</p>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <form id="balanceForm" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="dateDebut" class="form-label">Date début</label>
+                        <input type="date" class="form-control" id="dateDebut" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="dateFin" class="form-label">Date fin</label>
+                        <input type="date" class="form-control" id="dateFin" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="exercice" class="form-label">Exercice</label>
+                        <select class="form-select" id="exercice" required>
+                            <option value="">Sélectionner...</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search"></i> Générer la balance
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-dark text-uppercase">
+                            <tr>
+                                <th>N° Compte</th>
+                                <th>Intitulé</th>
+                                <th>Solde initial débit</th>
+                                <th>Solde initial crédit</th>
+                                <th>Mouvement débit</th>
+                                <th>Mouvement crédit</th>
+                                <th>Solde final débit</th>
+                                <th>Solde final crédit</th>
+                            </tr>
+                        </thead>
+                        <tbody id="balanceTable">
+                            <!-- Les données seront insérées ici via JavaScript -->
+                        </tbody>
+                        <tfoot class="table-secondary fw-bold">
+                            <tr>
+                                <td colspan="2">Totaux</td>
+                                <td id="totalSoldeInitialDebit">0.00</td>
+                                <td id="totalSoldeInitialCredit">0.00</td>
+                                <td id="totalMouvementDebit">0.00</td>
+                                <td id="totalMouvementCredit">0.00</td>
+                                <td id="totalSoldeFinalDebit">0.00</td>
+                                <td id="totalSoldeFinalCredit">0.00</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-end mt-3">
+                    <button class="btn btn-success me-2" id="exportExcel">
+                        <i class="bi bi-file-earmark-excel"></i> Export Excel
+                    </button>
+                    <button class="btn btn-danger" id="exportPdf">
+                        <i class="bi bi-file-earmark-pdf"></i> Export PDF
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- script bouton toggle menu rectractable -->
+
+    <script src="js/auth.js" type="module"></script>
     <script src="js/sidebar.js"></script>
-    <script type="module" src="js/auth.js"></script>
+    <script src="js/balance.js"></script>
 </body>
 
 </html>
