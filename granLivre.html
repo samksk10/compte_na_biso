@@ -95,14 +95,111 @@
         </ul>
     </nav>
     <!-- Contenu principal -->
-    <div class="main-content">
-        <h4 class="mb-3">Le Grand livre comptable - <strong>Comptabilité Na Biso</strong>, <span id="userNom"></span>
-        </h4>
-        <p class="lead">Vous êtes connecté en tant que : <strong id="userRole"></strong></p>
+    <div class="main-content fade-in">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4>Grand Livre</h4>
+            <p>Utilisateur : <span id="userNom"></span> (<strong id="userRole"></strong>)</p>
+        </div>
+
+        <!-- Formulaire de filtrage -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form id="grandLivreForm" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="exercice" class="form-label">Exercice</label>
+                        <select class="form-select" id="exercice" required>
+                            <option value="">Sélectionner...</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="compte" class="form-label">Compte</label>
+                        <select class="form-select" id="compte" required>
+                            <option value="">Sélectionner...</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="dateDebut" class="form-label">Date début</label>
+                        <input type="date" class="form-control" id="dateDebut" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="dateFin" class="form-label">Date fin</label>
+                        <input type="date" class="form-control" id="dateFin" required>
+                    </div>
+                    <div class="col-12 text-center">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search"></i> Afficher
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Détails du compte -->
+        <div class="card mb-4 d-none" id="compteDetails">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Détails du compte : <span id="compteNumero"></span></h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Intitulé :</strong> <span id="compteIntitule"></span></p>
+                        <p><strong>Classe :</strong> <span id="compteClasse"></span></p>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <p><strong>Solde initial :</strong> <span id="soldeinitial"></span></p>
+                        <p><strong>Solde final :</strong> <span id="soldefinal"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tableau des écritures -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Écritures comptables</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-dark text-uppercase">
+                            <tr>
+                                <th>Date</th>
+                                <th>N° Pièce</th>
+                                <th>Journal</th>
+                                <th>Libellé</th>
+                                <th>Débit</th>
+                                <th>Crédit</th>
+                                <th>Solde progressif</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ecrituresTable">
+                            <!-- Les données seront insérées ici via JavaScript -->
+                        </tbody>
+                        <tfoot class="table-secondary fw-bold">
+                            <tr>
+                                <td colspan="4" class="text-end">Totaux :</td>
+                                <td id="totalDebit">0.00</td>
+                                <td id="totalCredit">0.00</td>
+                                <td id="soldeProgressif">0.00</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mb-3">
+            <button class="btn btn-primary me-2" id="exportExcel">
+                <i class="bi bi-file-earmark-excel"></i> Export Excel
+            </button>
+            <button class="btn btn-danger" id="exportPdf">
+                <i class="bi bi-file-earmark-pdf"></i> Export PDF
+            </button>
+        </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/sidebar.js"></script>
     <script type="module" src="js/auth.js"></script>
+    <script src="js/grandLivre.js"></script>
 </body>
 
 </html>
