@@ -4,8 +4,19 @@ document.addEventListener('DOMContentLoaded', () => {
     let editMode = false;
     let editId = null;
 
-    // Charger les taux de change
+    // Fonction pour gérer le spinner
+    function toggleSpinner(show = true) {
+        const spinner = document.getElementById('loadingSpinner');
+        if (show) {
+            spinner.classList.remove('d-none');
+        } else {
+            spinner.classList.add('d-none');
+        }
+    }
+
+    // Fonction pour charger les taux de change
     async function loadTauxChange() {
+        toggleSpinner(true);
         try {
             const response = await fetch('api/tauxChange.php');
             const data = await response.json();
@@ -17,16 +28,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             tauxChangeTable.innerHTML = data.map(taux => `
                 <tr>
-                    <td>${ formatDate(taux.dateTaux) }</td>
-                    <td>${ taux.devise }</td>
-                    <td class="text-end">${ formatTaux(taux.taux) }</td>
-                    <td>${ taux.deviseRef }</td>
-                    <td>${ formatDate(taux.dateCreation) }</td>
+                    <td>${taux.devise_source}</td>
+                    <td>${taux.devise_cible}</td>
+                    <td class="text-end">${formatTaux(taux.TauxChange)}</td>
+                    <td>${formatDate(taux.date_effective)}</td>
+                    <td>${formatDateTime(taux.created_at)}</td>
                     <td>
-                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editTaux(${ taux.id })">
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editTaux(${taux.id})">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteTaux(${ taux.id })">
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteTaux(${taux.id})">
                             <i class="bi bi-trash"></i>
                         </button>
                     </td>
@@ -35,6 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Erreur:', error);
             tauxChangeTable.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Une erreur est survenue</td></tr>';
+        } finally {
+            toggleSpinner(false);
         }
     }
 
@@ -43,6 +56,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!dateStr) return '';
         const date = new Date(dateStr);
         return date.toLocaleDateString('fr-FR');
+    }
+
+    // Formater la date et l'heure
+    function formatDateTime(dateStr) {
+        if (!dateStr) return '';
+        const date = new Date(dateStr);
+        return date.toLocaleString('fr-FR');
     }
 
     // Formater le taux
@@ -56,7 +76,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Soumettre le formulaire
     tauxChangeForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const formData = new FormData(tauxChangeForm);
+        toggleSpinner(true);
+        const formData = {
+            devise_source: document.getElementById('devise_source').value,
+            devise_cible: document.getElementById('devise_cible').value,
+            TauxChange: document.getElementById('TauxChange').value,
+            date_effective: document.getElementById('date_effective').value,
+            created_at: document.getElementById('created_at').value
+        };
 
         try {
             const response = await fetch('api/tauxChange.php', {
@@ -66,10 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({
                     id: editId,
-                    devise: formData.get('devise'),
-                    dateTaux: formData.get('dateTaux'),
-                    taux: formData.get('tauxChange'),
-                    deviseRef: formData.get('deviseRef')
+                    ...formData
                 })
             });
 
@@ -84,6 +108,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Erreur:', error);
             alert('Une erreur est survenue lors de l\'enregistrement');
+        } finally {
+            toggleSpinner(false);
         }
     });
 
@@ -93,10 +119,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`api/tauxChange.php?id=${ id }`);
             const taux = await response.json();
 
-            document.getElementById('devise').value = taux.devise;
-            document.getElementById('dateTaux').value = taux.dateTaux;
-            document.getElementById('tauxChange').value = taux.taux;
-            document.getElementById('deviseRef').value = taux.deviseRef;
+            document.getElementById('devise_source').value = taux.devise_source;
+            document.getElementById('devise_cible').value = taux.devise_cible;
+            document.getElementById('TauxChange').value = taux.TauxChange;
+            document.getElementById('date_effective').value = taux.date_effective;
+            document.getElementById('created_at').value = taux.created_at;
 
             editMode = true;
             editId = id;
@@ -117,7 +144,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) throw new Error('Erreur serveur');
-
             await loadTauxChange();
 
         } catch (error) {
@@ -125,6 +151,48 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Une erreur est survenue lors de la suppression');
         }
     };
+
+    // Export Excel
+    document.getElementById('exportExcel').addEventListener('click', async () => {
+        toggleSpinner(true);
+        try {
+            const response = await fetch('api/exportTauxChange.php?format=excel');
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `TauxChange_${ new Date().toISOString().split('T')[ 0 ] }.xlsx`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Erreur export Excel:', error);
+            alert('Erreur lors de l\'export Excel');
+        } finally {
+            toggleSpinner(false);
+        }
+    });
+
+    // Export PDF
+    document.getElementById('exportPdf').addEventListener('click', async () => {
+        toggleSpinner(true);
+        try {
+            const response = await fetch('api/exportTauxChange.php?format=pdf');
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `TauxChange_${ new Date().toISOString().split('T')[ 0 ] }.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Erreur export PDF:', error);
+            alert('Erreur lors de l\'export PDF');
+        } finally {
+            toggleSpinner(false);
+        }
+    });
 
     // Chargement initial
     loadTauxChange();

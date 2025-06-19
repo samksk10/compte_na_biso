@@ -1,24 +1,112 @@
 <?php
-include "../config.php";
-header("Content-Type: application/json");
+header('Content-Type: application/json');
+require_once '../config.php';
 
-// Récupérer le taux actuel
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $stmt = $pdo->query("SELECT devise, taux FROM taux_change ORDER BY date_effective DESC LIMIT 1");
-    $taux = $stmt->fetch(PDO::FETCH_ASSOC);
-    echo json_encode($taux);
+// Vérifier l'authentification
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    http_response_code(401);
+    echo json_encode(['error' => 'Non autorisé']);
+    exit;
 }
 
-// Mettre à jour le taux de change
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = json_decode(file_get_contents("php://input"), true);
+// Connexion à la base de données
+try {
+    $pdo = new PDO(
+        "mysql:host=localhost;dbname=cicaf_sass;charset=utf8", "root", "");
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    if (isset($data['devise']) && isset($data['taux'])) {
-        $stmt = $pdo->prepare("INSERT INTO taux_change (devise, taux, date_effective) VALUES (?, ?, NOW())");
-        $stmt->execute([$data['devise'], $data['taux']]);
-        echo json_encode(["message" => "Taux mis à jour"]);
+        $role = $_SESSION['role'] ?? '';
+        $stats = [];
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Erreur de connexion à la base de données']);
+    exit;
+}
+
+// GET - Récupérer les taux de change
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    if (isset($_GET['id'])) {
+        // Récupérer un taux spécifique
+        $stmt = $pdo->prepare("SELECT * FROM taux_change WHERE id = ?");
+        $stmt->execute([$_GET['id']]);
+        echo json_encode($stmt->fetch(PDO::FETCH_ASSOC));
     } else {
-        echo json_encode(["error" => "Données incomplètes"]);
+        // Récupérer tous les taux
+        $stmt = $pdo->query("
+            SELECT * FROM taux_change 
+            ORDER BY date_effective DESC, created_at DESC
+        ");
+        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+    }
+}
+
+// POST - Créer un nouveau taux
+else if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    try {
+        $data = json_decode(file_get_contents('php://input'), true);
+        
+        $stmt = $pdo->prepare("
+            INSERT INTO taux_change (
+                devise_source, devise_cible, taux_change, 
+                date_effective, created_at
+            ) VALUES (?, ?, ?, ?, NOW())
+        ");
+        
+        $stmt->execute([
+            $data['devise_source'],
+            $data['devise_cible'],
+            $data['TauxChange'],
+            $data['date_effective']
+        ]);
+        
+        echo json_encode(['success' => true, 'id' => $pdo->lastInsertId()]);
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+}
+
+// PUT - Modifier un taux existant
+else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+    try {
+        $data = json_decode(file_get_contents('php://input'), true);
+        
+        $stmt = $pdo->prepare("
+            UPDATE taux_change 
+            SET devise_source = ?,
+                devise_cible = ?,
+                taux_change = ?,
+                date_effective = ?
+            WHERE id = ?
+        ");
+        
+        $stmt->execute([
+            $data['devise_source'],
+            $data['devise_cible'],
+            $data['TauxChange'],
+            $data['date_effective'],
+            $data['id']
+        ]);
+        
+        echo json_encode(['success' => true]);
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+}
+
+// DELETE - Supprimer un taux
+else if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+    try {
+        $id = $_GET['id'];
+        $stmt = $pdo->prepare("DELETE FROM taux_change WHERE id = ?");
+        $stmt->execute([$id]);
+        
+        echo json_encode(['success' => true]);
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode(['error' => $e->getMessage()]);
     }
 }
 ?>

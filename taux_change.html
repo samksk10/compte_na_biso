@@ -98,6 +98,13 @@
     </nav>
     <!-- Contenu principal -->
     <div class="main-content fade-in">
+        <!-- Spinner global -->
+        <div id="loadingSpinner" class="loading-spinner d-none">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Chargement...</span>
+            </div>
+        </div>
+
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h4>Gestion des Taux de Change</h4>
             <p>Utilisateur : <span id="userNom"></span> (<strong id="userRole"></strong>)</p>
@@ -108,27 +115,36 @@
             <div class="card-body">
                 <form id="tauxChangeForm" class="row g-3">
                     <div class="col-md-3">
-                        <label for="devise" class="form-label">Devise</label>
-                        <select class="form-select" id="devise" required>
-                            <option value="">Sélectionner...</option>
+                        <label for="devise_source" class="form-label">Devise source</label>
+                        <select class="form-select" id="devise_source" required>
+                            <option value="">Sélectionner une devise</option>
                             <option value="USD">Dollar US (USD)</option>
                             <option value="EUR">Euro (EUR)</option>
                             <option value="CDF">Franc Congolais (CDF)</option>
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label for="dateTaux" class="form-label">Date du taux</label>
-                        <input type="date" class="form-control" id="dateTaux" required>
-                    </div>
-                    <div class="col-md-3">
-                        <label for="tauxChange" class="form-label">Taux de change</label>
-                        <input type="number" class="form-control" id="tauxChange" step="0.0001" required>
-                    </div>
-                    <div class="col-md-3">
-                        <label for="deviseRef" class="form-label">Devise de référence</label>
-                        <select class="form-select" id="deviseRef" required>
+                        <label for="devise_cible" class="form-label">Devise cible</label>
+                        <select class="form-select" id="devise_cible" required>
+                            <option value="">Sélectionner une devise</option>
                             <option value="USD">Dollar US (USD)</option>
+                            <option value="EUR">Euro (EUR)</option>
+                            <option value="CDF">Franc Congolais (CDF)</option>
                         </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="TauxChange" class="form-label">Taux de change</label>
+                        <input type="number" class="form-control" id="TauxChange" step="0.0001" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="date_effective" class="form-label">Date effective</label>
+                        <input type="date" class="form-control" id="date_effective" required
+                            value="<?php echo date('yyyy-MM-dd'); ?>">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="created_at" class="form-label">Date de création</label>
+                        <input type="datetime-local" class="form-control" id="created_at" required readonly
+                            value="<?php echo date('yyyy-MM-ddThh:mm'); ?>">
                     </div>
                     <div class="col-12 text-center">
                         <button type="submit" class="btn btn-primary">
@@ -149,11 +165,11 @@
                     <table class="table table-hover">
                         <thead class="table-dark">
                             <tr>
-                                <th>Date</th>
-                                <th>Devise</th>
-                                <th>Taux</th>
-                                <th>Devise de référence</th>
-                                <th>Date de création</th>
+                                <th>Devise source</th>
+                                <th>Devise cible</th>
+                                <th>Taux de change</th>
+                                <th>Date effective</th>
+                                <th>Date et heure de création</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
