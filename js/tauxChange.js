@@ -28,16 +28,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             tauxChangeTable.innerHTML = data.map(taux => `
                 <tr>
-                    <td>${taux.devise_source}</td>
-                    <td>${taux.devise_cible}</td>
-                    <td class="text-end">${formatTaux(taux.TauxChange)}</td>
-                    <td>${formatDate(taux.date_effective)}</td>
-                    <td>${formatDateTime(taux.created_at)}</td>
+                    <td>${ taux.devise_source }</td>
+                    <td>${ taux.devise_cible }</td>
+                    <td class="text-end">${ formatTaux(taux.TauxChange) }</td>
+                    <td>${ formatDate(taux.date_effective) }</td>
+                    <td>${ formatDateTime(taux.created_at) }</td>
                     <td>
-                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editTaux(${taux.id})">
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editTaux(${ taux.id })">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteTaux(${taux.id})">
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteTaux(${ taux.id })">
                             <i class="bi bi-trash"></i>
                         </button>
                     </td>
@@ -77,29 +77,35 @@ document.addEventListener('DOMContentLoaded', () => {
     tauxChangeForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         toggleSpinner(true);
+
         const formData = {
             devise_source: document.getElementById('devise_source').value,
             devise_cible: document.getElementById('devise_cible').value,
             TauxChange: document.getElementById('TauxChange').value,
-            date_effective: document.getElementById('date_effective').value,
-            created_at: document.getElementById('created_at').value
+            date_effective: document.getElementById('date_effective').value
         };
 
+        let fetchOptions = {
+            headers: { 'Content-Type': 'application/json' }
+        };
+
+        if (editMode) {
+            fetchOptions.method = 'PUT';
+            fetchOptions.body = JSON.stringify({ id: editId, ...formData });
+        } else {
+            fetchOptions.method = 'POST';
+            fetchOptions.body = JSON.stringify(formData);
+        }
+
         try {
-            const response = await fetch('api/tauxChange.php', {
-                method: editMode ? 'PUT' : 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    id: editId,
-                    ...formData
-                })
-            });
+            const response = await fetch('api/tauxChange.php', fetchOptions);
+            const result = await response.json();
 
-            if (!response.ok) throw new Error('Erreur serveur');
+            if (!response.ok) {
+                console.error(result);
+                throw new Error(result.error || 'Erreur serveur');
+            }
 
-            // Réinitialiser le formulaire et recharger les données
             tauxChangeForm.reset();
             editMode = false;
             editId = null;
@@ -196,4 +202,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Chargement initial
     loadTauxChange();
+
+    // Initialiser les champs date par défaut
+    document.getElementById('date_effective').value = new Date().toISOString().slice(0, 10);
+    document.getElementById('created_at').value = new Date().toISOString().slice(0, 16);
 });

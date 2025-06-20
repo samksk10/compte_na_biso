@@ -46,13 +46,12 @@ else if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $data = json_decode(file_get_contents('php://input'), true);
         
+        // Insertion
         $stmt = $pdo->prepare("
             INSERT INTO taux_change (
-                devise_source, devise_cible, taux_change, 
-                date_effective, created_at
+                devise_source, devise_cible, TauxChange, date_effective, created_at
             ) VALUES (?, ?, ?, ?, NOW())
         ");
-        
         $stmt->execute([
             $data['devise_source'],
             $data['devise_cible'],
@@ -72,15 +71,15 @@ else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     try {
         $data = json_decode(file_get_contents('php://input'), true);
         
+        // Modification
         $stmt = $pdo->prepare("
             UPDATE taux_change 
             SET devise_source = ?,
                 devise_cible = ?,
-                taux_change = ?,
+                TauxChange = ?,
                 date_effective = ?
             WHERE id = ?
         ");
-        
         $stmt->execute([
             $data['devise_source'],
             $data['devise_cible'],
