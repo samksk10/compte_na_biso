@@ -66,7 +66,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     return `
                     <tr>
-                        <td>${ safeData.id }</td>
                         <td>${ safeData.code }</td>
                         <td>${ safeData.nom }</td>
                         <td>${ safeData.email }</td>
