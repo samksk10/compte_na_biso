@@ -414,6 +414,12 @@ body[data-role="comptable_od"] .comptable_od-only {
     z-index: 9999;
 }
 
+.btn-twitter-white {
+    background-color: #ffffff !important;
+    border-color: #ffffff !important;
+    color: #e0245e !important;
+}
+
 .twitter-red {
     color: #e0245e !important;
 }
