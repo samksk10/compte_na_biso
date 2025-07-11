@@ -57,28 +57,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 return;
             }
 
-            tableBody.innerHTML = filteredData.map(op => `
-                <tr>
-                    <td>${ formatDate(op.datePiece) }</td>
-                    <td>${ formatDate(op.dateOperation) }</td>
-                    <td>${ op.nomDocument || '' }</td>
-                    <td>${ op.numDoc || '' }</td>
-                    <td>${ op.typeDocument || '' }</td>
-                    <td>${ op.exercice || '' }</td>
-                    <td>${ op.devise || '' }</td>
-                    <td>${ op.beneficiaire || '' }</td>
-                    <td>${ op.debiteur || '' }</td>
-                    <td>${ op.motif || '' }</td>
-                    <td>${ op.code_anal || '' }</td>
-                    <td>${ op.imputation || '' }</td>
-                    <td>${ op.numero_compte || '' }</td>
-                    <td>${ op.LibelleOperation || '' }</td>
-                    <td class="text-end">${ formatMontant(op.MontantDebit) }</td>
-                    <td class="text-end">${ formatMontant(op.MontantCredit) }</td>
-                    <td>${ op.CompteDebit || '' }</td>
-                    <td>${ op.CompteCredit || '' }</td>
-                </tr>
-            `).join('');
+            allOperations = filteredData; // Stocke toutes les opérations
+            remplirSelectAnnees(filteredData);
+            afficherOperations(filteredData);
 
         } catch (error) {
             console.error('Erreur:', error);
@@ -91,6 +72,53 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         }
     }
+
+    // Fonction pour remplir le select des années
+    function remplirSelectAnnees(data) {
+        const annees = [ ...new Set(data.map(op => op.exercice)) ].sort().reverse();
+        filtreAnnee.innerHTML = '<option value="">Toutes</option>';
+        annees.forEach(annee => {
+            if (annee) {
+                filtreAnnee.innerHTML += `<option value="${ annee }">${ annee }</option>`;
+            }
+        });
+    }
+
+    // Fonction pour afficher les opérations filtrées
+    function afficherOperations(operations) {
+        tableBody.innerHTML = operations.map(op => `
+            <tr>
+                <td>${ formatDate(op.datePiece) }</td>
+                <td>${ formatDate(op.dateOperation) }</td>
+                <td>${ op.nomDocument || '' }</td>
+                <td>${ op.numDoc || '' }</td>
+                <td>${ op.typeDocument || '' }</td>
+                <td>${ op.exercice || '' }</td>
+                <td>${ op.devise || '' }</td>
+                <td>${ op.beneficiaire || '' }</td>
+                <td>${ op.debiteur || '' }</td>
+                <td>${ op.motif || '' }</td>
+                <td>${ op.code_anal || '' }</td>
+                <td>${ op.imputation || '' }</td>
+                <td>${ op.numero_compte || '' }</td>
+                <td>${ op.LibelleOperation || '' }</td>
+                <td class="text-end">${ formatMontant(op.MontantDebit) }</td>
+                <td class="text-end">${ formatMontant(op.MontantCredit) }</td>
+                <td>${ op.CompteDebit || '' }</td>
+                <td>${ op.CompteCredit || '' }</td>
+            </tr>
+        `).join('');
+    }
+
+    // Filtrer lors du changement d'année
+    filtreAnnee.addEventListener('change', function () {
+        const annee = this.value;
+        if (!annee) {
+            afficherOperations(allOperations);
+        } else {
+            afficherOperations(allOperations.filter(op => op.exercice == annee));
+        }
+    });
 
     // Export to Excel function
     document.getElementById('exportExcel').addEventListener('click', async () => {
