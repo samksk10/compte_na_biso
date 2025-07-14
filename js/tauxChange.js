@@ -1,3 +1,9 @@
+function toggleSpinner(show) {
+    const spinner = document.getElementById('loadingSpinner');
+    if (spinner) {
+        show ? spinner.classList.add('active') : spinner.classList.remove('active');
+    }
+}
 document.addEventListener('DOMContentLoaded', () => {
     const tauxChangeForm = document.getElementById('tauxChangeForm');
     const tauxChangeTable = document.getElementById('tauxChangeTable');

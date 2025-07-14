@@ -393,33 +393,6 @@ body[data-role="comptable_od"] .comptable_od-only {
     }
 }
 
-.loading-spinner {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
-
-/* === Photo utilisateur === */
-.user-photo-circle {
-    width: 90px;
-    height: 90px;
-    overflow: hidden;
-    border-radius: 50%;
-}
-
-.user-photo-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
 /* === Identité utilisateur === */
 #userNom {
     color: var(--user-name-color) !important;
@@ -452,4 +425,60 @@ body[data-role="comptable_od"] .comptable_od-only {
 
 .print-version #userNom {
     color: #333 !important;
+}
+
+/* Photo utilisateur */
+.user-profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.user-photo-circle {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 2px solid var(--bs-primary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background-color: #f8f9fa;
+    /* bg-light */
+}
+
+.user-photo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user-info {
+    margin-top: 0.5rem;
+    text-align: center;
+}
+
+.loading-spinner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.9);
+    /* on garde la version la plus claire */
+    display: none;
+    /* état par défaut */
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-spinner.active {
+    display: flex;
+}
+
+.loading-spinner .spinner-border {
+    width: 3rem;
+    height: 3rem;
 }
