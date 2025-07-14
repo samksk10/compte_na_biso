@@ -4,16 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let editMode = false;
     let editId = null;
 
-    // Fonction pour gérer le spinner
-    function toggleSpinner(show = true) {
-        const spinner = document.getElementById('loadingSpinner');
-        if (show) {
-            spinner.classList.remove('d-none');
-        } else {
-            spinner.classList.add('d-none');
-        }
-    }
-
     // Fonction pour charger les taux de change
     async function loadTauxChange() {
         toggleSpinner(true);

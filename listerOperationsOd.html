@@ -18,7 +18,16 @@
         <i class="bi bi-list" aria-hidden="true"></i>
     </button>
     <nav class="sidebar" id="sidebar">
-        <h2 class="text-center mb-4 twitter-red">Menu</h2>
+        <div class="d-flex flex-column align-items-center mb-4">
+            <div
+                class="rounded-circle bg-light border border-2 border-primary d-flex justify-content-center align-items-center user-photo-circle">
+                <img id="userPhoto" src="img/default-user.png" alt="Photo utilisateur" class="user-photo-img">
+            </div>
+            <div class="mt-2 text-center">
+                <span id="userNom"></span><br>
+                <strong id="userRole"></strong>
+            </div>
+        </div>
         <ul class="nav flex-column">
             <!-- Tableau de bord -->
             <li class="nav-item">
@@ -26,6 +35,53 @@
                     <i class="bi bi-speedometer2"></i> Tableau de bord
                 </a>
             </li>
+            <!-- Comptes Analytiques -->
+            <li class="nav-item chef_comptable-only">
+                <a class="nav-link" href="comptesAnalytiques.html">
+                    <i class="bi bi-diagram-3-fill"></i> Comptes analytiques
+                </a>
+            </li>
+
+            <!-- Grand Livre -->
+            <li class="nav-item">
+                <a class="nav-link" href="granLivre.html">
+                    <i class="bi bi-journal-text"></i> Grand Livre
+                </a>
+            </li>
+
+            <!-- Balances Comptables -->
+            <li class="nav-item">
+                <a class="nav-link" href="balance.html">
+                    <i class="bi bi-clipboard-data"></i> Balances Comptables
+                </a>
+            </li>
+            <!-- Administration -->
+            <li class="nav-item super_admin-only">
+                <a class="nav-link" href="register.html">
+                    <i class="bi bi-person-add"></i> Ajouter un administrateur
+                </a>
+            </li>
+
+            <!-- Gestion des Comptables -->
+            <li class="nav-item super_admin-only admin-only">
+                <a class="nav-link" href="comptables.html">
+                    <i class="bi bi-person-lines-fill"></i> Gestion des Comptables
+                </a>
+            </li>
+
+            <!-- Gestion des Entreprises -->
+            <li class="nav-item super_admin-only admin-only">
+                <a class="nav-link" href="entreprise.html">
+                    <i class="bi bi-building"></i> Gestion des Entreprises
+                </a>
+            </li>
+            <!-- Taux de change -->
+            <li class="nav-item">
+                <a class="nav-link" href="taux_change.html">
+                    <i class="bi bi-currency-exchange"></i> Gestion de Taux de Change
+                </a>
+            </li>
+
             <!-- Déconnexion -->
             <li class="nav-item mt-4">
                 <a class="nav-link logout-btn" href="index.html" id="logoutBtn">
@@ -37,10 +93,6 @@
     <div class="main-content fade-in">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h4>Liste des Opérations - <strong>journal des opérations diverses</strong></h4>
-            <p class="mb-4">Nom et Role de l'utilisateur :
-                <span id="userNom"></span>,
-                <strong id="userRole"></strong>
-            </p>
             <a href="journalBanque.html" class="btn btn-outline-primary">
                 <i class="bi bi-arrow-left"></i> Retour
             </a>

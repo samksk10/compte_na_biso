@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+cdocument.addEventListener('DOMContentLoaded', () => {
     const grandLivreForm = document.getElementById('grandLivreForm');
     const ecrituresTable = document.getElementById('ecrituresTable');
     const compteDetails = document.getElementById('compteDetails');
