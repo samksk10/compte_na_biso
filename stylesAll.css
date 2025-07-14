@@ -1,63 +1,42 @@
-/* Variables CSS */
+/* === Variables CSS === */
 :root {
     --sidebar-bg: #15202b;
-    /* Fond de la barre latérale */
     --sidebar-text: #ffffff;
-    /* Texte de la barre latérale */
     --sidebar-hover-bg: rgba(29, 161, 242, 0.1);
-    /* Fond au survol */
     --sidebar-hover-text: #1da1f2;
-    /* Texte au survol */
     --logout-btn-bg: #e0245e;
-    /* Bouton de déconnexion */
     --logout-btn-hover-bg: #b81d4b;
-    /* Bouton de déconnexion au survol */
     --main-bg: #f5f8fa;
-    /* Fond du contenu principal */
     --main-text: #15202b;
-    /* Texte du contenu principal */
     --main-subtext: #657786;
-    /* Sous-texte du contenu principal */
     --shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-    /* Ombre de la barre latérale */
     --transition: all 0.3s ease;
-    /* Transition par défaut */
     --success-btn-bg: #28a745;
     --success-btn-hover-bg: #218838;
+    --twitter-blue: #1DA1F2;
+    --twitter-red: #E0245E;
 }
 
-/* Fond général de la carte */
+/* === Cartes === */
 .card {
     background-color: #ffffff;
-    /* gris très clair */
     border: 1px solid #dee2e6;
     border-radius: 8px;
 }
 
-/* En-tête de la carte */
 .card-header {
     background-color: #1da1f2;
     color: white;
     font-weight: bold;
 }
 
-/* Titre principal */
-.main-content h4 {
-    color: #0f1419;
-}
-
-/* Labels des champs */
-.form-label {
+/* === Formulaires === */
+.form-label,
+.form-text {
     color: #0f1419;
     font-weight: 500;
 }
 
-/* Aide sous les inputs */
-.form-text {
-    color: #0f1419;
-}
-
-/* Champs de formulaire */
 .form-control,
 .form-select {
     background-color: #ffffff;
@@ -65,27 +44,20 @@
     color: #212529;
 }
 
-/* Champs focus */
 .form-control:focus,
 .form-select:focus {
     border-color: #1da1f2;
     box-shadow: 0 0 0 0.2rem rgba(29, 161, 242, 0.25);
 }
 
-/* Bouton Ajouter */
-button[type="submit"] {
-    background-color: #e0245e;
-    border-color: #e0245e;
-    color: white;
-}
-
+button[type="submit"],
 button[type="submit"]:hover {
     background-color: #e0245e;
     border-color: #e0245e;
     color: white;
 }
 
-/* Bouton œil (mot de passe) */
+/* === Mot de passe œil === */
 #togglePassword {
     color: #1da1f2;
 }
@@ -94,13 +66,13 @@ button[type="submit"]:hover {
     background-color: #e9f5ef;
 }
 
-/* Message après soumission */
+/* === Message de validation === */
 #message {
     color: #e0245e;
     font-weight: 500;
 }
 
-/* Style général de la barre latérale */
+/* === Sidebar === */
 .sidebar {
     background-color: var(--sidebar-bg);
     color: var(--sidebar-text);
@@ -113,14 +85,12 @@ button[type="submit"]:hover {
     left: 0;
 }
 
-/* Sidebar rétractée */
 .sidebar.collapsed {
     width: 0;
     padding: 0;
     overflow: hidden;
 }
 
-/* Bouton toggle */
 .sidebar-toggle-btn {
     position: fixed;
     top: 10px;
@@ -129,13 +99,12 @@ button[type="submit"]:hover {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* Ajustement du contenu principal */
+/* === Contenu principal === */
 .main-content {
     background-color: var(--main-bg);
     padding: 20px;
@@ -146,13 +115,12 @@ button[type="submit"]:hover {
     transition: all 0.3s ease-in-out;
 }
 
-/* Contenu principal quand la sidebar est rétractée */
 .main-content.expanded {
     margin-left: 0;
     width: 100%;
 }
 
-/* Style des liens de la barre latérale */
+/* === Liens navigation === */
 .nav-link {
     color: var(--sidebar-text) !important;
     font-weight: 500;
@@ -175,7 +143,7 @@ button[type="submit"]:hover {
     font-size: 1.2rem;
 }
 
-/* Style du bouton de déconnexion */
+/* === Bouton Déconnexion === */
 .logout-btn {
     margin-top: 30px;
     background-color: var(--logout-btn-bg);
@@ -190,17 +158,16 @@ button[type="submit"]:hover {
     background-color: var(--logout-btn-hover-bg);
 }
 
-/* Bouton de succès */
+/* === Bouton Succès === */
 .btn-success {
     background-color: var(--success-btn-bg);
     border: none;
     border-radius: 8px;
     padding: 10px 20px;
-    transition: var(--transition);
     width: 100%;
     color: white;
-    /* Changer de #1da1f2 à white */
     font-weight: bold;
+    transition: var(--transition);
 }
 
 .btn-success:hover {
@@ -212,25 +179,8 @@ button[type="submit"]:hover {
     transform: translateY(0);
 }
 
-/* Style du contenu principal */
-.main-content {
-    background-color: var(--main-bg);
-    padding: 20px;
-    margin-left: 250px;
-    /* Pour compenser la largeur de la barre latérale */
-    flex-grow: 1;
-    min-height: 100vh;
-    width: calc(100% - 250px);
-    transition: all 0.3s ease-in-out;
-}
-
-p {
-    color: var(--main-text);
-    font-weight: 700;
-    margin-bottom: 1rem;
-    margin-left: 35px;
-}
-
+/* === Textes généraux === */
+p,
 h4 {
     color: var(--main-text);
     font-weight: 700;
@@ -240,9 +190,8 @@ h4 {
 
 h5 {
     color: #ffffff;
-    font-weight: 600;
-    margin-bottom: 1rem;
     font-weight: bold;
+    margin-bottom: 1rem;
 }
 
 .lead {
@@ -250,14 +199,7 @@ h5 {
     font-size: 1.1rem;
 }
 
-/* Style du tableau */
-.table td input[name="libelleOperation[]"] {
-    min-width: 300px;
-    font-size: 0.875rem;
-    padding: 0.25rem 0.5rem;
-}
-
-/* Styles pour les tableaux */
+/* === Tableau === */
 .table-responsive {
     background-color: white;
     border-radius: 10px;
@@ -279,7 +221,6 @@ h5 {
     padding: 1rem;
     font-weight: 500;
     font-size: 0.9rem;
-    /*text-transform: uppercase;*/
     letter-spacing: 0.5px;
     vertical-align: middle;
     color: white;
@@ -299,7 +240,13 @@ h5 {
     color: var(--main-text);
 }
 
-/* Style pour les boutons d'action */
+.table td input[name="libelleOperation[]"] {
+    min-width: 300px;
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Boutons d'action */
 .table .btn-action {
     padding: 0.4rem 0.8rem;
     font-size: 0.875rem;
@@ -316,7 +263,7 @@ h5 {
     border-color: #dc3545;
 }
 
-/* Styles pour le conteneur de messages */
+/* === Conteneur de message === */
 .message-container {
     display: none;
     margin-bottom: 1rem;
@@ -328,45 +275,40 @@ h5 {
     display: block;
 }
 
-/* Sections spécifiques au tableau de bord */
+/* === Dashboards par rôle === */
 .dashboard-section {
     display: none;
 }
 
-/* Rôles et affichage des sections */
-/* Super Admin voit tout */
+/* Règles d’affichage par rôle */
 body[data-role="super_admin"] .dashboard-section#superAdminDashboard,
 body[data-role="super_admin"] .dashboard-section#adminDashboard,
 body[data-role="super_admin"] .dashboard-section#chefComptableDashboard,
 body[data-role="super_admin"] .dashboard-section#comptableDashboard,
-/* Admin voit chef comptable et comptable */
 body[data-role="admin"] .dashboard-section#adminDashboard,
 body[data-role="admin"] .dashboard-section#chefComptableDashboard,
 body[data-role="admin"] .dashboard-section#comptableDashboard,
-/* Chef comptable voit son dashboard */
 body[data-role="chef_comptable"] .dashboard-section#chefComptableDashboard,
-/* Comptables voient leur dashboard */
 body[data-role="comptable_banque"] .dashboard-section#comptableDashboard,
 body[data-role="comptable_caisse"] .dashboard-section#comptableDashboard,
 body[data-role="comptable_od"] .dashboard-section#comptableDashboard {
     display: block;
 }
 
-/* Affichage des sections spécifiques aux comptables */
+/* Contenus spécifiques aux comptables */
 .comptable_banque-only,
 .comptable_caisse-only,
 .comptable_od-only {
     display: none;
 }
 
-/* Affichage conditionnel selon le type de comptable */
 body[data-role="comptable_banque"] .comptable_banque-only,
 body[data-role="comptable_caisse"] .comptable_caisse-only,
 body[data-role="comptable_od"] .comptable_od-only {
     display: block;
 }
 
-/* Statistiques communes */
+/* === Statistiques === */
 .stat-card {
     margin-bottom: 1rem;
 }
@@ -381,6 +323,7 @@ body[data-role="comptable_od"] .comptable_od-only {
     margin-bottom: 0.5rem;
 }
 
+/* === Utilitaires divers === */
 .btn:disabled {
     cursor: not-allowed;
     opacity: 0.7;
@@ -400,7 +343,6 @@ body[data-role="comptable_od"] .comptable_od-only {
     }
 }
 
-/* Loading Spinner */
 .loading-spinner {
     position: fixed;
     top: 0;
@@ -414,6 +356,7 @@ body[data-role="comptable_od"] .comptable_od-only {
     z-index: 9999;
 }
 
+/* === Boutons alternatifs === */
 .btn-twitter-white {
     background-color: #ffffff !important;
     border-color: #ffffff !important;
@@ -422,4 +365,64 @@ body[data-role="comptable_od"] .comptable_od-only {
 
 .twitter-red {
     color: #e0245e !important;
+}
+
+/* === Photo utilisateur === */
+.user-photo-circle {
+    width: 90px;
+    height: 90px;
+    overflow: hidden;
+    border-radius: 50%;
+}
+
+.user-photo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Applique les couleurs aux éléments utilisateur dans TOUTES les pages */
+#userNom {
+    color: #1DA1F2 !important;
+    /* Bleu Twitter */
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+#userRole {
+    color: #E0245E !important;
+    /* Rouge Twitter */
+    font-weight: 600;
+    text-transform: capitalize;
+    transition: color 0.3s ease;
+}
+
+/* Version avec variables CSS (recommandé pour la maintenabilité) */
+
+#userNom {
+    color: var(--twitter-blue) !important;
+}
+
+#userRole {
+    color: var(--twitter-red) !important;
+}
+
+/* Styles complémentaires recommandés */
+.user-info-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.5rem 0;
+}
+
+/* Pour les cas où les éléments sont dans un header/sidebar sombre */
+.dark-theme #userNom,
+.dark-theme #userRole {
+    opacity: 0.9;
+}
+
+/* États interactifs */
+#userNom:hover,
+#userRole:hover {
+    opacity: 0.8;
 }

@@ -17,7 +17,16 @@
     </button>
 
     <nav class="sidebar" id="sidebar">
-        <h2 class="text-center mb-4 twitter-red">Menu</h2>
+        <div class="d-flex flex-column align-items-center mb-4">
+            <div
+                class="rounded-circle bg-light border border-2 border-primary d-flex justify-content-center align-items-center user-photo-circle">
+                <img id="userPhoto" src="img/default-user.png" alt="Photo utilisateur" class="user-photo-img">
+            </div>
+            <div class="mt-2 text-center">
+                <span id="userNom"></span>,<br>
+                <strong id="userRole"></strong>
+            </div>
+        </div>
         <ul class="nav flex-column">
             <li class="nav-item">
                 <a class="nav-link" href="dashboard.html">
@@ -94,7 +103,6 @@
     <div class="main-content fade-in">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h4>Balance des comptes</h4>
-            <p>Utilisateur : <span id="userNom"></span> (<strong id="userRole"></strong>)</p>
         </div>
 
         <div class="card mb-4">

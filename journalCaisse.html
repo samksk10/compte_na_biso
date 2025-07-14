@@ -21,7 +21,16 @@
     </button>
     <!-- Sidebar -->
     <nav class="sidebar" id="sidebar">
-        <h2 class="text-center mb-4 twitter-red">Menu</h2>
+        <div class="d-flex flex-column align-items-center mb-4">
+            <div
+                class="rounded-circle bg-light border border-2 border-primary d-flex justify-content-center align-items-center user-photo-circle">
+                <img id="userPhoto" src="img/default-user.png" alt="Photo utilisateur" class="user-photo-img">
+            </div>
+            <div class="mt-2 text-center">
+                <span id="userNom"></span>,<br>
+                <strong id="userRole"></strong>
+            </div>
+        </div>
         <ul class="nav flex-column">
             <!-- Tableau de bord -->
             <li class="nav-item">
@@ -93,10 +102,6 @@
                 </a>
             </div>
             <h4 class="mb-4">Journal de Caisse - <strong>Comptabilité na biso</strong></h4>
-            <p class="mb-4">Nom et Role de l'utilisateur :
-                <span id="userNom"></span>,
-                <strong id="userRole"></strong>
-            </p>
             <form id="mouvementForm">
                 <div class="card mb-4">
                     <div class="card-header bg-primary text-white">

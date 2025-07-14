@@ -14,7 +14,16 @@
 <body class="d-flex">
     <!-- Sidebar -->
     <nav class="sidebar">
-        <h2 class="text-center mb-4 twitter-red">Menu</h2>
+        <div class="d-flex flex-column align-items-center mb-4">
+            <div
+                class="rounded-circle bg-light border border-2 border-primary d-flex justify-content-center align-items-center user-photo-circle">
+                <img id="userPhoto" src="img/default-user.png" alt="Photo utilisateur" class="user-photo-img">
+            </div>
+            <div class="mt-2 text-center">
+                <span id="userNom"></span>,<br>
+                <strong id="userRole"></strong>
+            </div>
+        </div>
         <ul class="nav flex-column">
             <!-- Comptes Analytiques -->
             <li class="nav-item chef_comptable-only">
@@ -96,9 +105,7 @@
     </nav>
     <!-- Contenu principal -->
     <div class="main-content">
-        <h4 class="mb-3">Bienvenue dans la page d'accueil de Comptabilité na biso, <span id="userNom"></span>
-            😄</h4>
-        <p class="mb-3">voici votre tableau de bord : <strong id="userRole"></strong></p>
+        <h4 class="mb-3">Bienvenue dans la page d'accueil de Comptabilité na biso</h4>
         <!-- Tableaux de bord spécifiques -->
         <div class="row mt-4">
             <!-- Super Admin Dashboard -->

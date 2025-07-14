@@ -7,9 +7,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const totalCreditEl = document.getElementById("totalCredit");
     const balanceEl = document.getElementById("balance");
     const messageContainer = document.getElementById("message-container");
-    document.getElementById('userNom').style.color = '#1DA1F2';  // Bleu Twitter
-    document.getElementById('userRole').style.color = '#E0245E'; // Rouge utilisé par Twitter pour erreurs/alertes
-
+    document.getElementById('userNom');
+    document.getElementById('userRole');
 
     // Cache pour les options des comptes
     let cachedCompteOptions = null;
