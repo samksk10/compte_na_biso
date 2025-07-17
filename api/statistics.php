@@ -21,18 +21,7 @@ try {
                 'totalAdministrateurs' => getCount($pdo, "SELECT COUNT(*) FROM users WHERE role = 'admin'"),
             ];
             // Ajouter les stats du chef comptable pour super_admin
-            $response['chefComptable'] = [
-                'opBanque' => getCount($pdo, "SELECT COUNT(DISTINCT cm.T8_NumeroLigneOperation) FROM t8_corpmouv cm 
-                              INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece 
-                              WHERE em.typeDocument IN ('EB', 'SB')"),
-                'opCaisse' => getCount($pdo, "SELECT COUNT(DISTINCT cm.T8_NumeroLigneOperation) FROM t8_corpmouv cm 
-                              INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece 
-                              WHERE em.typeDocument IN ('EC', 'SC')"),
-                'opDiverses' => getCount($pdo, "SELECT COUNT(DISTINCT cm.T8_NumeroLigneOperation) FROM t8_corpmouv cm 
-                              INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece 
-                              WHERE em.typeDocument IN ('OD', 'JD')"),
-                'comptesAnalytiques' => getCount($pdo, "SELECT COUNT(*) FROM comptes_analytiques")
-            ];
+            $response['chefComptable'] = getChefComptableStats($pdo);
             // no break intentionally
 
         case 'admin':
@@ -43,61 +32,36 @@ try {
             ];
             // Ajouter les stats du chef comptable pour admin si pas déjà définies
             if (!isset($response['chefComptable'])) {
-                $response['chefComptable'] = [
-                    'opBanque' => getCount($pdo, "SELECT COUNT(DISTINCT cm.T8_NumeroLigneOperation) FROM t8_corpmouv cm 
-                                  INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece 
-                                  WHERE em.typeDocument IN ('EB', 'SB')"),
-                    'opCaisse' => getCount($pdo, "SELECT COUNT(DISTINCT cm.T8_NumeroLigneOperation) FROM t8_corpmouv cm 
-                                  INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece 
-                                  WHERE em.typeDocument IN ('EC', 'SC')"),
-                    'opDiverses' => getCount($pdo, "SELECT COUNT(DISTINCT cm.T8_NumeroLigneOperation) FROM t8_corpmouv cm 
-                                  INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece 
-                                  WHERE em.typeDocument IN ('OD', 'JD')"),
-                    'comptesAnalytiques' => getCount($pdo, "SELECT COUNT(*) FROM comptes_analytiques")
-                ];
+                $response['chefComptable'] = getChefComptableStats($pdo);
             }
             break;
 
         case 'chef_comptable':
-            $response['chefComptable'] = [
-                // Ajouter le GROUP BY pour éviter les doublons
-                'opBanque' => getCount($pdo, "SELECT COUNT(DISTINCT cm.T8_NumeroLigneOperation) FROM t8_corpmouv cm 
-                              INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece 
-                              WHERE em.typeDocument IN ('EB', 'SB')"),
-                'opCaisse' => getCount($pdo, "SELECT COUNT(DISTINCT cm.T8_NumeroLigneOperation) FROM t8_corpmouv cm 
-                              INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece 
-                              WHERE em.typeDocument IN ('EC', 'SC')"),
-                'opDiverses' => getCount($pdo, "SELECT COUNT(DISTINCT cm.T8_NumeroLigneOperation) FROM t8_corpmouv cm 
-                              INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece 
-                              WHERE em.typeDocument IN ('OD', 'JD')"),
-                'comptesAnalytiques' => getCount($pdo, "SELECT COUNT(*) FROM comptes_analytiques")
+            $response['chefComptable'] = getChefComptableStats($pdo);
+            break;
+
+        case 'comptable_banque':
+        case 'comptable_caisse':
+        case 'comptable_od':
+            $response['comptable'] = [
+                // Statistiques spécifiques au rôle
+                'operationsJour' => getDailyOperations($pdo, $role),
+                'operationsMois' => getMonthlyOperations($pdo, $role),
+                
+                // Statistiques détaillées pour tous les types (utiles pour le dashboard)
+                'operationsJourBanque' => $role === 'comptable_banque' ? getDailyOperations($pdo, 'comptable_banque') : 0,
+                'operationsMoisBanque' => $role === 'comptable_banque' ? getMonthlyOperations($pdo, 'comptable_banque') : 0,
+                'operationsJourCaisse' => $role === 'comptable_caisse' ? getDailyOperations($pdo, 'comptable_caisse') : 0,
+                'operationsMoisCaisse' => $role === 'comptable_caisse' ? getMonthlyOperations($pdo, 'comptable_caisse') : 0,
+                'operationsJourOD' => $role === 'comptable_od' ? getDailyOperations($pdo, 'comptable_od') : 0,
+                'operationsMoisOD' => $role === 'comptable_od' ? getMonthlyOperations($pdo, 'comptable_od') : 0
             ];
             break;
 
         default:
-            // Déterminer le type de document selon le rôle
-            $typeDocument = [
-                'comptable_banque' => ['EB', 'SB'],
-                'comptable_caisse' => ['EC', 'SC'],
-                'comptable_od' => ['OD', 'JD']
-            ][$role] ?? [];
-
-            if (!empty($typeDocument)) {
-                $response['comptable'] = [
-                    'operationsJour' => getCount($pdo, "SELECT COUNT(DISTINCT cm.T8_NumeroLigneOperation) 
-                               FROM t8_corpmouv cm 
-                               INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece 
-                               WHERE em.typeDocument IN ('" . implode("','", $typeDocument) . "')
-                               AND DATE(em.datePiece) = CURDATE()"),
-                    'operationsMois' => getCount($pdo, "SELECT COUNT(DISTINCT cm.T8_NumeroLigneOperation) 
-                               FROM t8_corpmouv cm 
-                               INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece 
-                               WHERE em.typeDocument IN ('" . implode("','", $typeDocument) . "')
-                               AND MONTH(em.datePiece) = MONTH(CURDATE()) 
-                               AND YEAR(em.datePiece) = YEAR(CURDATE())")
-                ];
-            }
-            break;
+            http_response_code(403);
+            echo json_encode(['error' => 'Rôle non autorisé']);
+            exit;
     }
 
     echo json_encode($response);
@@ -110,13 +74,51 @@ try {
     ]);
 }
 
-function getCount($pdo, $query) {
-    $stmt = $pdo->query($query);
-    return $stmt->fetchColumn();
+function getChefComptableStats($pdo) {
+    return [
+        'opBanque' => getCount($pdo, "SELECT COUNT(DISTINCT cm.T8_NumeroLigneOperation) FROM t8_corpmouv cm 
+                      INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece 
+                      WHERE em.typeDocument IN ('EB', 'SB')"),
+        'opCaisse' => getCount($pdo, "SELECT COUNT(DISTINCT cm.T8_NumeroLigneOperation) FROM t8_corpmouv cm 
+                      INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece 
+                      WHERE em.typeDocument IN ('EC', 'SC')"),
+        'opDiverses' => getCount($pdo, "SELECT COUNT(DISTINCT cm.T8_NumeroLigneOperation) FROM t8_corpmouv cm 
+                      INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece 
+                      WHERE em.typeDocument IN ('OD', 'JD')"),
+        'comptesAnalytiques' => getCount($pdo, "SELECT COUNT(*) FROM comptes_analytiques")
+    ];
 }
 
-function getRecentActivity($pdo, $limit = 5) {
-    $stmt = $pdo->prepare("SELECT * FROM activity_log ORDER BY timestamp DESC LIMIT ?");
-    $stmt->execute([$limit]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+function getDailyOperations($pdo, $role) {
+    $types = [
+        'comptable_banque' => ['EB', 'SB'],
+        'comptable_caisse' => ['EC', 'SC'],
+        'comptable_od' => ['OD', 'JD']
+    ][$role] ?? [];
+    
+    return getCount($pdo, "SELECT COUNT(DISTINCT cm.T8_NumeroLigneOperation) 
+           FROM t8_corpmouv cm 
+           INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece 
+           WHERE em.typeDocument IN ('" . implode("','", $types) . "')
+           AND DATE(em.datePiece) = CURDATE()");
+}
+
+function getMonthlyOperations($pdo, $role) {
+    $types = [
+        'comptable_banque' => ['EB', 'SB'],
+        'comptable_caisse' => ['EC', 'SC'],
+        'comptable_od' => ['OD', 'JD']
+    ][$role] ?? [];
+    
+    return getCount($pdo, "SELECT COUNT(DISTINCT cm.T8_NumeroLigneOperation) 
+           FROM t8_corpmouv cm 
+           INNER JOIN t7_entetemouv em ON cm.T7_NumMouv = em.numPiece 
+           WHERE em.typeDocument IN ('" . implode("','", $types) . "')
+           AND MONTH(em.datePiece) = MONTH(CURDATE()) 
+           AND YEAR(em.datePiece) = YEAR(CURDATE())");
+}
+
+function getCount($pdo, $query) {
+    $stmt = $pdo->query($query);
+    return (int)$stmt->fetchColumn();
 }

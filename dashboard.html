@@ -107,93 +107,119 @@
     <div class="main-content">
         <h4 class="mb-3">Bienvenue dans la page d'accueil de Comptabilité na biso</h4>
         <!-- Tableaux de bord spécifiques -->
-        <div class="row mt-4">
-            <!-- Super Admin Dashboard -->
-            <div id="superAdminDashboard" class="dashboard-section super_admin-only">
-                <div class="row g-4">
-                    <div class="col-md-12">
+        <div id="superAdminDashboard" class="dashboard-section super_admin-only">
+            <div class="row g-4">
+                <div class="col-md-12">
+                    <a href="register.html" class="text-decoration-none">
                         <div class="card bg-primary text-white">
                             <div class="card-body">
                                 <h5><i class="bi bi-people"></i> Administrateurs</h5>
                                 <h2 id="totalAdministrateurs">0</h2>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
-
-            <!-- Admin et Super Admin Dashboard -->
-            <div id="adminDashboard" class="dashboard-section admin-only super_admin-only">
-                <div class="row g-4">
-                    <div class="col-md-4">
+        </div>
+        <!-- Admin et Super Admin Dashboard -->
+        <div id="adminDashboard" class="dashboard-section admin-only super_admin-only">
+            <div class="row g-4">
+                <!-- Comptables -->
+                <div class="col-md-4">
+                    <a href="comptables.html" class="text-decoration-none">
                         <div class="card bg-success text-white">
                             <div class="card-body">
                                 <h5><i class="bi bi-person-workspace"></i> Comptables</h5>
                                 <h2 id="totalComptables">0</h2>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
+                    </a>
+                </div>
+
+                <!-- Chefs Comptables -->
+                <div class="col-md-4">
+                    <a href="comptables.html" class="text-decoration-none">
                         <div class="card bg-success text-white">
                             <div class="card-body">
                                 <h5><i class="bi bi-person-badge-fill"></i> Chefs Comptables</h5>
                                 <h2 id="totalChefsComptables">0</h2>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
+                    </a>
+                </div>
+
+                <!-- Entreprises -->
+                <div class="col-md-4">
+                    <a href="entreprise.html" class="text-decoration-none">
                         <div class="card bg-success text-white">
                             <div class="card-body">
                                 <h5><i class="bi bi-building"></i> Entreprises</h5>
                                 <h2 id="totalEntreprises">0</h2>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
-            <!-- Chef Comptable Dashboard -->
-            <div id="chefComptableDashboard" class="dashboard-section chef_comptable-only">
-                <div class="row g-4">
-                    <div class="col-md-3">
+        </div>
+
+        <!-- Chef Comptable Dashboard -->
+        <div id="chefComptableDashboard" class="dashboard-section chef_comptable-only">
+            <div class="row g-4">
+                <!-- Opérations Banque -->
+                <div class="col-md-3">
+                    <a href="listeOperations.html" class="text-decoration-none">
                         <div class="card bg-info text-white">
                             <div class="card-body">
                                 <h5><i class="bi bi-bank2"></i> Opérations Banque</h5>
                                 <h2 id="totalOpBanque">0</h2>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-3">
+                    </a>
+                </div>
+
+                <!-- Opérations Caisse -->
+                <div class="col-md-3">
+                    <a href="listerOperationsCaisse.html" class="text-decoration-none">
                         <div class="card bg-info text-white">
                             <div class="card-body">
                                 <h5><i class="bi bi-cash-coin"></i> Opérations Caisse</h5>
                                 <h2 id="totalOpCaisse">0</h2>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-3">
+                    </a>
+                </div>
+
+                <!-- Opérations Diverses -->
+                <div class="col-md-3">
+                    <a href="listerOperationsOd.html" class="text-decoration-none">
                         <div class="card bg-info text-white">
                             <div class="card-body">
                                 <h5><i class="bi bi-journal-text"></i> Opérations Diverses</h5>
                                 <h2 id="totalOpDiverses">0</h2>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-3">
+                    </a>
+                </div>
+
+                <!-- Comptes Analytiques -->
+                <div class="col-md-3">
+                    <a href="comptesAnalytiques.html" class="text-decoration-none">
                         <div class="card bg-info text-white">
                             <div class="card-body">
                                 <h5><i class="bi bi-diagram-3"></i> Comptes Analytiques</h5>
                                 <h2 id="comptesAnalytiques">0</h2>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
-
-            <!-- Comptable Dashboard -->
-            <div id="comptableDashboard" class="dashboard-section">
-                <div class="row g-4">
-                    <!-- Comptable Banque -->
-                    <div class="col-md-4 comptable_banque-only">
+        </div>
+        <!-- Comptable Dashboard -->
+        <div id="comptableDashboard" class="dashboard-section">
+            <div class="row g-4">
+                <!-- Comptable Banque -->
+                <div class="col-md-4 comptable_banque-only">
+                    <a href="operations_banque.html" class="text-decoration-none">
                         <div class="card bg-warning text-white">
                             <div class="card-body">
                                 <h5><i class="bi bi-bank2"></i> Opérations Bancaires</h5>
@@ -209,10 +235,12 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
+                </div>
 
-                    <!-- Comptable Caisse -->
-                    <div class="col-md-4 comptable_caisse-only">
+                <!-- Comptable Caisse -->
+                <div class="col-md-4 comptable_caisse-only">
+                    <a href="operations_caisse.html" class="text-decoration-none">
                         <div class="card bg-success text-white">
                             <div class="card-body">
                                 <h5><i class="bi bi-cash"></i> Opérations Caisse</h5>
@@ -228,10 +256,12 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
+                </div>
 
-                    <!-- Comptable OD -->
-                    <div class="col-md-4 comptable_od-only">
+                <!-- Comptable OD -->
+                <div class="col-md-4 comptable_od-only">
+                    <a href="operations_diverses.html" class="text-decoration-none">
                         <div class="card bg-info text-white">
                             <div class="card-body">
                                 <h5><i class="bi bi-journal-text"></i> Opérations Diverses</h5>
@@ -247,10 +277,12 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
         </div>
+
+    </div>
     </div>
 
     <!-- Scripts -->
