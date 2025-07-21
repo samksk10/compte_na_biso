@@ -76,7 +76,10 @@ document.addEventListener('DOMContentLoaded', function () {
             'super_admin': [ 'superAdminDashboard', 'adminDashboard', 'chefComptableDashboard' ],
             'admin': [ 'adminDashboard', 'chefComptableDashboard' ],
             'chef_comptable': [ 'chefComptableDashboard' ],
-            'comptable': [ 'comptableDashboard' ]
+            'comptable': [ 'comptableDashboard' ],
+            'comptable_banque': [ 'comptableDashboard' ],
+            'comptable_caisse': [ 'comptableDashboard' ],
+            'comptable_od': [ 'comptableDashboard' ]
         };
 
         (showSections[ role ] || []).forEach(id => {
