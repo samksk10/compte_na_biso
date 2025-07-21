@@ -15,14 +15,21 @@
 </head>
 
 <body class="d-flex align-items-center justify-content-center vh-100">
+    <!-- Bouton de bascule du thème en haut à droite -->
+    <div class="theme-toggle-fixed">
+        <button id="themeToggle" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-moon"></i> Mode sombre
+        </button>
+    </div>
     <div class="card p-4 shadow-lg">
         <div class="login-container">
             <!-- Logo et nom de l'application -->
             <div class="app-logo">
-                <i class="bi bi-journal-bookmark-fill"></i> <!-- Icône de livre de comptes -->
+                <i class="bi bi-journal-bookmark-fill"></i>
                 <h2 class="app-name">COMPTABILITE NA BISO</h2>
+                <h2 class="app-name">Connexion</h2>
             </div>
-            <h2 class="text-center mb-4">Connexion</h2>
+
             <form id="loginForm">
                 <div class="mb-3">
                     <input type="email" id="email" class="form-control" placeholder="Adresse e-mail" required>

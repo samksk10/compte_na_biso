@@ -1,26 +1,26 @@
 /* Variables CSS */
 :root {
-    --primary-color: #1da1f2;
-    /* Bleu Twitter */
-    --secondary-color: #1991db;
-    /* Bleu plus foncé */
-    --background-color: #15202b;
-    /* Fond sombre */
-    --card-background: #192734;
-    /* Fond de la carte */
-    --input-background: #253341;
-    /* Fond des champs de formulaire */
-    --border-color: #38444d;
-    /* Couleur des bordures */
-    --text-color: #ffffff;
-    /* Couleur du texte */
+    --primary-color: #007bff;
+    /* Bleu clair Bootstrap */
+    --secondary-color: #0056b3;
+    /* Bleu foncé Bootstrap */
+    --background-color: #f8f9fa;
+    /* Fond très clair */
+    --card-background: #ffffff;
+    /* Carte blanche */
+    --input-background: #f1f3f4;
+    /* Champs très clairs */
+    --border-color: #ced4da;
+    /* Bordure grise claire */
+    --text-color: #212529;
+    /* Texte foncé */
     --error-color: #e0245e;
-    /* Rouge pour les messages d'erreur */
-    --icon-color: #657786;
-    /* Couleur des icônes */
+    /* Rouge pour erreurs */
+    --icon-color: #6c757d;
+    /* Icônes gris moyen */
     --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    --shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    /* Ombre par défaut */
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    /* Ombre douce */
 }
 
 /* Styles globaux */
@@ -179,4 +179,39 @@ h2 {
     .btn-primary {
         padding: 8px;
     }
+}
+
+/* Dark Mode */
+body.dark-mode {
+    background-color: #181a1b !important;
+}
+
+.dark-mode .card {
+    background-color: #23272b;
+    color: #f8f9fa;
+}
+
+.dark-mode input,
+.dark-mode .form-control {
+    background-color: #23272b;
+    color: #f8f9fa;
+    border-color: #444;
+}
+
+.dark-mode .btn-primary {
+    background-color: #375a7f;
+    border-color: #375a7f;
+}
+
+.dark-mode .app-logo,
+.dark-mode .app-name {
+    color: #f8f9fa;
+}
+
+/* Theme Toggle Button */
+.theme-toggle-fixed {
+    position: fixed;
+    top: 20px;
+    right: 30px;
+    z-index: 1000;
 }
