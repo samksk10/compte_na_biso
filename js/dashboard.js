@@ -55,6 +55,14 @@ document.addEventListener('DOMContentLoaded', function () {
             if (data.comptable) {
                 updateStatElement('totalOperationsJour', data.comptable.operationsJour);
                 updateStatElement('totalOperationsMois', data.comptable.operationsMois);
+
+                // Comptable caisse
+                updateStatElement('totalOperationsJourCaisse', data.comptable.operationsJourCaisse);
+                updateStatElement('totalOperationsMoisCaisse', data.comptable.operationsMoisCaisse);
+
+                // Comptable OD
+                updateStatElement('totalOperationsJourOD', data.comptable.operationsJourOD);
+                updateStatElement('totalOperationsMoisOD', data.comptable.operationsMoisOD);
             }
 
             // Afficher/masquer les sections selon le rôle
