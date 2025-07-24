@@ -272,7 +272,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const labels = data.map(taux => taux.date_effective);
         const values = data.map(taux => Number(taux.TauxChange));
 
-        if (window.usdCdfChart) window.usdCdfChart.destroy();
+        // Correction ici :
+        if (window.usdCdfChart && typeof window.usdCdfChart.destroy === 'function') {
+            window.usdCdfChart.destroy();
+        }
         window.usdCdfChart = new Chart(ctx, {
             type: 'line',
             data: {
