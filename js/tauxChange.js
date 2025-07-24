@@ -196,10 +196,123 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Filtrer par période
+    document.getElementById('btnFiltrer').addEventListener('click', async () => {
+        const debut = document.getElementById('periodeDebut').value;
+        const fin = document.getElementById('periodeFin').value;
+        toggleSpinner(true);
+        try {
+            let url = 'api/tauxChange.php';
+            if (debut && fin) {
+                url += `?dateDebut=${ debut }&dateFin=${ fin }`;
+            }
+            const response = await fetch(url);
+            const data = await response.json();
+            tauxChangeTable.innerHTML = data.length
+                ? data.map(taux => `
+                    <tr>
+                        <td>${ taux.devise_source }</td>
+                        <td>${ taux.devise_cible }</td>
+                        <td class="text-end">${ formatTaux(taux.TauxChange) }</td>
+                        <td>${ formatDate(taux.date_effective) }</td>
+                        <td>${ formatDateTime(taux.created_at) }</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="editTaux(${ taux.id })">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteTaux(${ taux.id })">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('')
+                : '<tr><td colspan="6" class="text-center">Aucun taux de change enregistré</td></tr>';
+        } catch (error) {
+            tauxChangeTable.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Erreur lors du filtrage</td></tr>';
+        } finally {
+            toggleSpinner(false);
+        }
+    });
+
+    // Afficher le taux actuel
+    async function afficherTauxActuel() {
+        const source = document.getElementById('devise_source').value || 'USD';
+        const cible = document.getElementById('devise_cible').value || 'CDF';
+        try {
+            const response = await fetch(`api/tauxChange.php?actuel=1&devise_source=${ source }&devise_cible=${ cible }`);
+            const taux = await response.json();
+            if (taux && taux.TauxChange) {
+                document.getElementById('tauxActuelInfo').textContent =
+                    `Taux actuel (${ source } → ${ cible }) : ${ formatTaux(taux.TauxChange) } au ${ formatDate(taux.date_effective) }`;
+            } else {
+                document.getElementById('tauxActuelInfo').textContent = 'Aucun taux actuel trouvé';
+            }
+        } catch {
+            document.getElementById('tauxActuelInfo').textContent = 'Erreur taux actuel';
+        }
+    }
+
+    // Met à jour le taux actuel à chaque changement de devise
+    document.getElementById('devise_source').addEventListener('change', afficherTauxActuel);
+    document.getElementById('devise_cible').addEventListener('change', afficherTauxActuel);
+
     // Chargement initial
     loadTauxChange();
+    afficherTauxActuel();
 
     // Initialiser les champs date par défaut
     document.getElementById('date_effective').value = new Date().toISOString().slice(0, 10);
     document.getElementById('created_at').value = new Date().toISOString().slice(0, 16);
+
+    async function afficherGraphiqueUsdCdf() {
+        const ctx = document.getElementById('usdCdfChart').getContext('2d');
+        const response = await fetch('api/tauxChange.php?devise_source=USD&devise_cible=CDF');
+        const data = await response.json();
+
+        const labels = data.map(taux => taux.date_effective);
+        const values = data.map(taux => Number(taux.TauxChange));
+
+        if (window.usdCdfChart) window.usdCdfChart.destroy();
+        window.usdCdfChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [ {
+                    label: 'USD → CDF',
+                    data: values,
+                    borderColor: 'rgba(25,135,84,1)',
+                    backgroundColor: 'rgba(25,135,84,0.1)',
+                    fill: true,
+                    tension: 0.2
+                } ]
+            },
+            options: {
+                scales: {
+                    x: { title: { display: true, text: 'Date' } },
+                    y: { title: { display: true, text: 'Taux' } }
+                }
+            }
+        });
+    }
+
+    // Appelle la fonction au chargement
+    afficherGraphiqueUsdCdf();
+
+    document.getElementById('btnInvert').addEventListener('click', () => {
+        const source = document.getElementById('devise_source');
+        const cible = document.getElementById('devise_cible');
+        const taux = document.getElementById('TauxChange');
+
+        // Inverse les devises
+        const tmp = source.value;
+        source.value = cible.value;
+        cible.value = tmp;
+
+        // Si le taux est renseigné, calcule l'inverse
+        if (taux.value && Number(taux.value) > 0) {
+            taux.value = (1 / Number(taux.value)).toFixed(4);
+        }
+
+        afficherTauxActuel();
+    });
 });

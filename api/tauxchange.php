@@ -26,6 +26,30 @@ try {
 
 // GET - Récupérer les taux de change
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    // Filtre par période
+    if (isset($_GET['dateDebut']) && isset($_GET['dateFin'])) {
+        $stmt = $pdo->prepare("SELECT * FROM taux_change WHERE date_effective BETWEEN ? AND ? ORDER BY date_effective DESC, created_at DESC");
+        $stmt->execute([$_GET['dateDebut'], $_GET['dateFin']]);
+        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+        exit;
+    }
+    // Graphique USD → CDF (tous les taux dans l'ordre croissant de date)
+    if (
+        isset($_GET['devise_source']) && isset($_GET['devise_cible']) &&
+        $_GET['devise_source'] === 'USD' && $_GET['devise_cible'] === 'CDF'
+    ) {
+        $stmt = $pdo->prepare("SELECT date_effective, TauxChange FROM taux_change WHERE devise_source = 'USD' AND devise_cible = 'CDF' ORDER BY date_effective ASC");
+        $stmt->execute();
+        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+        exit;
+    }
+    // Taux actuel
+    if (isset($_GET['actuel']) && isset($_GET['devise_source']) && isset($_GET['devise_cible'])) {
+        $stmt = $pdo->prepare("SELECT * FROM taux_change WHERE devise_source = ? AND devise_cible = ? AND date_effective <= CURDATE() ORDER BY date_effective DESC, created_at DESC LIMIT 1");
+        $stmt->execute([$_GET['devise_source'], $_GET['devise_cible']]);
+        echo json_encode($stmt->fetch(PDO::FETCH_ASSOC));
+        exit;
+    }
     if (isset($_GET['id'])) {
         // Récupérer un taux spécifique
         $stmt = $pdo->prepare("SELECT * FROM taux_change WHERE id = ?");
