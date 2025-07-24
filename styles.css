@@ -73,6 +73,13 @@ h2 {
     text-align: center;
 }
 
+h3 {
+    color: var(--text-color);
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
 /* Champs de formulaire */
 .form-control {
     background-color: var(--input-background);
