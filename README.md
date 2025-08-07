@@ -20,11 +20,12 @@
 - Grand livre comptable (filtrage par compte, période, exercice, export PDF/Excel)
 - Balance comptable (filtrage par période et exercice, totaux dynamiques, export PDF/Excel)
 - Gestion dynamique des taux de change (CRUD, filtrage, historique, export PDF/Excel)
+- **Statistiques des taux de change** (page dédiée avec graphiques)
 - Gestion des comptes analytiques
 
 ### Administration
 - Gestion des entreprises
-- Gestion des comptables (CRUD, affichage dynamique, protection XSS, affichage email complet)
+- Gestion des comptables (SCRUD, affichage dynamique, protection XSS, affichage email complet)
 - Suivi des activités
 
 ### Export et Rapports
@@ -50,7 +51,7 @@
 - JavaScript (ES6+)
 - Bootstrap 5.3
 - Bootstrap Icons
-- Chart.js (diagrammes circulaires)
+- Chart.js (diagrammes circulaires et graphiques statistiques)
 - Animations et transitions modernes
 
 ### Backend
@@ -88,8 +89,7 @@
 compte_na_biso/
 ├── css/
 │   └── stylesAll.css
-    └── styles.css
-
+│   └── styles.css
 ├── js/
 │   ├── auth.js
 │   ├── comptables.js
@@ -110,6 +110,7 @@ compte_na_biso/
 ├── listeOperations.html
 ├── balance.html
 ├── taux_change.html
+├── statistiques_taux.html
 ├── grandLivre.html
 ├── comptables.html
 └── autres pages...
@@ -124,6 +125,7 @@ compte_na_biso/
 - **Balance** : Filtrage par période/exercice, totaux dynamiques, exports
 - **Grand Livre** : Filtrage par compte/période, détails, exports
 - **Taux de Change** : Gestion CRUD, filtrage, historique, exports
+- **Statistiques Taux de Change** : Visualisation graphique de l’évolution des taux (nouvelle page dédiée)
 - **Comptables** : Gestion des utilisateurs, rôles, sécurité, affichage dynamique
 
 ---
@@ -145,6 +147,17 @@ compte_na_biso/
 - Protection contre les injections SQL
 - Contrôle d'accès basé sur les rôles
 - Protection XSS (affichage sécurisé des données)
+
+---
+
+## Fichiers ignorés par Git
+
+Le fichier `.gitignore` permet d’exclure du dépôt :
+- Les fichiers de configuration sensibles (`.env`, `config.php`)
+- Les dépendances (`/vendor/`, `/node_modules/`)
+- Les fichiers de build, logs, temporaires, systèmes, IDE, uploads, sessions, cache, documentation générée, tests, archives, etc.
+
+Cela évite d’ajouter au dépôt des fichiers inutiles, volumineux ou confidentiels.
 
 ---
 
