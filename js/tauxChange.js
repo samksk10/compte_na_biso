@@ -264,43 +264,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('date_effective').value = new Date().toISOString().slice(0, 10);
     document.getElementById('created_at').value = new Date().toISOString().slice(0, 16);
 
-    async function afficherGraphiqueUsdCdf() {
-        const ctx = document.getElementById('usdCdfChart').getContext('2d');
-        const response = await fetch('api/tauxChange.php?devise_source=USD&devise_cible=CDF');
-        const data = await response.json();
-
-        const labels = data.map(taux => taux.date_effective);
-        const values = data.map(taux => Number(taux.TauxChange));
-
-        // Correction ici :
-        if (window.usdCdfChart && typeof window.usdCdfChart.destroy === 'function') {
-            window.usdCdfChart.destroy();
-        }
-        window.usdCdfChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels,
-                datasets: [ {
-                    label: 'USD → CDF',
-                    data: values,
-                    borderColor: 'rgba(25,135,84,1)',
-                    backgroundColor: 'rgba(25,135,84,0.1)',
-                    fill: true,
-                    tension: 0.2
-                } ]
-            },
-            options: {
-                scales: {
-                    x: { title: { display: true, text: 'Date' } },
-                    y: { title: { display: true, text: 'Taux' } }
-                }
-            }
-        });
-    }
-
-    // Appelle la fonction au chargement
-    afficherGraphiqueUsdCdf();
-
     document.getElementById('btnInvert').addEventListener('click', () => {
         const source = document.getElementById('devise_source');
         const cible = document.getElementById('devise_cible');
